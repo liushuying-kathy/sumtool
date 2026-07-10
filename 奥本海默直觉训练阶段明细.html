@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奥本海默直觉训练 | 五阶段明细</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e2e8f0;
+        }
+        
+        .container { max-width: 950px; margin: 0 auto; }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+        
+        .header h1 { 
+            font-size: 2.2em; 
+            margin-bottom: 12px; 
+            background: linear-gradient(135deg, #e94560, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header .subtitle { font-size: 1.05em; color: #a0aec0; line-height: 1.6; }
+        
+        /* Quote Card */
+        .quote-card {
+            background: rgba(233, 69, 96, 0.1);
+            border-left: 4px solid #e94560;
+            border-radius: 0 16px 16px 0;
+            padding: 20px 24px;
+            margin-bottom: 28px;
+            font-style: italic;
+            color: #cbd5e0;
+        }
+        
+        .quote-card .author { color: #e94560; font-style: normal; font-weight: bold; margin-top: 8px; font-size: 0.9em; }
+        
+        /* Timeline */
+        .timeline { position: relative; padding-left: 40px; }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #e94560, #f39c12, #e94560);
+            border-radius: 3px;
+        }
+        
+        /* Phase Card */
+        .phase-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 24px;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+        
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            left: -33px;
+            top: 32px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e94560;
+            border: 3px solid #1a1a2e;
+            z-index: 2;
+        }
+        
+        .phase-card.completed::before { background: #48bb78; }
+        .phase-card.active::before { 
+            background: #f39c12; 
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 15px rgba(243,156,18,0.5);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+        
+        .phase-num {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4em;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .phase-num.p1 { background: linear-gradient(135deg, #e94560, #c0392b); }
+        .phase-num.p2 { background: linear-gradient(135deg, #e67e22, #d35400); }
+        .phase-num.p3 { background: linear-gradient(135deg, #f39c12, #f1c40f); color: #333; }
+        .phase-num.p4 { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+        .phase-num.p5 { background: linear-gradient(135deg, #3498db, #2980b9); }
+        
+        .phase-title-group { flex: 1; }
+        .phase-title { font-size: 1.3em; color: #fff; }
+        .phase-subtitle { font-size: 0.9em; color: #a0aec0; margin-top: 2px; }
+        
+        .phase-duration {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            background: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+            white-space: nowrap;
+        }
+        
+        .phase-goal {
+            background: rgba(243, 156, 18, 0.1);
+            border-left: 3px solid #f39c12;
+            border-radius: 0 10px 10px 0;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            color: #f39c12;
+            font-size: 0.95em;
+        }
+        
+        .phase-goal strong { display: block; margin-bottom: 4px; }
+        
+        /* Activity List */
+        .activity-list { list-style: none; }
+        
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .activity-item:last-child { border-bottom: none; }
+        
+        .activity-icon { font-size: 1.3em; flex-shrink: 0; margin-top: 2px; }
+        
+        .activity-content { flex: 1; }
+        .activity-name { color: #fff; font-weight: 500; margin-bottom: 4px; }
+        .activity-desc { color: #a0aec0; font-size: 0.9em; line-height: 1.5; }
+        .activity-meta { 
+            display: flex; 
+            gap: 10px; 
+            margin-top: 6px; 
+            flex-wrap: wrap;
+        }
+        
+        .meta-chip {
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 0.8em;
+        }
+        .meta-chip.time { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+        .meta-chip.tool { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+        .meta-chip.check { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+        
+        /* Milestone */
+        .milestone {
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px dashed rgba(46, 204, 113, 0.3);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-top: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .milestone-icon { font-size: 1.5em; }
+        .milestone-text { color: #2ecc71; font-size: 0.95em; }
+        .milestone-text strong { display: block; color: #fff; margin-bottom: 2px; }
+        
+        /* Overall Progress */
+        .progress-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .progress-title { font-size: 1.2em; color: #fff; margin-bottom: 16px; }
+        
+        .progress-bar-wrap {
+            height: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #f39c12, #2ecc71, #3498db);
+            border-radius: 10px;
+            transition: width 1s;
+        }
+        
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8em;
+            color: #a0aec0;
+        }
+        
+        /* Principle Grid */
+        .principle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .principle-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 14px;
+            padding: 18px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .principle-icon { font-size: 1.8em; margin-bottom: 8px; }
+        .principle-title { color: #fff; font-weight: bold; margin-bottom: 8px; }
+        .principle-text { color: #a0aec0; font-size: 0.9em; line-height: 1.6; }
+        
+        /* Print */
+        @media print {
+            body { background: white; color: #333; }
+            .phase-card { background: white; border: 1px solid #ddd; color: #333; }
+            .phase-title { color: #333; }
+            .phase-subtitle, .activity-desc { color: #666; }
+            .quote-card { background: #f5f5f5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🧠 奥本海默直觉训练</h1>
+            <div class="subtitle">
+                真正的直觉不是天赋，是深度理解后的自动化反应<br>
+                五阶段系统训练，把"刻意正确"变成"本能正确"
+            </div>
+        </div>
+        
+        <!-- Quote -->
+        <div class="quote-card">
+            "所谓直觉，是你对一件事理解得足够深之后，大脑跳过了中间步骤直接给出的答案。但如果理解不够深，跳过的就是关键步骤。"
+            <div class="author">— 训练核心理念</div>
+        </div>
+        
+        <!-- Overall Progress -->
+        <div class="progress-card">
+            <div class="progress-title">📊 整体训练进度（暑假8周计划）</div>
+            <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" id="overallProgress" style="width:0%"></div>
+            </div>
+            <div class="progress-labels">
+                <span>第1周</span>
+                <span>第2周</span>
+                <span>第3周</span>
+                <span>第4周</span>
+                <span>第5周</span>
+                <span>第6周</span>
+                <span>第7周</span>
+                <span>第8周</span>
+            </div>
+        </div>
+        
+        <!-- Timeline -->
+        <div class="timeline">
+            
+            <!-- PHASE 1 -->
+            <div class="phase-card active" id="phase1">
+                <div class="phase-header">
+                    <div class="phase-num p1">1</div>
+                    <div class="phase-title-group">
+                        <div class="phase-title">认知基建期</div>
+                        <div class="phase-subtitle">大脑的硬件升级</div>
+                    </div>
+                    <div class="phase-duration">第1-2周</div>
+                </div>
+                
+                <div class="phase-goal">
+                    <strong>🎯 阶段目标</strong>
+                    提升工作记忆容量和抑制控制能力，让大脑"装得下"更多步骤，"拦得住"冲动反应
+                </div>
+                
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <span class="activity-icon">🔢</span>
+                        <div class="activity-content">
+                            <div class="activity-name">数字倒背训练</div>
+                            <div class="activity-desc">每天5分钟，从4位开始，稳定后升级。目标：暑假结束时稳定6位</div>
+                            <div class="activity-meta">
+                                <span class="meta-chip time">5分钟/天</span>
+                                <span class="meta-chip tool">数字倒背卡</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <span class="activity-icon">🎯</span>
+                        <div class="activity-content">
+                            <div class="activity-name">斯特鲁普热身</div>
+                            <div class="activity-desc">每天5分钟经典模式。目标：10题正确率90%+，平均反应时间缩短</div>
+                            <div class="activity-meta">
+                                <span class="meta-chip time">5分钟/天</span>
+                                <span class="meta-chip tool">斯特鲁普卡</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <span class="activity-icon">🧹</span>
+                        <div class="activity-content">
+                            <div class="activity-name">多步骤家务指令</div>
+                            <div class="activity-desc">每天一项家务，独立完成不提醒。训练"记住多步骤不遗漏"的执行功能</div>
+                            <div class="activity-meta">
+                                <span class="meta-chip time">10分钟/天</span>
+                                <span class="meta-chip tool">家务指令卡</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                
+                <div class="milestone">
+                    <span class="milestone-icon">🏁</span>
+                    <div class="milestone-text">
+                        <strong>通过标准</strong>
+                        数字倒背稳定5位 | 斯特鲁普10题对9题 | 家务连续3天独立完成
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PHASE 2 -->
+            <div class="phase-card" id="phase2">
+                <div class="phase-header">
+                    <div class="phase-num p2">2</div>
+                    <div class="phase-title-group">
+                        <div class="phase-title">显式外化期</div>
+                        <div class="phase-subtitle">把"心里想"变成"说出来"</div>
+                    </div>
+                    <div class="phase-duration">第2-4周</div>
+                </div>
+                
+                <div class="phase-goal">
+                    <strong>🎯 阶段目标</strong>
+                    建立"口述解题"和"检查清单"的习惯，让思考过程可见、可检查、可修正
+                </div>
+                
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <span class="activity-icon">🗣️</span>
+                        <div class="activity-content">
+                            <div class="activity-name">口述解题法</div>
+                            <div class="activity-desc">每天选1道错题，用"理解→规划→验证"三步法大声说出来。训练"舌头比脑子诚实"</div>
+                            <div class="activity-meta">
+                                <span class="meta-chip time">5分钟/题</span>
+                                <span class="meta-chip tool">口述话术卡</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <span class="activity-icon">📋</span>
+                        <div class="activity-content">
+                            <div class="activity-name">学科检查卡使用</div>
+                            <div class="activity-desc">每次做题后（特别是作业），用检查卡逐项勾选。重点训练"单位、验算、答句"不遗漏</div>
+                            <div class="activity-meta">
+                                <span class="meta-chip time">2分钟/次</span>
+                                <span class="meta-chip tool">学科检查卡</span>
+                                <span class="meta-chip check">关键习惯</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <span class="activity-icon">💡</span>
+                        <div class="activity-content">
+                            <div class="activity-name">直觉校准训练</div>
+                            <div class="activity-desc">学习区分"可信直觉"和"直觉陷阱"。关键口诀：快做慢检查，遇到老面孔暂停再看菜</div>
+                            <div class="activity-meta">
+                                <span class="meta-chip tool">学科检查卡-直觉模块</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                
+                <div class="milestone">
+                    <span class="milestone-icon">🏁</span>
+                    <div class="milestone-text">
+                        <strong>通过标准</strong>
+                        能独立完成口述解题 | 检查卡使用不需要提醒 | 陷阱题识别率50%+
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PHASE 3 -->
+            <div class="phase-card" id="phase3">
+                <div class="phase-header">
+                    <div class="phase-num p3">3</div>
+                    <div class="phase-title-group">
+                        <div class="phase-title">模式识别期</div>
+                        <div class="phase-subtitle">找到自己的"错误指纹"</div>
+                    </div>
+                    <div class="phase-duration">第3-5周</div>
+                </div>
+                
+                <div class="phase-goal">
+                    <strong>🎯 阶段目标</strong>
+                    系统记录和分析错误模式，建立"看到这类型错误就自动警觉"的反应
+                </div>
+                
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <span class="activity-icon">🔍</span>
+                        <div class="activity-content">
+                            <div class="activity-name">错误归因记录</div>
+                            <div class="activity-desc">每次作业/测试的错误，归类到错误模式卡中。持续2周后看统计，找出Top 3高频错误</div>
+                            <div class="activity-meta">
+                                <span class="meta-chip time">3分钟/天</span>
+                                <span class="meta-chip tool">错误模式归因卡</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <span class="activity-icon">🎯</span>
+                        <div class="activity-content">
+                            <div class="activity-name">针对性突破</div>
+                            <div class="activity-desc">针对Top 3高频错误，每天额外做5道专项练习。直到连续3天不再犯同类错</div>
+                            <div class="activity-meta">
+                                <span class="meta-chip time">10分钟/天</span>
+                                <span class="meta-chip check">精准打击</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <span class="activity-icon">⚡</span>
+                        <div class="activity-content">
+                            <div class="activity-name">斯特鲁普进阶</div>
+                            <div class="activity-desc">加入干扰模式和极速挑战，训练"在干扰中保持专注"的能力</div>
+                            <div class="activity-meta">
+                                <span class="meta-chip time">5分钟/天</span>
+                                <span class="meta-chip tool">斯特鲁普卡-进阶</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                
+                <div class="milestone">
+                    <span class="milestone-icon">🏁</span>
+                    <div class="milestone-text">
+                        <strong>通过标准</strong>
+                        明确知道自己的Top 3错误类型 | 专项练习正确率90%+ | 同类错误重复率下降
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PHASE 4 -->
+            <div class="phase-card" id="phase4">
+                <div class="phase-header">
+                    <div class="phase-num p4">4</div>
+                    <div class="phase-title-group">
+                        <div class="phase-title">压力模拟期</div>
+                        <div class="phase-subtitle">在压力下保持清醒</div>
+                    </div>
+                    <div class="phase-duration">第5-7周</div>
+                </div>
+                
+                <div class="phase-goal">
+                    <strong>🎯 阶段目标</strong>
+                    在限时和干扰环境下，依然能执行检查清单、保持正确步骤、识别直觉陷阱
+                </div>
+                
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <span class="activity-icon">⏱️</span>
+                        <div class="activity-content">
+                            <div class="activity-name">限时口述解题</div>
+                            <div class="activity-desc">2分钟内口述完整解题过程。时间压力迫使大脑提炼核心步骤，淘汰废话</div>
+                            <div class="activity-meta">
+                                <span class="meta-chip time">2分钟/题</span>
+                                <span class="meta-chip tool">口述话术卡-计时</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <span class="activity-icon">🧪</span>
+                        <div class="activity-content">
+                            <div class="activity-name">双周压力测试</div>
+                            <div class="activity-desc">每两周六进行一次完整测试（6项），模拟考试环境。记录数据，追踪进步曲线</div>
+                            <div class="activity-meta">
+                                <span class="meta-chip time">30分钟/双周</span>
+                                <span class="meta-chip tool">双周测试方案卡</span>
+                                <span class="meta-chip check">重要节点</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <span class="activity-icon">🎲</span>
+                        <div class="activity-content">
+                            <div class="activity-name">家务干扰测试</div>
+                            <div class="activity-desc">做一半家务时插入额外任务，观察是否能记住原任务并继续完成</div>
+                            <div class="activity-meta">
+                                <span class="meta-chip time">随机</span>
+                                <span class="meta-chip tool">家务指令卡</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                
+                <div class="milestone">
+                    <span class="milestone-icon">🏁</span>
+                    <div class="milestone-text">
+                        <strong>通过标准</strong>
+                        限时口述完整流畅 | 压力测试总评稳定2星+ | 干扰后能快速恢复
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PHASE 5 -->
+            <div class="phase-card" id="phase5">
+                <div class="phase-header">
+                    <div class="phase-num p5">5</div>
+                    <div class="phase-title-group">
+                        <div class="phase-title">自动化内化期</div>
+                        <div class="phase-subtitle">从"刻意正确"到"本能正确"</div>
+                    </div>
+                    <div class="phase-duration">第7-8周</div>
+                </div>
+                
+                <div class="phase-goal">
+                    <strong>🎯 阶段目标</strong>
+                    检查、口述、验证成为不需要提醒的自动行为——这就是真正的"奥本海默式直觉"
+                </div>
+                
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <span class="activity-icon">🧠</span>
+                        <div class="activity-content">
+                            <div class="activity-name">无意识检查</div>
+                            <div class="activity-desc">做题后"自然而然"看一眼单位、做一遍验算——不需要清单提醒，就像系安全带一样自然</div>
+                            <div class="activity-meta">
+                                <span class="meta-chip check">自动化标志</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <span class="activity-icon">🎤</span>
+                        <div class="activity-content">
+                            <div class="activity-name">给他人讲题</div>
+                            <div class="activity-desc">每周给家长/同学讲一道难题。能讲清楚 = 真正理解。这是费曼技巧的最终形态</div>
+                            <div class="activity-meta">
+                                <span class="meta-chip time">10分钟/周</span>
+                                <span class="meta-chip check">费曼技巧</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <span class="activity-icon">📊</span>
+                        <div class="activity-content">
+                            <div class="activity-name">总结复盘</div>
+                            <div class="activity-desc">回顾8周数据：哪些错误类型消失了？哪些还需巩固？制定开学后的维持计划</div>
+                            <div class="activity-meta">
+                                <span class="meta-chip time">1次</span>
+                                <span class="meta-chip check">暑假收官</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                
+                <div class="milestone">
+                    <span class="milestone-icon">🏁</span>
+                    <div class="milestone-text">
+                        <strong>通过标准（终极检验）</strong>
+                        检查习惯自动化 | 口述解题流畅 | 能独立给他人讲清一道题 | 开学考试不犯暑假前同类错
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Core Principles -->
+        <div class="progress-card" style="margin-top: 20px;">
+            <div class="progress-title">🎯 贯穿全程的四大原则</div>
+            <div class="principle-grid">
+                <div class="principle-card">
+                    <div class="principle-icon">🧠</div>
+                    <div class="principle-title">深度理解优先</div>
+                    <div class="principle-text">不理解就反复讲，讲到能给别人讲明白为止。死记硬背的效率是深度理解的1/10。</div>
+                </div>
+                <div class="principle-card">
+                    <div class="principle-icon">🗣️</div>
+                    <div class="principle-title">外化检验内化</div>
+                    <div class="principle-text">嘴里说得出来的才是真理解。口述是检验、也是强化。说一遍 = 想三遍。</div>
+                </div>
+                <div class="principle-card">
+                    <div class="principle-icon">⏸️</div>
+                    <div class="principle-title">暂停是超能力</div>
+                    <div class="principle-text"> rush 交卷不会加分，但漏看一个单位会扣分。2秒暂停可能挽回5分。</div>
+                </div>
+                <div class="principle-card">
+                    <div class="principle-icon">📈</div>
+                    <div class="principle-title">数据驱动调整</div>
+                    <div class="principle-text">不看感觉看数据。错误归因卡会告诉你该练什么，而不是你觉得该练什么。</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div style="text-align:center;padding:30px 0;color:#a0aec0;font-size:0.9em;">
+            8周不是终点，是起点。开学后每周30分钟维持，习惯就会伴随一生 🌟
+        </div>
+    </div>
+
+    <script>
+        // Set progress based on current week of summer vacation
+        // Assuming summer vacation starts around week 28 of the year
+        const now = new Date();
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const currentWeek = Math.ceil((now - startOfYear) / 604800000);
+        const summerStartWeek = 28; // Approximate start of summer
+        const vacationWeek = Math.max(0, Math.min(8, currentWeek - summerStartWeek + 1));
+        const progressPct = (vacationWeek / 8) * 100;
+        
+        document.getElementById('overallProgress').style.width = progressPct + '%';
+        
+        // Mark completed phases
+        if (vacationWeek >= 2) document.getElementById('phase1').classList.add('completed');
+        if (vacationWeek >= 4) document.getElementById('phase2').classList.add('completed');
+        if (vacationWeek >= 5) document.getElementById('phase3').classList.add('completed');
+        if (vacationWeek >= 7) document.getElementById('phase4').classList.add('completed');
+        
+        // Active phase
+        document.querySelectorAll('.phase-card').forEach(p => p.classList.remove('active'));
+        if (vacationWeek <= 2) document.getElementById('phase1').classList.add('active');
+        else if (vacationWeek <= 4) document.getElementById('phase2').classList.add('active');
+        else if (vacationWeek <= 5) document.getElementById('phase3').classList.add('active');
+        else if (vacationWeek <= 7) document.getElementById('phase4').classList.add('active');
+        else document.getElementById('phase5').classList.add('active');
+    </script>
+</body>
+</html>

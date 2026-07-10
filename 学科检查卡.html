@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日热身 | 学科检查与直觉校准</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 25px;
+        }
+        
+        .header h1 { font-size: 2.1em; margin-bottom: 8px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        .header .subtitle { font-size: 1.05em; opacity: 0.95; }
+        
+        .date-bar {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .date-bar .date { font-weight: bold; color: #5a67d8; }
+        
+        /* Philosophy Card - IMPORTANT */
+        .philosophy-card {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid #f6ad55;
+        }
+        
+        .philosophy-title {
+            font-size: 1.2em;
+            color: #744210;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .philosophy-content {
+            color: #553c9a;
+            line-height: 1.8;
+            font-size: 0.95em;
+        }
+        
+        .philosophy-content strong { color: #744210; }
+        
+        .trust-doubt-scale {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 14px;
+            padding: 12px;
+            background: white;
+            border-radius: 12px;
+        }
+        
+        .scale-label { font-size: 0.85em; font-weight: bold; white-space: nowrap; }
+        .scale-label.trust { color: #38a169; }
+        .scale-label.doubt { color: #e53e3e; }
+        
+        .scale-bar {
+            flex: 1;
+            height: 20px;
+            background: linear-gradient(90deg, #c6f6d5 0%, #fed7d7 100%);
+            border-radius: 10px;
+            position: relative;
+        }
+        
+        .scale-marker {
+            position: absolute;
+            top: -5px;
+            width: 30px;
+            height: 30px;
+            background: #5a67d8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: left 0.3s;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        /* Subject Tabs */
+        .subject-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .subject-tab {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.05em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .subject-tab:hover { transform: translateY(-2px); }
+        .subject-tab.active { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+        
+        .subject-tab.math { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .subject-tab.chinese { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .subject-tab.english { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        
+        /* Intuition Alert Banner */
+        .intuition-banner {
+            background: #fef3c7;
+            border: 2px dashed #f59e0b;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .intuition-banner:hover { background: #fde68a; }
+        .intuition-banner .icon { font-size: 1.8em; }
+        .intuition-banner .text { flex: 1; }
+        .intuition-banner .title { font-weight: bold; color: #92400e; }
+        .intuition-banner .desc { font-size: 0.9em; color: #b45309; margin-top: 2px; }
+        
+        /* Card */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .card-title {
+            font-size: 1.3em;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title.math { color: #5a67d8; }
+        .card-title.chinese { color: #e53e3e; }
+        .card-title.english { color: #3182ce; }
+        
+        /* Checklist */
+        .checklist { list-style: none; }
+        
+        .check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            background: #f7fafc;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s;
+            border: 2px solid transparent;
+        }
+        
+        .check-item:hover { background: #edf2f7; }
+        .check-item.checked { background: #f0fff4; border-color: #9ae6b4; }
+        .check-item.checked .check-box { background: #48bb78; border-color: #48bb78; }
+        .check-item.checked .check-box::after { content: '✓'; color: white; font-size: 0.9em; }
+        .check-item.checked .check-text { text-decoration: line-through; opacity: 0.75; }
+        .check-item.intuition-trap { border-left: 4px solid #f6ad55; }
+        .check-item.intuition-trap:hover { background: #fffaf0; }
+        
+        .check-box {
+            min-width: 24px;
+            height: 24px;
+            border: 2px solid #cbd5e0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+            transition: all 0.25s;
+        }
+        
+        .check-text { flex: 1; font-size: 1em; line-height: 1.5; }
+        .check-text .highlight { color: #e53e3e; font-weight: bold; background: #fff5f5; padding: 1px 4px; border-radius: 4px; }
+        .check-text .tip { font-size: 0.85em; color: #a0aec0; display: block; margin-top: 3px; font-style: italic; }
+        
+        /* Progress */
+        .progress-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 18px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s;
+        }
+        
+        .progress-fill.math { background: linear-gradient(90deg, #667eea, #764ba2); }
+        .progress-fill.chinese { background: linear-gradient(90deg, #f093fb, #f5576c); }
+        .progress-fill.english { background: linear-gradient(90deg, #4facfe, #00f2fe); }
+        
+        .progress-text { font-size: 0.9em; color: #718096; white-space: nowrap; }
+        
+        /* Pause & Check Button */
+        .pause-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+            color: white;
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            box-shadow: 0 4px 12px rgba(237,137,54,0.35);
+        }
+        
+        .pause-btn:hover { transform: translateY(-2px); }
+        .pause-btn.pressed { 
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            box-shadow: 0 4px 12px rgba(72,187,120,0.35);
+        }
+        
+        /* Intuition Guide Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-overlay.show { display: flex; }
+        
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-title { font-size: 1.3em; margin-bottom: 16px; color: #2d3748; }
+        
+        .intuition-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+        
+        .intuition-table th {
+            background: #f7fafc;
+            padding: 10px;
+            text-align: left;
+            font-size: 0.9em;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .intuition-table td {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        .intuition-table .trust { color: #38a169; background: #f0fff4; }
+        .intuition-table .trap { color: #e53e3e; background: #fff5f5; }
+        
+        /* Reset */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover { transform: translateY(-2px); }
+        .btn-reset { background: #e2e8f0; color: #4a5568; }
+        
+        /* Summary */
+        .summary-card {
+            background: linear-gradient(135deg, #e6fffa 0%, #ebf8ff 100%);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            margin-top: 10px;
+        }
+        
+        .summary-title { font-size: 1.2em; color: #2d3748; margin-bottom: 14px; }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        
+        .summary-item {
+            background: white;
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+        
+        .summary-num { font-size: 1.6em; font-weight: bold; }
+        .summary-num.math { color: #5a67d8; }
+        .summary-num.chinese { color: #e53e3e; }
+        .summary-num.english { color: #3182ce; }
+        .summary-label { font-size: 0.85em; color: #718096; margin-top: 4px; }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.5em; }
+            .subject-tabs { flex-direction: column; }
+            .card { padding: 18px; }
+            .trust-doubt-scale { flex-direction: column; }
+        }
+        
+        @media print {
+            body { background: white; }
+            .card, .philosophy-card { box-shadow: none; border: 1px solid #ddd; }
+            .subject-tabs, .btn-group, .pause-btn { display: none; }
+            .check-item { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📋 学科检查卡</h1>
+            <div class="subtitle">不是"直觉总是错的"，而是"学会在关键处暂停"</div>
+        </div>
+        
+        <!-- Date -->
+        <div class="date-bar">
+            <div class="date" id="todayDate">📅 载入中...</div>
+            <div style="color:#718096;font-size:0.9em;">做题后花2分钟检查，比 rush 交卷更重要</div>
+        </div>
+        
+        <!-- Philosophy Card -->
+        <div class="philosophy-card">
+            <div class="philosophy-title">
+                <span>💡</span>
+                <span>关于"直觉"的正确理解（请仔细阅读）</span>
+            </div>
+            <div class="philosophy-content">
+                <strong>你的直觉不总是错的！</strong>很多题目你的第一感觉是对的——特别是阅读理解、有把握的口算、熟悉的故事主旨。<br><br>
+                
+                <strong>需要暂停验证的"直觉陷阱"只有这些：</strong><br>
+                · 看到"好像做过"的题，直接套答案 → 陷阱！条件可能不同<br>
+                · 计算时"感觉对了"但没验算 → 陷阱！抄错数字很常见<br>
+                · 选答案时"这个看起来对" → 陷阱！可能漏看了关键词<br><br>
+                
+                <strong>正确姿势：</strong>快速做题时相信直觉，但在<span class="highlight">交卷前</span>、<span class="highlight">换题型时</span>、<span class="highlight">遇到"似曾相识"的题时</span>，按下暂停键，用检查清单扫一遍。
+            </div>
+            
+            <div class="trust-doubt-scale">
+                <span class="scale-label trust">直觉可信</span>
+                <div class="scale-bar">
+                    <div class="scale-marker" id="scaleMarker" title="拖动调整" onclick="toggleScale()">我</div>
+                </div>
+                <span class="scale-label doubt">需要验证</span>
+            </div>
+            <div style="text-align:center;font-size:0.85em;color:#a0aec0;margin-top:6px;">
+                点击圆点切换：绿色=相信直觉 | 红色=暂停检查
+            </div>
+        </div>
+        
+        <!-- Subject Tabs -->
+        <div class="subject-tabs">
+            <button class="subject-tab math active" onclick="switchSubject('math')">
+                🔢 数学检查
+            </button>
+            <button class="subject-tab chinese" onclick="switchSubject('chinese')">
+                📖 语文检查
+            </button>
+            <button class="subject-tab english" onclick="switchSubject('english')">
+                🔤 英语检查
+            </button>
+        </div>
+        
+        <!-- Intuition Banner -->
+        <div class="intuition-banner" onclick="showIntuitionGuide()">
+            <span class="icon">🎯</span>
+            <div class="text">
+                <div class="title">什么时候该暂停验证？点击查看直觉陷阱清单</div>
+                <div class="desc">不是所有题都需要怀疑，只在特定场景下按暂停键</div>
+            </div>
+            <span style="font-size:1.5em;">›</span>
+        </div>
+        
+        <!-- === MATH CARD === -->
+        <div class="card" id="mathCard">
+            <div class="card-title math">
+                <span>🔢</span>
+                <span>数学 — 检查清单</span>
+            </div>
+            <ul class="checklist" id="mathList"></ul>
+            <div class="progress-row">
+                <div class="progress-bar">
+                    <div class="progress-fill math" id="mathProgress" style="width:0%"></div>
+                </div>
+                <div class="progress-text" id="mathProgressText">0/0</div>
+            </div>
+            <button class="pause-btn" id="mathPauseBtn" onclick="pressPause('math')">
+                ⏸️ 我做到这里了，先暂停检查一下
+            </button>
+        </div>
+        
+        <!-- === CHINESE CARD === -->
+        <div class="card" id="chineseCard" style="display:none;">
+            <div class="card-title chinese">
+                <span>📖</span>
+                <span>语文 — 检查清单</span>
+            </div>
+            <ul class="checklist" id="chineseList"></ul>
+            <div class="progress-row">
+                <div class="progress-bar">
+                    <div class="progress-fill chinese" id="chineseProgress" style="width:0%"></div>
+                </div>
+                <div class="progress-text" id="chineseProgressText">0/0</div>
+            </div>
+            <button class="pause-btn" id="chinesePauseBtn" onclick="pressPause('chinese')">
+                ⏸️ 我做到这里了，先暂停检查一下
+            </button>
+        </div>
+        
+        <!-- === ENGLISH CARD === -->
+        <div class="card" id="englishCard" style="display:none;">
+            <div class="card-title english">
+                <span>🔤</span>
+                <span>英语 — 检查清单</span>
+            </div>
+            <ul class="checklist" id="englishList"></ul>
+            <div class="progress-row">
+                <div class="progress-bar">
+                    <div class="progress-fill english" id="englishProgress" style="width:0%"></div>
+                </div>
+                <div class="progress-text" id="englishProgressText">0/0</div>
+            </div>
+            <button class="pause-btn" id="englishPauseBtn" onclick="pressPause('english')">
+                ⏸️ 我做到这里了，先暂停检查一下
+            </button>
+        </div>
+        
+        <!-- Summary -->
+        <div class="summary-card">
+            <div class="summary-title">📊 今日检查统计</div>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-num math" id="totalMath">0</div>
+                    <div class="summary-label">数学已检查</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-num chinese" id="totalChinese">0</div>
+                    <div class="summary-label">语文已检查</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-num english" id="totalEnglish">0</div>
+                    <div class="summary-label">英语已检查</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-num" style="color:#ed8936;" id="totalPauses">0</div>
+                    <div class="summary-label">暂停次数</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn btn-reset" onclick="resetAll()">🔄 重置今日</button>
+        </div>
+    </div>
+    
+    <!-- Intuition Guide Modal -->
+    <div class="modal-overlay" id="intuitionModal">
+        <div class="modal-box">
+            <div class="modal-title">🎯 直觉使用指南：什么时候信，什么时候停</div>
+            
+            <table class="intuition-table">
+                <thead>
+                    <tr>
+                        <th style="width:20%">场景</th>
+                        <th style="width:40%">可以相信直觉 ✅</th>
+                        <th style="width:40%">需要暂停验证 ⚠️</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>数学计算</strong></td>
+                        <td class="trust">口算熟练的加减乘除；步骤清晰的大题</td>
+                        <td class="trap">"似曾相识"的题；多位数运算；带单位的题；除不尽的除法</td>
+                    </tr>
+                    <tr>
+                        <td><strong>语文阅读</strong></td>
+                        <td class="trust">对文章整体情感的理解；人物性格判断</td>
+                        <td class="trap">"我觉得是这个"但没回原文找依据；概括题漏要点</td>
+                    </tr>
+                    <tr>
+                        <td><strong>语文作文</strong></td>
+                        <td class="trust">第一反应的素材往往最真挚</td>
+                        <td class="trap">写完后不检查错字；不确认题目要求</td>
+                    </tr>
+                    <tr>
+                        <td><strong>英语阅读</strong></td>
+                        <td class="trust">大意理解；明显对错的判断</td>
+                        <td class="trap">看到熟悉单词就选（可能考的是另一个意思）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>英语语法</strong></td>
+                        <td class="trust">背过的固定搭配</td>
+                        <td class="trap">时态选择（一定要看时间标志词）；三单-s</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div style="margin-top:16px;padding:12px;background:#fffaf0;border-radius:10px;font-size:0.9em;color:#744210;">
+                <strong>🧠 记住这个口诀：</strong><br>
+                快做慢检查，直觉可信赖；遇到老面孔，暂停再看菜。进退位单位，回头必须验；交卷前三秒，清单扫一遍。
+            </div>
+            
+            <button class="btn btn-reset" style="margin-top:15px;width:100%;" onclick="closeIntuitionGuide()">知道了，关闭</button>
+        </div>
+    </div>
+
+    <script>
+        // === Data ===
+        const CHECKLISTS = {
+            math: [
+                { text: '我是否把题目中的<strong>数字抄对</strong>了？', tip: '特别是应用题里的数字，容易看错', trap: true },
+                { text: '答案有没有写<strong>单位</strong>？单位对不对？', tip: '米/厘米/千米；克/千克；元/角/分', trap: true },
+                { text: '计算结果我<strong>验算</strong>了吗？', tip: '加法用减法验，乘法用除法验', trap: true },
+                { text: '<strong>进退位</strong>标记做了吗？加法进位/减法退位', tip: '进位写小数字在上方，退位打点', trap: true },
+                { text: '有没有漏掉"<strong>答</strong>"或"<strong>答句</strong>"？', tip: '应用题必须写答', trap: false },
+                { text: '我有没有把答案<strong>抄到答题区</strong>？', tip: '草稿纸上的答案要写到试卷上', trap: false },
+                { text: '试卷<strong>正反面</strong>我都写完了吗？', tip: '翻过去看看背面有没有漏题', trap: false },
+                { text: '遇到"<strong>似曾相识</strong>"的题，我确认条件一样了吗？', tip: '数字或条件可能变了，不能直接套', trap: true },
+                { text: '<strong>多步计算</strong>的中间步骤我都写了吗？', tip: '有些题要求写出过程，不能只写答案', trap: false },
+                { text: '最后再看一眼，有没有<strong>漏题</strong>没做？', tip: '从头到尾扫一遍题号', trap: false }
+            ],
+            chinese: [
+                { text: '作文/阅读有没有<strong>回原文</strong>找依据？', tip: '"我觉得"不够，要有原文证据', trap: true },
+                { text: '我有没有<strong>漏看题目要求</strong>？', tip: '比如"用原文回答""不超过20字"', trap: true },
+                { text: '<strong>错别字</strong>我检查了吗？', tip: '重点看：的/地/得；同音字', trap: false },
+                { text: '作文的<strong>开头和结尾</strong>我读了一遍吗？', tip: '开头结尾最重要，不能有病句', trap: false },
+                { text: '阅读理解答题是否<strong>完整</strong>？', tip: '概括题要答全几个要点，不能只写一点', trap: true },
+                { text: '有没有因为<strong>赶时间</strong>而潦草写答案？', tip: '字迹工整也是得分项', trap: false },
+                { text: '古诗默写我<strong>逐字</strong>检查了吗？', tip: '古诗错一个字就全错，必须逐字对', trap: true },
+                { text: '选择题我是否<strong>看全了所有选项</strong>？', tip: '别看到B对就直接选，看看C和D', trap: true },
+                { text: '作文<strong>偏题</strong>了吗？中心思想和题目一致吗？', tip: '再读一遍题目，确认自己没跑题', trap: true },
+                { text: '最后通读一遍，有没有<strong>不通顺的句子</strong>？', tip: '出声默读最容易发现问题', trap: false }
+            ],
+            english: [
+                { text: '名词<strong>单复数</strong>对吗？', tip: 'a/an后面接单数；some/many后面接复数', trap: true },
+                { text: '<strong>动词时态</strong>对吗？我检查时间标志词了吗？', tip: 'yesterday→过去时；tomorrow→将来时；often→一般现在时', trap: true },
+                { text: '<strong>第三人称单数</strong>（he/she/it）动词加-s了吗？', tip: '这是最常见的丢分点！', trap: true },
+                { text: '句子的<strong>首字母</strong>大写了吗？', tip: '每句话开头必须大写', trap: false },
+                { text: '英语作文我<strong>拼写</strong>检查了吗？', tip: '不确定的单词在草稿纸上先写一遍', trap: false },
+                { text: '单词<strong>拼写</strong>我仔细检查了吗？', tip: '不确定的单词，一个字母一个字母核对', trap: true },
+                { text: '选择题我看<strong>清题干</strong>了吗？（选正确还是选错误？）', tip: '注意NOT/EXCEPT这些词', trap: true },
+                { text: '作文的<strong>标点</strong>用对了吗？', tip: '英语用点号. 不是句号。', trap: false },
+                { text: '字母<strong>i和l</strong>、<strong>b和d</strong>我分清楚了吗？', tip: '抄写单词时最容易把b写成d', trap: false },
+                { text: '最后有没有<strong>漏掉的题</strong>？', tip: '检查题号是否连续', trap: false }
+            ]
+        };
+        
+        // === State ===
+        let currentSubject = 'math';
+        let checkedItems = { math: new Set(), chinese: new Set(), english: new Set() };
+        let pauseCount = parseInt(localStorage.getItem('pauseCount') || '0');
+        let scalePosition = 0; // 0=trust, 1=doubt
+        
+        // === Date ===
+        const now = new Date();
+        document.getElementById('todayDate').textContent = 
+            `📅 ${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+        document.getElementById('totalPauses').textContent = pauseCount;
+        
+        // === Subject Switch ===
+        function switchSubject(subject) {
+            currentSubject = subject;
+            document.querySelectorAll('.subject-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.subject-tab.${subject}`).classList.add('active');
+            
+            ['math', 'chinese', 'english'].forEach(s => {
+                document.getElementById(s + 'Card').style.display = s === subject ? 'block' : 'none';
+            });
+        }
+        
+        // === Render Checklist ===
+        function renderChecklist(subject) {
+            const list = document.getElementById(subject + 'List');
+            list.innerHTML = '';
+            
+            CHECKLISTS[subject].forEach((item, i) => {
+                const li = document.createElement('li');
+                li.className = 'check-item' + (item.trap ? ' intuition-trap' : '');
+                if (checkedItems[subject].has(i)) li.classList.add('checked');
+                li.dataset.index = i;
+                li.onclick = () => toggleCheck(subject, i);
+                
+                li.innerHTML = `
+                    <div class="check-box"></div>
+                    <div class="check-text">
+                        ${item.text}
+                        <span class="tip">💡 ${item.tip}</span>
+                    </div>
+                    ${item.trap ? '<span style="font-size:1.2em;">⚠️</span>' : ''}
+                `;
+                list.appendChild(li);
+            });
+            
+            updateProgress(subject);
+        }
+        
+        function toggleCheck(subject, index) {
+            const set = checkedItems[subject];
+            if (set.has(index)) set.delete(index);
+            else set.add(index);
+            
+            renderChecklist(subject);
+            
+            // Update totals
+            document.getElementById('total' + subject.charAt(0).toUpperCase() + subject.slice(1)).textContent = set.size;
+        }
+        
+        function updateProgress(subject) {
+            const total = CHECKLISTS[subject].length;
+            const done = checkedItems[subject].size;
+            document.getElementById(subject + 'Progress').style.width = (done/total*100) + '%';
+            document.getElementById(subject + 'ProgressText').textContent = `${done}/${total}`;
+        }
+        
+        // === Pause Button ===
+        function pressPause(subject) {
+            const btn = document.getElementById(subject + 'PauseBtn');
+            btn.classList.add('pressed');
+            btn.innerHTML = '✅ 已暂停检查！继续加油！';
+            
+            pauseCount++;
+            localStorage.setItem('pauseCount', pauseCount);
+            document.getElementById('totalPauses').textContent = pauseCount;
+            
+            setTimeout(() => {
+                btn.classList.remove('pressed');
+                btn.innerHTML = '⏸️ 我做到这里了，先暂停检查一下';
+            }, 3000);
+        }
+        
+        // === Scale Toggle ===
+        function toggleScale() {
+            const marker = document.getElementById('scaleMarker');
+            scalePosition = scalePosition === 0 ? 1 : 0;
+            marker.style.left = scalePosition === 0 ? '15%' : '85%';
+            marker.textContent = scalePosition === 0 ? '信' : '验';
+            marker.style.background = scalePosition === 0 ? '#48bb78' : '#e53e3e';
+        }
+        
+        // === Intuition Modal ===
+        function showIntuitionGuide() {
+            document.getElementById('intuitionModal').classList.add('show');
+        }
+        
+        function closeIntuitionGuide() {
+            document.getElementById('intuitionModal').classList.remove('show');
+        }
+        
+        // Close modal on backdrop click
+        document.getElementById('intuitionModal').addEventListener('click', function(e) {
+            if (e.target === this) closeIntuitionGuide();
+        });
+        
+        // === Reset ===
+        function resetAll() {
+            checkedItems = { math: new Set(), chinese: new Set(), english: new Set() };
+            pauseCount = 0;
+            localStorage.setItem('pauseCount', '0');
+            document.getElementById('totalPauses').textContent = '0';
+            ['math', 'chinese', 'english'].forEach(s => {
+                renderChecklist(s);
+                document.getElementById('total' + s.charAt(0).toUpperCase() + s.slice(1)).textContent = '0';
+            });
+        }
+        
+        // === Init ===
+        ['math', 'chinese', 'english'].forEach(s => renderChecklist(s));
+    </script>
+</body>
+</html>

@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日热身 | 错误模式归因卡</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container { max-width: 950px; margin: 0 auto; }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 { font-size: 2.1em; margin-bottom: 8px; }
+        .header .subtitle { font-size: 1.05em; opacity: 0.95; }
+        
+        .date-bar {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .date-bar .date { font-weight: bold; color: #e53e3e; }
+        
+        /* Subject Tabs */
+        .subject-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 14px;
+            min-height: 44px;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.05em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab-btn:hover { transform: translateY(-2px); }
+        .tab-btn.active { transform: scale(1.05); }
+        
+        .tab-btn.english { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .tab-btn.chinese { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .tab-btn.math { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        
+        /* Error Category Card */
+        .category-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .category-title {
+            font-size: 1.2em;
+            color: #2d3436;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .category-badge {
+            font-size: 0.75em;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .category-badge.high { background: #fed7d7; color: #c53030; }
+        .category-badge.medium { background: #fefcbf; color: #b7791f; }
+        .category-badge.low { background: #c6f6d5; color: #276749; }
+        
+        /* Tag Grid */
+        .tag-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        
+        .error-tag {
+            padding: 12px 16px;
+            min-height: 44px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .error-tag:hover { border-color: #a0aec0; background: #f7fafc; }
+        .error-tag.selected {
+            border-color: #e53e3e;
+            background: #fff5f5;
+            color: #c53030;
+        }
+        .error-tag .count {
+            background: #e53e3e;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        /* Log Entry */
+        .log-section { margin-top: 14px; }
+        
+        .log-entry {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
+            background: #f7fafc;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .log-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95em;
+        }
+        
+        .log-input:focus { outline: none; border-color: #a0aec0; }
+        
+        .log-btn {
+            padding: 10px 16px;
+            min-height: 44px;
+            border: none;
+            border-radius: 8px;
+            background: #e53e3e;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        /* History Table */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+            font-size: 0.9em;
+        }
+        
+        .history-table th {
+            background: #f7fafc;
+            padding: 10px;
+            text-align: left;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .history-table td {
+            padding: 10px;
+            border-bottom: 1px solid #edf2f7;
+        }
+        
+        .history-table .tag-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 0.85em;
+            background: #fed7d7;
+            color: #c53030;
+        }
+        
+        .history-table .delete-btn {
+            color: #a0aec0;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1.1em;
+            min-width: 44px;
+            min-height: 44px;
+            padding: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .history-table .delete-btn:hover { color: #e53e3e; }
+        
+        /* Stats Dashboard */
+        .stats-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .stats-title { font-size: 1.2em; color: #2d3436; margin-bottom: 16px; }
+        
+        .chart-bars { display: flex; flex-direction: column; gap: 10px; }
+        
+        .chart-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chart-label {
+            min-width: 120px;
+            font-size: 0.85em;
+            color: #4a5568;
+            text-align: right;
+        }
+        
+        .chart-bar-wrap {
+            flex: 1;
+            height: 28px;
+            background: #edf2f7;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        
+        .chart-bar {
+            height: 100%;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            padding-left: 12px;
+            color: white;
+            font-size: 0.85em;
+            font-weight: bold;
+            transition: width 0.5s;
+            min-width: fit-content;
+            padding-right: 10px;
+        }
+        
+        .chart-bar.red { background: linear-gradient(90deg, #fc8181, #e53e3e); }
+        .chart-bar.orange { background: linear-gradient(90deg, #fbd38d, #ed8936); }
+        .chart-bar.yellow { background: linear-gradient(90deg, #faf089, #ecc94b); color: #744210; }
+        .chart-bar.green { background: linear-gradient(90deg, #9ae6b4, #48bb78); }
+        .chart-bar.blue { background: linear-gradient(90deg, #90cdf4, #4299e1); }
+        
+        .chart-count { min-width: 30px; font-weight: bold; color: #e53e3e; }
+        
+        /* Action Plan */
+        .action-card {
+            background: linear-gradient(135deg, #e6fffa 0%, #ebf8ff 100%);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .action-title { font-size: 1.2em; color: #2d3436; margin-bottom: 14px; }
+        
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px dashed #cbd5e0;
+        }
+        
+        .action-item:last-child { border-bottom: none; }
+        .action-num { color: #4299e1; font-weight: bold; flex-shrink: 0; }
+        .action-text { color: #4a5568; font-size: 0.95em; }
+        
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 10px 22px;
+            min-height: 44px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover { transform: translateY(-2px); }
+        .btn-reset { background: #e2e8f0; color: #4a5568; }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.5em; }
+            .subject-tabs { flex-direction: column; }
+            .chart-label { min-width: 80px; font-size: 0.75em; }
+            .log-entry { flex-direction: column; }
+            .log-entry .log-input, .log-entry .log-btn { width: 100%; }
+        }
+        
+        @media print {
+            body { background: white; }
+            .category-card, .stats-card, .action-card { 
+                box-shadow: none; 
+                border: 1px solid #ddd; 
+                break-inside: avoid;
+            }
+            .log-section, .btn-group, .subject-tabs { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔍 错误模式归因卡</h1>
+            <div class="subtitle">找到错误规律，才能精准改进</div>
+        </div>
+        
+        <!-- Date -->
+        <div class="date-bar">
+            <div class="date" id="todayDate">📅 载入中...</div>
+            <div style="color:#a0aec0;font-size:0.9em;">记录 → 归类 → 统计 → 针对性训练</div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="subject-tabs">
+            <button class="tab-btn english active" onclick="switchSubject('english')">🔤 英语错音/词汇</button>
+            <button class="tab-btn chinese" onclick="switchSubject('chinese')">📖 语文错别字</button>
+            <button class="tab-btn math" onclick="switchSubject('math')">🔢 数学计算</button>
+        </div>
+        
+        <!-- === ENGLISH PANEL === -->
+        <div id="englishPanel">
+            <!-- Pronunciation Categories -->
+            <div class="category-card">
+                <div class="category-title">
+                    <span>🔤</span>
+                    <span>错音归类（点击标签选择）</span>
+                    <span class="category-badge high">高频</span>
+                </div>
+                <div class="tag-grid" id="englishTags"></div>
+                <div class="log-section">
+                    <div class="log-entry">
+                        <input type="text" class="log-input" id="englishWord" placeholder="输入拼错的单词（如：thinks → sinks）">
+                        <button class="log-btn" onclick="addLog('english')">+ 记录</button>
+                    </div>
+                </div>
+                <table class="history-table" id="englishTable">
+                    <thead>
+                        <tr><th>时间</th><th>错误示例</th><th>错误类型</th><th></th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            
+            <!-- English Stats -->
+            <div class="stats-card">
+                <div class="stats-title">📊 英语错误分布</div>
+                <div class="chart-bars" id="englishChart"></div>
+            </div>
+            
+            <!-- English Action Plan -->
+            <div class="action-card" id="englishAction"></div>
+        </div>
+        
+        <!-- === CHINESE PANEL === -->
+        <div id="chinesePanel" style="display:none;">
+            <div class="category-card">
+                <div class="category-title">
+                    <span>📖</span>
+                    <span>错别字归类（点击标签选择）</span>
+                    <span class="category-badge medium">中频</span>
+                </div>
+                <div class="tag-grid" id="chineseTags"></div>
+                <div class="log-section">
+                    <div class="log-entry">
+                        <input type="text" class="log-input" id="chineseWord" placeholder="输入错别字（如：即 → 既）">
+                        <button class="log-btn" onclick="addLog('chinese')">+ 记录</button>
+                    </div>
+                </div>
+                <table class="history-table" id="chineseTable">
+                    <thead>
+                        <tr><th>时间</th><th>错误示例</th><th>错误类型</th><th></th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            
+            <div class="stats-card">
+                <div class="stats-title">📊 语文错误分布</div>
+                <div class="chart-bars" id="chineseChart"></div>
+            </div>
+            
+            <div class="action-card" id="chineseAction"></div>
+        </div>
+        
+        <!-- === MATH PANEL === -->
+        <div id="mathPanel" style="display:none;">
+            <div class="category-card">
+                <div class="category-title">
+                    <span>🔢</span>
+                    <span>计算错误归类（点击标签选择）</span>
+                    <span class="category-badge high">高频</span>
+                </div>
+                <div class="tag-grid" id="mathTags"></div>
+                <div class="log-section">
+                    <div class="log-entry">
+                        <input type="text" class="log-input" id="mathProblem" placeholder="描述错题（如：36+57，进位错了）">
+                        <button class="log-btn" onclick="addLog('math')">+ 记录</button>
+                    </div>
+                </div>
+                <table class="history-table" id="mathTable">
+                    <thead>
+                        <tr><th>时间</th><th>错误示例</th><th>错误类型</th><th></th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            
+            <div class="stats-card">
+                <div class="stats-title">📊 数学错误分布</div>
+                <div class="chart-bars" id="mathChart"></div>
+            </div>
+            
+            <div class="action-card" id="mathAction"></div>
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn btn-reset" onclick="resetAll()">🔄 重置所有数据</button>
+        </div>
+    </div>
+
+    <script>
+        // === Error Categories ===
+        const CATEGORIES = {
+            english: [
+                { id: 'vowel_confuse', name: '元音混淆', example: 'ship/sheep, bad/bed', freq: 'high' },
+                { id: 'th_sound', name: 'th音发错', example: 'think → sink, this → zis', freq: 'high' },
+                { id: 'final_consonant', name: '尾音遗漏', example: 'desk → des, stop → sto', freq: 'high' },
+                { id: 'r_l_confuse', name: 'r/l不分', example: 'rice → lice, read → lead', freq: 'medium' },
+                { id: 'spelling', name: '拼写错误', example: 'becouse → because', freq: 'high' },
+                { id: 's_sh', name: 's/sh不分', example: 'see → she, sip → ship', freq: 'medium' }
+            ],
+            chinese: [
+                { id: 'tongyin', name: '同音字混淆', example: '的/地/得, 做/作', freq: 'high' },
+                { id: 'xingjin', name: '形近字写错', example: '己/已/巳, 人/入/八', freq: 'high' },
+                { id: 'bihuacuowu', name: '笔画错误', example: '多写/少写笔画', freq: 'medium' },
+                { id: 'yilou', name: '漏字', example: '句子中漏写一个字', freq: 'high' },
+                { id: 'cuobiezi', name: '成语错别字', example: '川流不息(误写成穿)', freq: 'medium' },
+                { id: 'pinyin', name: '拼音错误', example: '前后鼻音, 平翘舌', freq: 'high' }
+            ],
+            math: [
+                { id: 'chaoshu', name: '抄错数字/符号', example: '36看成63, +看成-', freq: 'high' },
+                { id: 'jiewei', name: '进退位错误', example: '加法忘进位, 减法忘借位', freq: 'high' },
+                { id: 'koujue', name: '口诀不熟', example: '7×8=54(应为56)', freq: 'medium' },
+                { id: 'shunxu', name: '运算顺序错', example: '先加减后乘除', freq: 'medium' },
+                { id: 'lou ti', name: '漏题/漏步', example: '大题漏写第二问', freq: 'high' },
+                { id: 'yingyong', name: '应用题理解错', example: '求A却算了B', freq: 'medium' }
+            ]
+        };
+        
+        const ACTION_PLANS = {
+            english: {
+                'vowel_confuse': '每天练5组最小对立体(minimal pairs)：ship/sheep, bad/bed, full/fool',
+                'th_sound': '对着镜子练th音：舌尖轻触上齿，吹气发出/θ/和/ð/',
+                'final_consonant': '录音对比法：录下自己读的单词，和标准发音对比尾音',
+                'r_l_confuse': '练习绕口令：Red lorry, yellow lorry',
+                'spelling': '用拼写规则+联想记忆，不要纯死记；整理易错单词本',
+                's_sh': 's是平舌，sh是卷舌，手指放在嘴前感受气流区别'
+            },
+            chinese: {
+                'tongyin': '整理"的/地/得"用法表，写三句话各用对一个',
+                'xingjin': '做形近字对比卡片：左边写对的，右边写错的，每天看',
+                'bihuacuowu': '买一本笔画字典，不确定的字查一遍',
+                'yilou': '写完后逐字指着读一遍，最容易发现漏字',
+                'cuobiezi': '准备成语错题本，把易错成语抄三遍',
+                'pinyin': '重点练前后鼻音(en/eng, in/ing)和平翘舌(z/c/s vs zh/ch/sh)'
+            },
+            math: {
+                'chaoshu': '做题时用手指着数字一个个对，抄完回头看一眼',
+                'jiewei': '进位写小数字在上方，借位打点标记',
+                'koujue': '每天花3分钟随机抽背乘法口诀，直到秒答',
+                'shunxu': '记住口诀：先乘除后加减，有括号先算括号',
+                'lou ti': '做完一大题后回头看一眼题号，确认没有(1)(2)(3)漏做',
+                'yingyong': '画线段图/列表帮助理解，不要急着列算式；圈出题目问什么'
+            }
+        };
+        
+        // === State ===
+        let currentSubject = 'english';
+        let selectedTags = { english: null, chinese: null, math: null };
+        let logs = JSON.parse(localStorage.getItem('errorLogs') || '{"english":[],"chinese":[],"math":[]}');
+        
+        // === Date ===
+        const now = new Date();
+        document.getElementById('todayDate').textContent = 
+            `📅 ${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+        
+        // === Subject Switch ===
+        function switchSubject(subject) {
+            currentSubject = subject;
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab-btn.${subject}`).classList.add('active');
+            ['english', 'chinese', 'math'].forEach(s => {
+                document.getElementById(s + 'Panel').style.display = s === subject ? 'block' : 'none';
+            });
+        }
+        
+        // === Render Tags ===
+        function renderTags(subject) {
+            const container = document.getElementById(subject + 'Tags');
+            container.innerHTML = '';
+            
+            CATEGORIES[subject].forEach(cat => {
+                const tag = document.createElement('div');
+                tag.className = 'error-tag' + (selectedTags[subject] === cat.id ? ' selected' : '');
+                tag.dataset.id = cat.id;
+                tag.onclick = () => selectTag(subject, cat.id);
+                
+                const count = logs[subject].filter(l => l.tag === cat.id).length;
+                tag.innerHTML = `
+                    <span>${cat.name}</span>
+                    ${count > 0 ? `<span class="count">${count}</span>` : ''}
+                `;
+                container.appendChild(tag);
+            });
+        }
+        
+        function selectTag(subject, tagId) {
+            selectedTags[subject] = selectedTags[subject] === tagId ? null : tagId;
+            renderTags(subject);
+        }
+        
+        // === Add Log ===
+        function addLog(subject) {
+            const inputId = subject === 'english' ? 'englishWord' : subject === 'chinese' ? 'chineseWord' : 'mathProblem';
+            const input = document.getElementById(inputId);
+            const text = input.value.trim();
+            
+            if (!text) { alert('请先输入错误内容'); return; }
+            if (!selectedTags[subject]) { alert('请先选择一个错误类型标签'); return; }
+            
+            logs[subject].push({
+                time: new Date().toLocaleTimeString(),
+                text: text,
+                tag: selectedTags[subject],
+                id: Date.now()
+            });
+            
+            localStorage.setItem('errorLogs', JSON.stringify(logs));
+            input.value = '';
+            selectedTags[subject] = null;
+            
+            renderTags(subject);
+            renderTable(subject);
+            renderChart(subject);
+            renderAction(subject);
+        }
+        
+        // === Render Table ===
+        function renderTable(subject) {
+            const tbody = document.querySelector(`#${subject}Table tbody`);
+            tbody.innerHTML = '';
+            
+            const subjectLogs = logs[subject];
+            if (subjectLogs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#a0aec0;">暂无记录</td></tr>';
+                return;
+            }
+            
+            [...subjectLogs].reverse().forEach(log => {
+                const cat = CATEGORIES[subject].find(c => c.id === log.tag);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${log.time}</td>
+                    <td>${log.text}</td>
+                    <td><span class="tag-pill">${cat ? cat.name : log.tag}</span></td>
+                    <td><button class="delete-btn" onclick="deleteLog('${subject}', ${log.id})">🗑</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function deleteLog(subject, id) {
+            logs[subject] = logs[subject].filter(l => l.id !== id);
+            localStorage.setItem('errorLogs', JSON.stringify(logs));
+            renderTags(subject);
+            renderTable(subject);
+            renderChart(subject);
+            renderAction(subject);
+        }
+        
+        // === Render Chart ===
+        function renderChart(subject) {
+            const container = document.getElementById(subject + 'Chart');
+            container.innerHTML = '';
+            
+            const counts = {};
+            CATEGORIES[subject].forEach(c => counts[c.id] = 0);
+            logs[subject].forEach(l => { if (counts[l.tag] !== undefined) counts[l.tag]++; });
+            
+            const sorted = Object.entries(counts)
+                .filter(([_, c]) => c > 0)
+                .sort((a, b) => b[1] - a[1]);
+            
+            if (sorted.length === 0) {
+                container.innerHTML = '<div style="text-align:center;color:#a0aec0;padding:20px;">暂无数据，先记录几条错误</div>';
+                return;
+            }
+            
+            const maxCount = sorted[0][1];
+            const colors = ['red', 'red', 'orange', 'orange', 'yellow', 'green', 'green', 'blue'];
+            
+            sorted.forEach(([tagId, count], i) => {
+                const cat = CATEGORIES[subject].find(c => c.id === tagId);
+                const pct = (count / maxCount * 100);
+                const row = document.createElement('div');
+                row.className = 'chart-row';
+                row.innerHTML = `
+                    <div class="chart-label">${cat ? cat.name : tagId}</div>
+                    <div class="chart-bar-wrap">
+                        <div class="chart-bar ${colors[Math.min(i, colors.length-1)]}" style="width:${Math.max(pct, 5)}%">${count}次</div>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+        
+        // === Render Action Plan ===
+        function renderAction(subject) {
+            const container = document.getElementById(subject + 'Action');
+            
+            const counts = {};
+            CATEGORIES[subject].forEach(c => counts[c.id] = 0);
+            logs[subject].forEach(l => { if (counts[l.tag] !== undefined) counts[l.tag]++; });
+            
+            const sorted = Object.entries(counts)
+                .filter(([_, c]) => c > 0)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 3);
+            
+            if (sorted.length === 0) {
+                container.innerHTML = `
+                    <div class="action-title">🎯 改进建议</div>
+                    <div style="color:#718096;">记录错误后会自动生成针对性训练建议</div>
+                `;
+                return;
+            }
+            
+            let html = '<div class="action-title">🎯 Top 3 改进重点</div>';
+            sorted.forEach(([tagId, count], i) => {
+                const cat = CATEGORIES[subject].find(c => c.id === tagId);
+                const plan = ACTION_PLANS[subject][tagId] || '多练习这类题目';
+                html += `
+                    <div class="action-item">
+                        <span class="action-num">${i+1}.</span>
+                        <div class="action-text">
+                            <strong style="color:#e53e3e;">${cat ? cat.name : tagId} (${count}次)</strong><br>
+                            ${plan}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+        
+        // === Reset ===
+        function resetAll() {
+            if (!confirm('确定要清空所有错误记录吗？')) return;
+            logs = { english: [], chinese: [], math: [] };
+            localStorage.setItem('errorLogs', JSON.stringify(logs));
+            selectedTags = { english: null, chinese: null, math: null };
+            ['english', 'chinese', 'math'].forEach(s => {
+                renderTags(s);
+                renderTable(s);
+                renderChart(s);
+                renderAction(s);
+            });
+        }
+        
+        // === Init ===
+        ['english', 'chinese', 'math'].forEach(s => {
+            renderTags(s);
+            renderTable(s);
+            renderChart(s);
+            renderAction(s);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日热身 | 口述解题法话术卡</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 { font-size: 2.1em; margin-bottom: 8px; }
+        .header .subtitle { font-size: 1.05em; opacity: 0.95; }
+        
+        .date-bar {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .date-bar .date { font-weight: bold; color: #6c5ce7; }
+        
+        /* Intro Card */
+        .intro-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .intro-title {
+            font-size: 1.2em;
+            color: #2d3436;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .intro-text {
+            color: #636e72;
+            line-height: 1.8;
+            font-size: 0.95em;
+        }
+        
+        .intro-text strong { color: #6c5ce7; }
+        
+        /* Mode Switch */
+        .mode-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.3);
+            padding: 6px;
+            border-radius: 14px;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: transparent;
+            color: white;
+        }
+        
+        .mode-btn.active {
+            background: white;
+            color: #6c5ce7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Step Cards */
+        .step-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid;
+        }
+        
+        .step-card.step1 { border-left-color: #ff6b6b; }
+        .step-card.step2 { border-left-color: #feca57; }
+        .step-card.step3 { border-left-color: #48dbfb; }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        
+        .step-num {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        .step-num.s1 { background: linear-gradient(135deg, #ff6b6b, #ee5a6f); }
+        .step-num.s2 { background: linear-gradient(135deg, #feca57, #f39c12); }
+        .step-num.s3 { background: linear-gradient(135deg, #48dbfb, #0abde3); }
+        
+        .step-title { font-size: 1.25em; color: #2d3436; }
+        .step-subtitle { font-size: 0.85em; color: #b2bec3; }
+        
+        /* Phrase Cards */
+        .phrase-list { list-style: none; }
+        
+        .phrase-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 14px;
+            transition: all 0.25s;
+        }
+        
+        .phrase-item:hover { background: #eef2f7; transform: translateX(4px); }
+        
+        .phrase-badge {
+            min-width: 48px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.75em;
+            font-weight: bold;
+            text-align: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .phrase-badge.parent { background: #e8f5e9; color: #2e7d32; }
+        .phrase-badge.self { background: #e3f2fd; color: #1565c0; }
+        .phrase-badge.peer { background: #fff3e0; color: #e65100; }
+        
+        .phrase-text { font-size: 1.05em; color: #2d3436; line-height: 1.5; }
+        .phrase-text .highlight { 
+            background: linear-gradient(transparent 60%, rgba(108,92,231,0.2) 60%); 
+            font-weight: 500;
+        }
+        
+        /* Quick Pick */
+        .quick-pick {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            color: white;
+        }
+        
+        .quick-pick-title { font-size: 1.2em; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        
+        .quick-phrase {
+            background: rgba(255,255,255,0.2);
+            border-radius: 14px;
+            padding: 18px;
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 14px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.6;
+        }
+        
+        .quick-phrase .key { font-weight: bold; text-decoration: underline; text-underline-offset: 4px; }
+        
+        .pick-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05em;
+            font-weight: bold;
+            cursor: pointer;
+            background: white;
+            color: #6c5ce7;
+            transition: all 0.3s;
+        }
+        
+        .pick-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        
+        /* Timer Practice */
+        .practice-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .practice-title { font-size: 1.2em; color: #2d3436; margin-bottom: 14px; }
+        
+        .timer-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #6c5ce7;
+        }
+        
+        .timer-circle.running { border-color: #6c5ce7; animation: pulse 1s infinite; }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(108,92,231,0.3); }
+            50% { box-shadow: 0 0 0 15px rgba(108,92,231,0); }
+        }
+        
+        .practice-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .ctrl-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .ctrl-start { background: #6c5ce7; color: white; }
+        .ctrl-stop { background: #ff6b6b; color: white; }
+        
+        /* Example Section */
+        .example-box {
+            background: #f8f9fa;
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 14px;
+        }
+        
+        .example-label { font-size: 0.85em; color: #b2bec3; margin-bottom: 8px; }
+        .example-q { font-size: 1.05em; color: #2d3436; margin-bottom: 10px; font-weight: 500; }
+        .example-dialog { font-size: 0.95em; line-height: 1.8; color: #636e72; }
+        .example-dialog .q { color: #6c5ce7; font-weight: 500; }
+        .example-dialog .a { color: #2d3436; }
+        
+        /* Footer */
+        .footer-note {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.5em; }
+            .mode-bar { flex-direction: column; }
+            .step-title { font-size: 1.1em; }
+            .phrase-item { padding: 10px 12px; }
+        }
+        
+        @media print {
+            body { background: white; }
+            .step-card, .intro-card, .practice-card, .quick-pick { 
+                box-shadow: none; 
+                border: 1px solid #ddd; 
+                break-inside: avoid;
+            }
+            .practice-controls, .mode-bar { display: none; }
+            .quick-pick { background: #f0f0f0; color: #333; }
+            .pick-btn { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🗣️ 口述解题法话术卡</h1>
+            <div class="subtitle">把思路"说"出来，比"想"出来更清楚</div>
+        </div>
+        
+        <!-- Date -->
+        <div class="date-bar">
+            <div class="date" id="todayDate">📅 载入中...</div>
+            <div style="color:#a29bfe;font-size:0.9em;">三个步骤 · 九种问法 · 每天练一题</div>
+        </div>
+        
+        <!-- Intro -->
+        <div class="intro-card">
+            <div class="intro-title">
+                <span>💡</span>
+                <span>为什么口述解题有用？</span>
+            </div>
+            <div class="intro-text">
+                大脑"想"思路的时候很容易跳过步骤、混淆概念。但<strong>当你把思路说出来</strong>时，舌头会强迫大脑把每一步理清楚。<br><br>
+                使用方法：面对一道难题，按顺序问下面的问题（自己问自己，或者大人问孩子），<strong>必须出声回答</strong>，不能只在心里默念。
+            </div>
+        </div>
+        
+        <!-- Quick Pick -->
+        <div class="quick-pick">
+            <div class="quick-pick-title">🎲 随机抽一句提问</div>
+            <div class="quick-phrase" id="quickPhrase">
+                点击按钮随机抽取一个提问话术
+            </div>
+            <button class="pick-btn" onclick="randomPhrase()">🎲 抽一个提问</button>
+        </div>
+        
+        <!-- Mode Switch -->
+        <div class="mode-bar">
+            <button class="mode-btn active" onclick="switchMode('all', this)">📋 全部话术</button>
+            <button class="mode-btn" onclick="switchMode('parent', this)">👨‍👩‍👧 家长问孩子</button>
+            <button class="mode-btn" onclick="switchMode('self', this)">🙋 自己问自己</button>
+            <button class="mode-btn" onclick="switchMode('peer', this)">👫 同学互问</button>
+        </div>
+        
+        <!-- STEP 1: Understand -->
+        <div class="step-card step1" data-step="1">
+            <div class="step-header">
+                <div class="step-num s1">1</div>
+                <div>
+                    <div class="step-title">理解题目 — 告诉我你知道了什么</div>
+                    <div class="step-subtitle">目标：确保读懂题，找出已知条件和要求</div>
+                </div>
+            </div>
+            <ul class="phrase-list" id="step1List"></ul>
+            
+            <div class="example-box">
+                <div class="example-label">📝 示例场景 A（平均分）</div>
+                <div class="example-q">题目：小明有24颗糖，平均分给6个小朋友，每人几颗？</div>
+                <div class="example-dialog">
+                    <span class="q">问：</span><span class="a">这道题告诉我们什么数字？</span><br>
+                    <span class="q">答：</span><span class="a">24颗糖，6个小朋友。</span><br>
+                    <span class="q">问：</span><span class="a">题目要我们求什么？</span><br>
+                    <span class="a">每人分到几颗糖。</span>
+                </div>
+            </div>
+            <div class="example-box">
+                <div class="example-label">📝 示例场景 B（倍数问题 — 四升五重点）</div>
+                <div class="example-q">题目：小红有15本书，小明是她的3倍还多2本，小明有几本？</div>
+                <div class="example-dialog">
+                    <span class="q">问：</span><span class="a">这道题谁的书多？关键数字是什么？</span><br>
+                    <span class="q">答：</span><span class="a">小红15本，"3倍还多2本"，求小明。</span><br>
+                    <span class="q">问：</span><span class="a">"3倍还多2"是什么意思？</span><br>
+                    <span class="a">先算15的3倍，再加2。</span>
+                </div>
+            </div>
+            <div class="example-box">
+                <div class="example-label">📝 示例场景 C（面积问题 — 四升五重点）</div>
+                <div class="example-q">题目：一个长方形花坛长8米，宽5米，围着花坛走一圈是多少米？</div>
+                <div class="example-dialog">
+                    <span class="q">问：</span><span class="a">这道题问的是什么？一圈是什么意思？</span><br>
+                    <span class="q">答：</span><span class="a">一圈就是周长，不是面积！</span><br>
+                    <span class="q">问：</span><span class="a">周长怎么算？</span><br>
+                    <span class="a">（8+5）×2=26米。</span>
+                </div>
+            </div>
+            <div class="example-box">
+                <div class="example-label">📝 示例场景 D（归一问题 — 单价问题）</div>
+                <div class="example-q">题目：买5支同样的铅笔花了20元，买一支铅笔多少钱？</div>
+                <div class="example-dialog">
+                    <span class="q">问：</span><span class="a">这道题告诉我们什么？求什么？</span><br>
+                    <span class="q">答：</span><span class="a">5支铅笔20元，求1支多少钱。</span><br>
+                    <span class="q">问：</span><span class="a">"归一"是什么意思？</span><br>
+                    <span class="a">就是把总数归到"1个"上，20÷5=4元。</span>
+                </div>
+            </div>
+            <div class="example-box">
+                <div class="example-label">📝 示例场景 E（时间推算 — 90天新增）</div>
+                <div class="example-q">题目：电影从下午2:15开始，放映1小时40分钟，什么时候结束？</div>
+                <div class="example-dialog">
+                    <span class="q">问：</span><span class="a">这道题的关键信息是什么？</span><br>
+                    <span class="q">答：</span><span class="a">开始时间是2:15，经过1小时40分钟。</span><br>
+                    <span class="q">问：</span><span class="a">2:15加1小时是几点？再加40分钟呢？</span><br>
+                    <span class="a">2:15+1小时=3:15，再加40分钟=3:55。</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- STEP 2: Plan -->
+        <div class="step-card step2" data-step="2">
+            <div class="step-header">
+                <div class="step-num s2">2</div>
+                <div>
+                    <div class="step-title">规划路径 — 告诉我你打算怎么做</div>
+                    <div class="step-subtitle">目标：选择方法，列出步骤，建立思路</div>
+                </div>
+            </div>
+            <ul class="phrase-list" id="step2List"></ul>
+            
+            <div class="example-box">
+                <div class="example-label">📝 示例场景 A（平均分）</div>
+                <div class="example-q">接上题：24颗糖分给6个小朋友</div>
+                <div class="example-dialog">
+                    <span class="q">问：</span><span class="a">"平均"是什么意思？用什么方法？</span><br>
+                    <span class="a">平均分就是除法，24除以6。</span><br>
+                    <span class="q">问：</span><span class="a">你能估算一下答案大概多少吗？</span><br>
+                    <span class="a">6乘4等于24，所以应该是4颗。</span>
+                </div>
+            </div>
+            <div class="example-box">
+                <div class="example-label">📝 示例场景 B（倍数 — 先算什么？）</div>
+                <div class="example-q">接上题：15的3倍还多2本</div>
+                <div class="example-dialog">
+                    <span class="q">问：</span><span class="a">这道题要分几步做？第一步算什么？</span><br>
+                    <span class="a">两步。先算15×3=45（3倍），再加2得47。</span><br>
+                    <span class="q">问：</span><span class="a">"还多2"是在什么时候加？</span><br>
+                    <span class="a">算完倍数以后再加！不能先加再乘。</span>
+                </div>
+            </div>
+            <div class="example-box">
+                <div class="example-label">📝 示例场景 C（和差问题 — 四升五重点）</div>
+                <div class="example-q">题目：甲乙两数和是36，甲比乙多8，求甲乙各是多少？</div>
+                <div class="example-dialog">
+                    <span class="q">问：</span><span class="a">甲比乙多8，如果去掉这8个，两个数会怎样？</span><br>
+                    <span class="a">就变成一样多了！36-8=28，再除以2就是乙。</span><br>
+                    <span class="q">问：</span><span class="a">为什么要先减8？画图能帮助你理解吗？</span><br>
+                    <span class="a">画两条线段，一条比另一条长8，把多的部分去掉就一样长了。</span>
+                </div>
+            </div>
+            <div class="example-box">
+                <div class="example-label">📝 示例场景 D（有余数除法 — 进一/去尾）</div>
+                <div class="example-q">题目：30个同学坐船，每条船坐4人，至少要租几条船？</div>
+                <div class="example-dialog">
+                    <span class="q">问：</span><span class="a">这道题用什么方法算？</span><br>
+                    <span class="a">除法，30÷4=7余2。</span><br>
+                    <span class="q">问：</span><span class="a">余下2个人怎么办？答案是7条还是8条？</span><br>
+                    <span class="a">必须是8条！剩下的2人也要坐船，这种情况要"进一"。</span>
+                </div>
+            </div>
+            <div class="example-box">
+                <div class="example-label">📝 示例场景 E（时间推算 — 90天新增）</div>
+                <div class="example-q">题目：电影从下午2:15开始，放映1小时40分钟，什么时候结束？</div>
+                <div class="example-dialog">
+                    <span class="q">问：</span><span class="a">时间推算有什么技巧？</span><br>
+                    <span class="a">"凑整法"：2:15先加1小时到3:15，再加40分钟到3:55。不要一起加，容易乱。</span><br>
+                    <span class="q">问：</span><span class="a">如果超过60分钟会怎样？</span><br>
+                    <span class="a">60分钟=1小时，要进位！比如2:30加50分钟=3:20，不是2:80。</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- STEP 3: Execute -->
+        <div class="step-card step3" data-step="3">
+            <div class="step-header">
+                <div class="step-num s3">3</div>
+                <div>
+                    <div class="step-title">执行验证 — 告诉我答案对不对</div>
+                    <div class="step-subtitle">目标：算出结果，反向验证，确认无误</div>
+                </div>
+            </div>
+            <ul class="phrase-list" id="step3List"></ul>
+            
+            <div class="example-box">
+                <div class="example-label">📝 示例场景 A（平均分验算）</div>
+                <div class="example-q">接上题：24 ÷ 6 = 4</div>
+                <div class="example-dialog">
+                    <span class="q">问：</span><span class="a">怎么验证每人4颗是对的？</span><br>
+                    <span class="a">倒回去验：6个人每人4颗，6×4=24，和总数一样。</span><br>
+                    <span class="q">问：</span><span class="a">这个结果合理吗？有没有漏单位？</span><br>
+                    <span class="a">合理，单位是"颗"，每人4颗糖。</span>
+                </div>
+            </div>
+            <div class="example-box">
+                <div class="example-label">📝 示例场景 B（倍数 — 反向验证）</div>
+                <div class="example-q">接上题：15×3+2 = 47</div>
+                <div class="example-dialog">
+                    <span class="q">问：</span><span class="a">怎么验算倍数题对不对？</span><br>
+                    <span class="a">先验15×3=45对不对，再验45+2=47。倒推：47-2=45，45÷3=15，对！</span><br>
+                    <span class="q">问：</span><span class="a">如果不验算，最容易错在哪里？</span><br>
+                    <span class="a">最容易把"多2"忘了，只算15×3=45就停了！</span>
+                </div>
+            </div>
+            <div class="example-box">
+                <div class="example-label">📝 示例场景 C（周长 vs 面积 — 关键验证）</div>
+                <div class="example-q">接上题：（8+5）×2 = 26米</div>
+                <div class="example-dialog">
+                    <span class="q">问：</span><span class="a">你确定这道题求的是周长不是面积吗？</span><br>
+                    <span class="a">确定！题目说"围着走一圈"，一圈就是周长。</span><br>
+                    <span class="q">问：</span><span class="a">如果我问面积是多少呢？</span><br>
+                    <span class="a">面积是8×5=40平方米，单位是平方米不是米！</span>
+                </div>
+            </div>
+            <div class="example-box">
+                <div class="example-label">📝 示例场景 D（有余数除法 — 验证进一）</div>
+                <div class="example-q">接上题：30÷4 = 7余2 → 答：8条船</div>
+                <div class="example-dialog">
+                    <span class="q">问：</span><span class="a">怎么验证8条船够不够？</span><br>
+                    <span class="a">7条船只能坐28人（7×4=28），还剩2人没船坐！所以必须8条。</span><br>
+                    <span class="q">问：</span><span class="a">反过来想：如果租8条船，会不会浪费？</span><br>
+                    <span class="a">8条能坐32人，我们只有30人，只多出2个位置，不浪费。</span>
+                </div>
+            </div>
+            <div class="example-box">
+                <div class="example-label">📝 示例场景 E（时间推算 — 90天新增）</div>
+                <div class="example-q">接上题：2:15 + 1小时40分钟 = 3:55</div>
+                <div class="example-dialog">
+                    <span class="q">问：</span><span class="a">验算时间推算有什么好方法？</span><br>
+                    <span class="a">"倒推法"：从结束时间3:55减去经过的1小时40分钟，看是否等于2:15。</span><br>
+                    <span class="q">问：</span><span class="a">3:55减去1小时40分钟，你会怎么算？</span><br>
+                    <span class="a">先减1小时到2:55，再减40分钟到2:15。对了！</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Practice Timer -->
+        <div class="practice-card">
+            <div class="practice-title">⏱️ 口述计时练习</div>
+            <div style="text-align:center;color:#b2bec3;font-size:0.9em;margin-bottom:10px;">目标：2分钟内口述完整解题过程</div>
+            <div class="timer-circle" id="timerCircle">02:00</div>
+            <div class="practice-controls">
+                <button class="ctrl-btn ctrl-start" onclick="startPractice()">▶️ 开始</button>
+                <button class="ctrl-btn ctrl-stop" onclick="stopPractice()">⏹️ 停止</button>
+            </div>
+        </div>
+        
+        <div class="footer-note">每天选一道错题，用口述法重做一遍，比刷十道新题更有用 💪</div>
+    </div>
+
+    <script>
+        // === Data ===
+        const PHRASES = {
+            step1: [
+                { text: '这道题<strong>告诉我们什么</strong>？把已知条件说出来。', who: 'parent' },
+                { text: '题目里有<strong>哪些数字</strong>？它们分别代表什么？', who: 'parent' },
+                { text: '用你自己的话，<strong>复述一遍</strong>这道题在说什么。', who: 'parent' },
+                { text: '题目要我们<strong>求什么</strong>？目标是什么？', who: 'self' },
+                { text: '我读懂了吗？有没有<strong> keywords 没注意</strong>到的？', who: 'self' },
+                { text: '这道题和我之前做过的<strong>哪道题像</strong>？哪里不一样？', who: 'self' },
+                { text: '如果这道题是一个故事，<strong>发生了什么</strong>？', who: 'peer' },
+                { text: '你觉得这道题<strong>最容易搞错的地方</strong>在哪里？', who: 'peer' },
+                { text: '把题目的条件和问题<strong>分开写</strong>，分别是什么？', who: 'peer' }
+            ],
+            step2: [
+                { text: '你觉得该用<strong>什么方法</strong>？加/减/乘/除？', who: 'parent' },
+                { text: '关键词"平均"/"一共"/"剩下"告诉你该<strong>怎么算</strong>？', who: 'parent' },
+                { text: '如果不会直接算，能不能先<strong>画图或列表</strong>试试？', who: 'parent' },
+                { text: '我先<strong>估算一下</strong>，答案大概应该是什么范围？', who: 'self' },
+                { text: '这道题需要<strong>分几步</strong>做？第一步做什么？', who: 'self' },
+                { text: '我能不能<strong>换个思路</strong>试试？还有别的方法吗？', who: 'self' },
+                { text: '如果是你，你会<strong>先做哪一步</strong>？为什么？', who: 'peer' },
+                { text: '这个方法你<strong>确定吗</strong>？理由是什么？', who: 'peer' },
+                { text: '如果数字变简单（比如变成10），你<strong>会怎么做</strong>？', who: 'peer' }
+            ],
+            step3: [
+                { text: '算出来了？<strong>倒回去验算</strong>一下，对不对？', who: 'parent' },
+                { text: '答案<strong>合理吗</strong>？会不会太大或太小？', who: 'parent' },
+                { text: '单位写了吗？<strong>答句完整</strong>吗？', who: 'parent' },
+                { text: '我用<strong>另一种方法</strong>验证一下，结果一样吗？', who: 'self' },
+                { text: '代入答案<strong>反推</strong>，符不符合题目条件？', who: 'self' },
+                { text: '如果答案是XX，题目的<strong>条件还成立</strong>吗？', who: 'self' },
+                { text: '你敢<strong>100%确定</strong>这个答案是对的吗？为什么？', who: 'peer' },
+                { text: '如果这道题考试考到了，你<strong>哪里可能丢分</strong>？', who: 'peer' },
+                { text: '把这道题<strong>讲给我听</strong>，就像我是第一次做。', who: 'peer' }
+            ]
+        };
+        
+        // === State ===
+        let currentMode = 'all';
+        let practiceTimer = null;
+        let practiceSeconds = 120;
+        
+        // === Date ===
+        const now = new Date();
+        document.getElementById('todayDate').textContent = 
+            `📅 ${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+        
+        // === Mode Switch ===
+        function switchMode(mode, btn) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderAll();
+        }
+        
+        // === Render ===
+        function renderAll() {
+            renderStep('step1', PHRASES.step1);
+            renderStep('step2', PHRASES.step2);
+            renderStep('step3', PHRASES.step3);
+        }
+        
+        function renderStep(listId, phrases) {
+            const list = document.getElementById(listId + 'List');
+            list.innerHTML = '';
+            
+            let filtered = phrases;
+            if (currentMode !== 'all') {
+                filtered = phrases.filter(p => p.who === currentMode);
+            }
+            
+            // If filtered is empty in a mode, show a message
+            if (filtered.length === 0) {
+                list.innerHTML = '<li style="color:#b2bec3;text-align:center;padding:20px;">该角色下暂无专属话术，切换"全部话术"查看</li>';
+                return;
+            }
+            
+            filtered.forEach((phrase, i) => {
+                const li = document.createElement('li');
+                li.className = 'phrase-item';
+                const badgeClass = phrase.who;
+                const badgeText = phrase.who === 'parent' ? '家长问' : phrase.who === 'self' ? '自己问' : '同学问';
+                li.innerHTML = `
+                    <span class="phrase-badge ${badgeClass}">${badgeText}</span>
+                    <span class="phrase-text">${phrase.text}</span>
+                `;
+                list.appendChild(li);
+            });
+        }
+        
+        // === Random Phrase ===
+        function randomPhrase() {
+            const allPhrases = [...PHRASES.step1, ...PHRASES.step2, ...PHRASES.step3];
+            const phrase = allPhrases[Math.floor(Math.random() * allPhrases.length)];
+            const stepNum = PHRASES.step1.includes(phrase) ? '第一步' : 
+                           PHRASES.step2.includes(phrase) ? '第二步' : '第三步';
+            const whoLabel = phrase.who === 'parent' ? '【家长问】' : 
+                            phrase.who === 'self' ? '【自己问】' : '【同学问】';
+            document.getElementById('quickPhrase').innerHTML = 
+                `<span style="font-size:0.8em;opacity:0.7;">${stepNum} ${whoLabel}</span><br>${phrase.text}`;
+        }
+        
+        // === Practice Timer ===
+        function startPractice() {
+            stopPractice();
+            practiceSeconds = 120;
+            const circle = document.getElementById('timerCircle');
+            circle.classList.add('running');
+            
+            practiceTimer = setInterval(() => {
+                practiceSeconds--;
+                const mins = String(Math.floor(practiceSeconds / 60)).padStart(2, '0');
+                const secs = String(practiceSeconds % 60).padStart(2, '0');
+                circle.textContent = `${mins}:${secs}`;
+                
+                if (practiceSeconds <= 0) {
+                    stopPractice();
+                    circle.textContent = '✓';
+                }
+            }, 1000);
+        }
+        
+        function stopPractice() {
+            if (practiceTimer) {
+                clearInterval(practiceTimer);
+                practiceTimer = null;
+            }
+            document.getElementById('timerCircle').classList.remove('running');
+        }
+        
+        // === Init ===
+        renderAll();
+    </script>
+</body>
+</html>

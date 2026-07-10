@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日脑热身 | 斯特鲁普进阶练习</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 50%, #48dbfb 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container { max-width: 950px; margin: 0 auto; overflow-x: hidden; }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 { font-size: 2.2em; margin-bottom: 8px; }
+        .header .subtitle { font-size: 1.1em; opacity: 0.95; }
+        
+        .date-bar {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .date-bar .date { font-size: 1.2em; font-weight: bold; color: #e17055; }
+        .date-bar .info { color: #636e72; font-size: 0.95em; }
+        
+        /* Mode Switch */
+        .mode-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        
+        .mode-tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 14px 18px;
+            border: none;
+            border-radius: 14px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.85);
+            color: #2d3436;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .mode-tab:hover { transform: translateY(-2px); }
+        .mode-tab.active {
+            background: #2d3436;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .card-title {
+            font-size: 1.4em;
+            color: #2d3436;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Instructions */
+        .instructions {
+            background: #fff3cd;
+            border-left: 4px solid #feca57;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 18px;
+            font-size: 0.95em;
+            color: #856404;
+        }
+        
+        /* Canvas Area */
+        .canvas-area {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 18px;
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 20px;
+        }
+        
+        .canvas-area canvas {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 100%;
+        }
+        
+        .prebuilt-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+        
+        .prebuilt-card {
+            background: #f8f9fa;
+            border-radius: 14px;
+            padding: 12px;
+            transition: transform 0.25s;
+        }
+        
+        .prebuilt-card:hover { transform: translateY(-2px); }
+        
+        .prebuilt-card-title {
+            font-weight: bold;
+            color: #2d3436;
+            margin-bottom: 6px;
+            font-size: 0.95em;
+        }
+        
+        .prebuilt-card-desc {
+            font-size: 0.8em;
+            color: #636e72;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .prebuilt-img {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            cursor: pointer;
+            transition: transform 0.3s;
+            display: block;
+        }
+        
+        .prebuilt-img:hover { transform: scale(1.02); }
+        
+        .card-level {
+            display: inline-block;
+            font-size: 0.72em;
+            padding: 2px 8px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+        
+        .card-level.l1 { background: #d4edda; color: #155724; }
+        .card-level.l2 { background: #fff3cd; color: #856404; }
+        .card-level.l3 { background: #f8d7da; color: #721c24; }
+        
+        /* Color Buttons */
+        .color-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+            margin: 18px 0;
+        }
+        
+        .color-btn {
+            padding: 16px;
+            border: 3px solid transparent;
+            border-radius: 14px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .color-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+        
+        .color-btn.red { background: #e74c3c; }
+        .color-btn.blue { background: #3498db; }
+        .color-btn.green { background: #27ae60; }
+        .color-btn.yellow { background: #f1c40f; color: #333; text-shadow: none; }
+        .color-btn.purple { background: #9b59b6; }
+        .color-btn.orange { background: #e67e22; }
+        .color-btn.pink { background: #e84393; }
+        .color-btn.brown { background: #8b4513; }
+        .color-btn.cyan { background: #00cec9; }
+        .color-btn.black { background: #2c3e50; }
+        
+        /* Timer */
+        .timer-bar {
+            background: #dfe6e9;
+            border-radius: 10px;
+            height: 12px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b894, #00cec9);
+            border-radius: 10px;
+            transition: width 0.1s linear;
+        }
+        
+        .timer-text {
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #e17055;
+            margin-bottom: 10px;
+        }
+        
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+        
+        .stat-card .num {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2d3436;
+        }
+        
+        .stat-card .label {
+            font-size: 0.85em;
+            color: #636e72;
+            margin-top: 4px;
+        }
+        
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover { transform: translateY(-2px); }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white;
+            box-shadow: 0 4px 12px rgba(108,92,231,0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #55efc4);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #fdcb6e, #f39c12);
+            color: #333;
+        }
+        
+        /* Feedback */
+        .feedback {
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 12px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .feedback.correct { background: #c6f6d5; color: #22543d; display: block; }
+        .feedback.wrong { background: #fed7d7; color: #742a2a; display: block; }
+        .feedback .emoji { font-size: 1.5em; margin-right: 8px; }
+        
+        /* Phase tracker */
+        .phase-tracker {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            position: relative;
+        }
+        
+        .phase-tracker::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: #dfe6e9;
+            z-index: 0;
+        }
+        
+        .phase {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+            cursor: pointer;
+        }
+        
+        .phase-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #dfe6e9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .phase.active .phase-dot { background: #6c5ce7; color: white; }
+        .phase.completed .phase-dot { background: #00b894; color: white; }
+        .phase-label { font-size: 0.8em; color: #636e72; margin-top: 5px; }
+        .phase.active .phase-label { color: #6c5ce7; font-weight: bold; }
+        
+        /* Level info */
+        .level-info {
+            background: #e8f4f8;
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            color: #2d3436;
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.6em; }
+            .card { padding: 18px; }
+            .color-buttons { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media print {
+            body { background: white; }
+            .card { box-shadow: none; border: 1px solid #ddd; }
+            .mode-tabs, .btn-group { display: none; }
+            canvas { border: 1px solid #ddd; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎯 斯特鲁普进阶练习</h1>
+            <div class="subtitle">锻炼抑制控制能力 — 战胜自动反应！</div>
+        </div>
+        
+        <!-- Date Bar -->
+        <div class="date-bar">
+            <div class="date" id="todayDate">📅 载入中...</div>
+            <div class="info">🧠 前额叶训练 · 抑制控制</div>
+        </div>
+        
+        <!-- Mode Tabs -->
+        <div class="mode-tabs">
+            <button class="mode-tab active" onclick="switchMode('warmup', this)">🔥 热身模式</button>
+            <button class="mode-tab" onclick="switchMode('classic', this)">🎯 经典斯特鲁普</button>
+            <button class="mode-tab" onclick="switchMode('reverse', this)">🔄 反向斯特鲁普</button>
+            <button class="mode-tab" onclick="switchMode('advanced', this)">⚡ 干扰进阶</button>
+            <button class="mode-tab" onclick="switchMode('speed', this)">🏃 极速挑战</button>
+            <button class="mode-tab" onclick="switchMode('cards', this)">🖼️ 训练卡片</button>
+        </div>
+        
+        <!-- Phase Tracker -->
+        <div class="phase-tracker" id="phaseTracker">
+            <div class="phase active" onclick="setPhase(0)">
+                <div class="phase-dot">1</div>
+                <div class="phase-label">热身</div>
+            </div>
+            <div class="phase" onclick="setPhase(1)">
+                <div class="phase-dot">2</div>
+                <div class="phase-label">基础</div>
+            </div>
+            <div class="phase" onclick="setPhase(2)">
+                <div class="phase-dot">3</div>
+                <div class="phase-label">进阶</div>
+            </div>
+            <div class="phase" onclick="setPhase(3)">
+                <div class="phase-dot">4</div>
+                <div class="phase-label">干扰</div>
+            </div>
+            <div class="phase" onclick="setPhase(4)">
+                <div class="phase-dot">5</div>
+                <div class="phase-label">极速</div>
+            </div>
+        </div>
+        
+        <!-- === MODE: WARMUP === -->
+        <div class="card" id="warmupCard">
+            <div class="card-title">🔥 热身模式 — 字色一致</div>
+            <div class="instructions">
+                <strong>规则：</strong>说出每个字的<strong>颜色</strong>。热身模式的字义和颜色是一致的，用来熟悉规则。
+            </div>
+            <div class="canvas-area">
+                <canvas id="warmupCanvas" width="500" height="350"></canvas>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="drawStroop('warmup')">🎲 生成题目</button>
+                <button class="btn btn-success" onclick="revealWarmup()">👁️ 显示答案</button>
+            </div>
+            <div class="level-info" id="warmupInfo">点击"生成题目"开始热身</div>
+        </div>
+        
+        <!-- === MODE: CLASSIC === -->
+        <div class="card" id="classicCard" style="display:none;">
+            <div class="card-title">🎯 经典斯特鲁普 — 字色冲突</div>
+            <div class="instructions">
+                <strong>核心规则：</strong>说出每个字<strong>实际的颜色</strong>，而不是字的意思！<br>
+                比如"红"字用蓝色写的，你要说"蓝"！这很难，因为大脑会自动想读字的意思。
+            </div>
+            <div class="timer-text" id="classicTimer">⏱️ 00:00</div>
+            <div class="timer-bar"><div class="timer-fill" id="classicTimerFill" style="width:100%"></div></div>
+            <div class="canvas-area">
+                <canvas id="classicCanvas" width="500" height="350"></canvas>
+            </div>
+            <div class="color-buttons" id="classicButtons"></div>
+            <div class="feedback" id="classicFeedback"></div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="startClassic()">🚀 开始测试</button>
+                <button class="btn btn-warning" onclick="nextClassic()">⏭️ 下一题</button>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="num" id="cCorrect">0</div><div class="label">正确</div></div>
+                <div class="stat-card"><div class="num" id="cTotal">0</div><div class="label">总计</div></div>
+                <div class="stat-card"><div class="num" id="cAccuracy">0%</div><div class="label">准确率</div></div>
+                <div class="stat-card"><div class="num" id="cAvgTime">0s</div><div class="label">平均用时</div></div>
+                <div class="stat-card"><div class="num" id="cBest">-</div><div class="label">最快</div></div>
+            </div>
+        </div>
+        
+        <!-- === MODE: REVERSE === -->
+        <div class="card" id="reverseCard" style="display:none;">
+            <div class="card-title">🔄 反向斯特鲁普 — 读字不管色</div>
+            <div class="instructions">
+                <strong>反向规则：</strong>这次要读出<strong>字的意思</strong>，完全忽略颜色！<br>
+                比如绿色的"红"字，你要说"红"！这会让你的大脑更困惑。
+            </div>
+            <div class="timer-text" id="reverseTimer">⏱️ 00:00</div>
+            <div class="timer-bar"><div class="timer-fill" id="reverseTimerFill" style="width:100%"></div></div>
+            <div class="canvas-area">
+                <canvas id="reverseCanvas" width="500" height="350"></canvas>
+            </div>
+            <div class="color-buttons" id="reverseButtons"></div>
+            <div class="feedback" id="reverseFeedback"></div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="startReverse()">🚀 开始测试</button>
+                <button class="btn btn-warning" onclick="nextReverse()">⏭️ 下一题</button>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="num" id="rCorrect">0</div><div class="label">正确</div></div>
+                <div class="stat-card"><div class="num" id="rTotal">0</div><div class="label">总计</div></div>
+                <div class="stat-card"><div class="num" id="rAccuracy">0%</div><div class="label">准确率</div></div>
+                <div class="stat-card"><div class="num" id="rAvgTime">0s</div><div class="label">平均用时</div></div>
+            </div>
+        </div>
+        
+        <!-- === MODE: ADVANCED === -->
+        <div class="card" id="advancedCard" style="display:none;">
+            <div class="card-title">⚡ 干扰进阶 — 双重冲突</div>
+            <div class="instructions">
+                <strong>进阶规则：</strong>说出<strong>字的颜色</strong>，但旁边会有干扰色块试图误导你！<br>
+                忽略干扰色块，只看字的颜色。这需要更强的专注力。
+            </div>
+            <div class="timer-text" id="advTimer">⏱️ 00:00</div>
+            <div class="canvas-area">
+                <canvas id="advancedCanvas" width="500" height="350"></canvas>
+            </div>
+            <div class="color-buttons" id="advButtons"></div>
+            <div class="feedback" id="advFeedback"></div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="startAdvanced()">🚀 开始测试</button>
+                <button class="btn btn-warning" onclick="nextAdvanced()">⏭️ 下一题</button>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="num" id="aCorrect">0</div><div class="label">正确</div></div>
+                <div class="stat-card"><div class="num" id="aTotal">0</div><div class="label">总计</div></div>
+                <div class="stat-card"><div class="num" id="aAccuracy">0%</div><div class="label">准确率</div></div>
+                <div class="stat-card"><div class="num" id="aStreak">0</div><div class="label">连胜</div></div>
+            </div>
+        </div>
+        
+        <!-- === MODE: SPEED === -->
+        <div class="card" id="speedCard" style="display:none;">
+            <div class="card-title">🏃 极速挑战 — 60秒极限</div>
+            <div class="instructions">
+                <strong>极速规则：</strong>60秒内答对越多越好！字色不一致，说出字的颜色！<br>
+                连续答对可获得连击加分！错误会打断连击。
+            </div>
+            <div class="timer-text" id="speedTimer" style="font-size:2em;">⏱️ 60</div>
+            <div class="timer-bar"><div class="timer-fill" id="speedTimerFill" style="width:100%"></div></div>
+            <div class="canvas-area">
+                <canvas id="speedCanvas" width="500" height="300"></canvas>
+            </div>
+            <div class="color-buttons" id="speedButtons"></div>
+            <div class="feedback" id="speedFeedback"></div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="startSpeedRun()">🏃 开始极速挑战</button>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="num" id="sScore">0</div><div class="label">得分</div></div>
+                <div class="stat-card"><div class="num" id="sCorrect">0</div><div class="label">正确</div></div>
+                <div class="stat-card"><div class="num" id="sCombo">0</div><div class="label">连击</div></div>
+                <div class="stat-card"><div class="num" id="sMaxCombo">0</div><div class="label">最高连击</div></div>
+            </div>
+        </div>
+        
+        <!-- === MODE: PREBUILT CARDS === -->
+        <div class="card" id="cardsCard" style="display:none;">
+            <div class="card-title">🖼️ 打印版训练卡片（共10张）</div>
+            <div class="instructions">
+                <strong>使用方法：</strong>这些卡片可以保存打印。让孩子看着卡片，快速说出每个字的<strong>颜色</strong>（不是字的意思）！<br>
+                建议从卡片1开始，稳定后再升级。可以用计时器记录完成每张卡片的时间和错误次数。
+            </div>
+            <div class="prebuilt-images" id="prebuiltImages"></div>
+            <div class="level-info">
+                💡 <strong>训练建议：</strong>第1-3张为基础冲突，第4-7张为干扰进阶，第8-10张为极速分散。每天选一张，观察进步！
+            </div>
+        </div>
+        
+        <!-- Progress Summary -->
+        <div class="card">
+            <div class="card-title">📊 今日训练进度</div>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="num" id="totalCorrect">0</div><div class="label">总正确</div></div>
+                <div class="stat-card"><div class="num" id="totalAttempts">0</div><div class="label">总尝试</div></div>
+                <div class="stat-card"><div class="num" id="totalAccuracy">0%</div><div class="label">总准确率</div></div>
+                <div class="stat-card"><div class="num" id="bestPhase">-</div><div class="label">最佳阶段</div></div>
+            </div>
+        </div>
+        
+        <div class="header" style="margin-top:25px;">
+            <div class="subtitle">每天练5分钟，专注力大提升！🌟</div>
+        </div>
+    </div>
+
+    <script>
+        // === Config ===
+        const COLORS = [
+            { name: '红', code: '#e74c3c', key: 'red' },
+            { name: '蓝', code: '#3498db', key: 'blue' },
+            { name: '绿', code: '#27ae60', key: 'green' },
+            { name: '黄', code: '#f1c40f', key: 'yellow' },
+            { name: '紫', code: '#9b59b6', key: 'purple' },
+            { name: '橙', code: '#e67e22', key: 'orange' },
+            { name: '粉', code: '#e84393', key: 'pink' },
+            { name: '棕', code: '#8b4513', key: 'brown' },
+            { name: '青', code: '#00cec9', key: 'cyan' },
+            { name: '黑', code: '#2d3436', key: 'black' },
+        ];
+        
+        const PHASE_NAMES = ['热身', '基础', '进阶', '干扰', '极速'];
+        const STROOP_CARD_DIR = 'stroop-cards/';
+        const STROOP_CARDS = [
+            { n: 1, title: '基础冲突', desc: '字义与颜色不一致，建立斯特鲁普规则', level: 'l1', levelText: '入门' },
+            { n: 2, title: '基础冲突', desc: '继续熟悉「说颜色不说字」', level: 'l1', levelText: '入门' },
+            { n: 3, title: '基础冲突', desc: '加大颜色对比，巩固抑制控制', level: 'l1', levelText: '入门' },
+            { n: 4, title: '干扰进阶', desc: '加入干扰元素，训练选择性注意', level: 'l2', levelText: '进阶' },
+            { n: 5, title: '干扰进阶', desc: '更多干扰色块，忽略无关信息', level: 'l2', levelText: '进阶' },
+            { n: 6, title: '干扰进阶', desc: '复杂布局，提升抗干扰能力', level: 'l2', levelText: '进阶' },
+            { n: 7, title: '干扰进阶', desc: '高密度干扰，接近实战难度', level: 'l2', levelText: '进阶' },
+            { n: 8, title: '极速分散', desc: '字词分散排列，限时快速反应', level: 'l3', levelText: '挑战' },
+            { n: 9, title: '极速分散', desc: '更多目标，训练视觉搜索速度', level: 'l3', levelText: '挑战' },
+            { n: 10, title: '极速分散', desc: '最高难度综合挑战', level: 'l3', levelText: '挑战' }
+        ];
+        
+        function renderPrebuiltCards() {
+            const container = document.getElementById('prebuiltImages');
+            container.innerHTML = '';
+            STROOP_CARDS.forEach(card => {
+                const file = 'stroop_test_card_' + card.n + '.png';
+                const src = encodeURI(STROOP_CARD_DIR + file);
+                const div = document.createElement('div');
+                div.className = 'prebuilt-card';
+                div.innerHTML = `
+                    <span class="card-level ${card.level}">${card.levelText}</span>
+                    <div class="prebuilt-card-title">卡片${card.n}：${card.title}</div>
+                    <div class="prebuilt-card-desc">${card.desc}</div>
+                    <img src="${src}" class="prebuilt-img" alt="斯特鲁普训练卡${card.n}"
+                         onclick="viewStroopCard('${src}', '卡片${card.n}：${card.title}')">
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function viewStroopCard(src, title) {
+            const w = window.open('', '_blank');
+            if (w) {
+                w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><style>body{margin:0;padding:16px;background:#f5f5f5;text-align:center;font-family:sans-serif;}img{max-width:100%;height:auto;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.15);}p{color:#666;margin-top:12px;}</style></head><body><h2>${title}</h2><img src="${src}" alt="${title}"><p>长按或右键可保存图片，方便打印</p></body></html>`);
+                w.document.close();
+            }
+        }
+        
+        let currentPhase = 0;
+        let currentMode = 'warmup';
+        
+        // Stats
+        let classicStats = { correct: 0, total: 0, times: [], best: Infinity };
+        let reverseStats = { correct: 0, total: 0, times: [] };
+        let advStats = { correct: 0, total: 0, streak: 0, maxStreak: 0 };
+        let speedStats = { score: 0, correct: 0, combo: 0, maxCombo: 0 };
+        
+        // Current question state
+        let currentWord = null;
+        let currentInkColor = null;
+        let startTime = null;
+        let timerInterval = null;
+        let speedTimeLeft = 60;
+        let speedRunning = false;
+        
+        // === Date ===
+        const now = new Date();
+        document.getElementById('todayDate').textContent = 
+            `📅 ${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+        
+        // === Mode Switching ===
+        function switchMode(mode, btn) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            document.querySelectorAll('.card').forEach(c => {
+                if (c.id !== 'phaseTracker') c.style.display = 'none';
+            });
+            document.getElementById(mode + 'Card').style.display = 'block';
+        }
+        
+        // === Phase Tracking ===
+        function setPhase(n) {
+            currentPhase = n;
+            document.querySelectorAll('.phase').forEach((p, i) => {
+                p.classList.remove('active', 'completed');
+                if (i < n) p.classList.add('completed');
+                else if (i === n) p.classList.add('active');
+            });
+        }
+        
+        function completePhase() {
+            if (currentPhase < 4) {
+                setPhase(currentPhase + 1);
+            }
+        }
+        
+        // === Canvas Drawing ===
+        function drawStroopCard(canvasId, word, inkColor, distractorColor, mode) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Background
+            ctx.fillStyle = '#fafbfc';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Border
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(4, 4, canvas.width-8, canvas.height-8);
+            
+            if (mode === 'advanced' && distractorColor) {
+                // Draw distractor circles
+                for (let i = 0; i < 5; i++) {
+                    ctx.beginPath();
+                    ctx.arc(60 + i * 95, 50, 25, 0, Math.PI * 2);
+                    ctx.fillStyle = distractorColor.code;
+                    ctx.fill();
+                    ctx.strokeStyle = '#ccc';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+                // Label
+                ctx.fillStyle = '#999';
+                ctx.font = '12px sans-serif';
+                ctx.fillText('干扰色（忽略！）', 10, 90);
+            }
+            
+            // Draw main word
+            const fontSize = mode === 'speed' ? 80 : 100;
+            ctx.font = `bold ${fontSize}px "Microsoft YaHei", sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = inkColor.code;
+            
+            // Text shadow for readability
+            ctx.shadowColor = 'rgba(0,0,0,0.15)';
+            ctx.shadowBlur = 4;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+            
+            const yPos = mode === 'advanced' ? 200 : canvas.height / 2 + 15;
+            ctx.fillText(word.name, canvas.width / 2, yPos);
+            
+            ctx.shadowColor = 'transparent';
+            
+            // Subtle hint at bottom
+            ctx.fillStyle = '#bbb';
+            ctx.font = '13px sans-serif';
+            ctx.fillText(mode === 'reverse' ? '读这个字的意思！' : '说这个字的颜色！', canvas.width / 2, canvas.height - 20);
+            
+            return { word, inkColor };
+        }
+        
+        function clearCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#999';
+            ctx.font = '18px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('点击"开始"生成题目', canvas.width/2, canvas.height/2);
+        }
+        
+        // === Warmup Mode ===
+        function drawStroop(type) {
+            if (type === 'warmup') {
+                const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+                drawStroopCard('warmupCanvas', color, color, null, 'warmup');
+                document.getElementById('warmupInfo').textContent = 
+                    `这个字是"${color.name}"，颜色也是${color.name}。试试说出颜色！`;
+            }
+        }
+        
+        function revealWarmup() {
+            document.getElementById('warmupInfo').textContent = '答案就是字的颜色！多练几遍熟悉规则后，进入「经典斯特鲁普」挑战。';
+        }
+        
+        // === Color Buttons Generator ===
+        function createColorButtons(containerId, onClick) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            COLORS.forEach(c => {
+                const btn = document.createElement('button');
+                btn.className = `color-btn ${c.key}`;
+                btn.textContent = c.name;
+                btn.onclick = () => onClick(c);
+                container.appendChild(btn);
+            });
+        }
+        
+        // === Timer ===
+        function startTimer(displayId, fillId, maxTime, onTick, onEnd) {
+            stopTimer();
+            let timeLeft = maxTime;
+            startTime = Date.now();
+            
+            timerInterval = setInterval(() => {
+                timeLeft -= 0.1;
+                const pct = (timeLeft / maxTime) * 100;
+                document.getElementById(fillId).style.width = pct + '%';
+                document.getElementById(displayId).textContent = 
+                    `⏱️ ${Math.max(0, timeLeft).toFixed(1)}s`;
+                
+                if (timeLeft <= 0) {
+                    stopTimer();
+                    if (onEnd) onEnd();
+                }
+                if (onTick) onTick(timeLeft);
+            }, 100);
+        }
+        
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+        
+        // === Classic Mode ===
+        function startClassic() {
+            createColorButtons('classicButtons', checkClassic);
+            nextClassic();
+        }
+        
+        function nextClassic() {
+            const word = COLORS[Math.floor(Math.random() * COLORS.length)];
+            let inkColor;
+            do {
+                inkColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+            } while (inkColor.name === word.name);
+            
+            currentWord = word;
+            currentInkColor = inkColor;
+            drawStroopCard('classicCanvas', word, inkColor, null, 'classic');
+            
+            startTimer('classicTimer', 'classicTimerFill', 10, null, () => {
+                showFeedback('classicFeedback', false, '时间到！', `正确答案是：${currentInkColor.name}`);
+                classicStats.total++;
+                updateClassicStats();
+            });
+        }
+        
+        function checkClassic(selectedColor) {
+            stopTimer();
+            const elapsed = (Date.now() - startTime) / 1000;
+            const isCorrect = selectedColor.name === currentInkColor.name;
+            
+            if (isCorrect) {
+                showFeedback('classicFeedback', true, '正确！', `用了 ${elapsed.toFixed(1)} 秒`);
+                classicStats.correct++;
+                classicStats.times.push(elapsed);
+                if (elapsed < classicStats.best) classicStats.best = elapsed;
+            } else {
+                showFeedback('classicFeedback', false, '错了', `这是${currentInkColor.name}色的"${currentWord.name}"字`);
+            }
+            classicStats.total++;
+            updateClassicStats();
+            
+            if (classicStats.correct >= 5) completePhase();
+            updateTotalStats();
+        }
+        
+        function updateClassicStats() {
+            document.getElementById('cCorrect').textContent = classicStats.correct;
+            document.getElementById('cTotal').textContent = classicStats.total;
+            document.getElementById('cAccuracy').textContent = 
+                classicStats.total > 0 ? Math.round(classicStats.correct/classicStats.total*100) + '%' : '0%';
+            const avg = classicStats.times.length > 0 
+                ? (classicStats.times.reduce((a,b)=>a+b,0)/classicStats.times.length).toFixed(1) : '0';
+            document.getElementById('cAvgTime').textContent = avg + 's';
+            document.getElementById('cBest').textContent = 
+                classicStats.best < Infinity ? classicStats.best.toFixed(1) + 's' : '-';
+        }
+        
+        // === Reverse Mode ===
+        function startReverse() {
+            createColorButtons('reverseButtons', checkReverse);
+            // For reverse, buttons should show color names to click
+            nextReverse();
+        }
+        
+        function nextReverse() {
+            const word = COLORS[Math.floor(Math.random() * COLORS.length)];
+            let inkColor;
+            do {
+                inkColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+            } while (inkColor.name === word.name);
+            
+            currentWord = word;
+            currentInkColor = inkColor;
+            drawStroopCard('reverseCanvas', word, inkColor, null, 'reverse');
+            
+            startTimer('reverseTimer', 'reverseTimerFill', 10, null, () => {
+                showFeedback('reverseFeedback', false, '时间到！', `正确答案是：${currentWord.name}（读字的意思）`);
+                reverseStats.total++;
+                updateReverseStats();
+            });
+        }
+        
+        function checkReverse(selectedColor) {
+            stopTimer();
+            const elapsed = (Date.now() - startTime) / 1000;
+            // In reverse, answer is the WORD meaning, not the ink color
+            const isCorrect = selectedColor.name === currentWord.name;
+            
+            if (isCorrect) {
+                showFeedback('reverseFeedback', true, '正确！', `这是"${currentWord.name}"字，用了 ${elapsed.toFixed(1)} 秒`);
+                reverseStats.correct++;
+                reverseStats.times.push(elapsed);
+            } else {
+                showFeedback('reverseFeedback', false, '错了', `这是"${currentWord.name}"字，不是${selectedColor.name}！`);
+            }
+            reverseStats.total++;
+            updateReverseStats();
+            updateTotalStats();
+        }
+        
+        function updateReverseStats() {
+            document.getElementById('rCorrect').textContent = reverseStats.correct;
+            document.getElementById('rTotal').textContent = reverseStats.total;
+            document.getElementById('rAccuracy').textContent = 
+                reverseStats.total > 0 ? Math.round(reverseStats.correct/reverseStats.total*100) + '%' : '0%';
+            const avg = reverseStats.times.length > 0 
+                ? (reverseStats.times.reduce((a,b)=>a+b,0)/reverseStats.times.length).toFixed(1) : '0';
+            document.getElementById('rAvgTime').textContent = avg + 's';
+        }
+        
+        // === Advanced Mode ===
+        function startAdvanced() {
+            createColorButtons('advButtons', checkAdvanced);
+            nextAdvanced();
+        }
+        
+        function nextAdvanced() {
+            const word = COLORS[Math.floor(Math.random() * COLORS.length)];
+            let inkColor, distColor;
+            do {
+                inkColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+            } while (inkColor.name === word.name);
+            do {
+                distColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+            } while (distColor.name === inkColor.name);
+            
+            currentWord = word;
+            currentInkColor = inkColor;
+            drawStroopCard('advancedCanvas', word, inkColor, distColor, 'advanced');
+            
+            startTimer('advTimer', 'advTimerFill', 8, null, () => {
+                showFeedback('advFeedback', false, '时间到！', `正确答案是：${currentInkColor.name}`);
+                advStats.total++;
+                advStats.streak = 0;
+                updateAdvStats();
+            });
+        }
+        
+        function checkAdvanced(selectedColor) {
+            stopTimer();
+            const isCorrect = selectedColor.name === currentInkColor.name;
+            
+            if (isCorrect) {
+                advStats.streak++;
+                if (advStats.streak > advStats.maxStreak) advStats.maxStreak = advStats.streak;
+                const bonus = advStats.streak >= 3 ? ` 🔥${advStats.streak}连击！` : '';
+                showFeedback('advFeedback', true, '正确！' + bonus, `忽略了干扰，真棒！`);
+                advStats.correct++;
+            } else {
+                advStats.streak = 0;
+                showFeedback('advFeedback', false, '错了', `别被干扰色影响！答案是${currentInkColor.name}`);
+            }
+            advStats.total++;
+            updateAdvStats();
+            if (advStats.correct >= 3) completePhase();
+            updateTotalStats();
+        }
+        
+        function updateAdvStats() {
+            document.getElementById('aCorrect').textContent = advStats.correct;
+            document.getElementById('aTotal').textContent = advStats.total;
+            document.getElementById('aAccuracy').textContent = 
+                advStats.total > 0 ? Math.round(advStats.correct/advStats.total*100) + '%' : '0%';
+            document.getElementById('aStreak').textContent = advStats.streak;
+        }
+        
+        // === Speed Mode ===
+        function startSpeedRun() {
+            if (speedRunning) return;
+            speedRunning = true;
+            speedTimeLeft = 60;
+            speedStats = { score: 0, correct: 0, combo: 0, maxCombo: 0 };
+            createColorButtons('speedButtons', checkSpeed);
+            nextSpeed();
+            
+            timerInterval = setInterval(() => {
+                speedTimeLeft--;
+                document.getElementById('speedTimer').textContent = `⏱️ ${speedTimeLeft}`;
+                document.getElementById('speedTimerFill').style.width = (speedTimeLeft/60*100) + '%';
+                
+                if (speedTimeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    endSpeedRun();
+                }
+            }, 1000);
+        }
+        
+        function nextSpeed() {
+            const word = COLORS[Math.floor(Math.random() * COLORS.length)];
+            let inkColor;
+            do {
+                inkColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+            } while (inkColor.name === word.name);
+            
+            currentWord = word;
+            currentInkColor = inkColor;
+            drawStroopCard('speedCanvas', word, inkColor, null, 'speed');
+        }
+        
+        function checkSpeed(selectedColor) {
+            if (!speedRunning) return;
+            const isCorrect = selectedColor.name === currentInkColor.name;
+            
+            if (isCorrect) {
+                speedStats.combo++;
+                if (speedStats.combo > speedStats.maxCombo) speedStats.maxCombo = speedStats.combo;
+                const points = 10 + Math.min(speedStats.combo, 10);
+                speedStats.score += points;
+                speedStats.correct++;
+                showFeedback('speedFeedback', true, `+${points}分`, `${speedStats.combo}连击！`);
+            } else {
+                speedStats.combo = 0;
+                speedStats.score = Math.max(0, speedStats.score - 5);
+                showFeedback('speedFeedback', false, '-5分', '连击中断！');
+            }
+            
+            document.getElementById('sScore').textContent = speedStats.score;
+            document.getElementById('sCorrect').textContent = speedStats.correct;
+            document.getElementById('sCombo').textContent = speedStats.combo;
+            document.getElementById('sMaxCombo').textContent = speedStats.maxCombo;
+            
+            nextSpeed();
+        }
+        
+        function endSpeedRun() {
+            speedRunning = false;
+            showFeedback('speedFeedback', true, `时间到！`, `最终得分：${speedStats.score}分，答对${speedStats.correct}题`);
+            clearCanvas('speedCanvas');
+            completePhase();
+            updateTotalStats();
+        }
+        
+        // === Feedback ===
+        function showFeedback(id, isCorrect, title, detail) {
+            const fb = document.getElementById(id);
+            fb.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+            fb.innerHTML = `<span class="emoji">${isCorrect ? '🎉' : '💪'}</span> ${title}<br><small>${detail}</small>`;
+        }
+        
+        // === Total Stats ===
+        function updateTotalStats() {
+            const totalC = classicStats.correct + reverseStats.correct + advStats.correct + speedStats.correct;
+            const totalAll = classicStats.total + reverseStats.total + advStats.total + speedStats.correct;
+            document.getElementById('totalCorrect').textContent = totalC;
+            document.getElementById('totalAttempts').textContent = totalAll;
+            
+            const acc = totalAll > 0 ? Math.round(totalC / totalAll * 100) : 0;
+            document.getElementById('totalAccuracy').textContent = acc + '%';
+            
+            // Best phase
+            let best = 0;
+            if (classicStats.correct >= 3) best = 1;
+            if (reverseStats.correct >= 3) best = 2;
+            if (advStats.correct >= 3) best = 3;
+            if (speedStats.score > 50) best = 4;
+            document.getElementById('bestPhase').textContent = PHASE_NAMES[best];
+        }
+        
+        // === Init ===
+        renderPrebuiltCards();
+        clearCanvas('warmupCanvas');
+        clearCanvas('classicCanvas');
+        clearCanvas('reverseCanvas');
+        clearCanvas('advancedCanvas');
+        clearCanvas('speedCanvas');
+    </script>
+</body>
+</html>

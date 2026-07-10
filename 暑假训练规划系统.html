@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>暑假训练规划系统 | 60-90天完整方案</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            padding: 0;
+            color: #2d3748;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 30px 40px;
+            text-align: center;
+        }
+        
+        .hero h1 { font-size: 2.4em; margin-bottom: 12px; text-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
+        .hero .subtitle { font-size: 1.15em; opacity: 0.95; max-width: 700px; margin: 0 auto; }
+        .hero .meta { margin-top: 20px; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+        .hero .meta-item { background: rgba(255,255,255,0.15); padding: 8px 20px; border-radius: 20px; font-size: 0.9em; }
+        
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+        
+        /* Nav */
+        .nav-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(245,247,250,0.95);
+            padding: 12px;
+            border-radius: 14px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-btn {
+            padding: 10px 18px;
+            min-height: 44px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            color: #5a67d8;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            flex-shrink: 0;
+        }
+        
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+        .nav-btn.active { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        
+        /* Section */
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.4s ease; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .section-title {
+            font-size: 1.6em;
+            color: #2d3748;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-desc { color: #718096; margin-bottom: 24px; font-size: 0.95em; }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        
+        .card-title {
+            font-size: 1.2em;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #2d3748;
+        }
+        
+        .card-title .badge {
+            font-size: 0.7em;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        
+        .badge.blue { background: #ebf8ff; color: #2b6cb0; }
+        .badge.green { background: #f0fff4; color: #276749; }
+        .badge.orange { background: #fffaf0; color: #975a16; }
+        .badge.red { background: #fff5f5; color: #c53030; }
+        .badge.purple { background: #faf5ff; color: #6b46c1; }
+        
+        /* Month Grid */
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        
+        .month-card {
+            background: white;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border-top: 4px solid;
+        }
+        
+        .month-card.m1 { border-top-color: #667eea; }
+        .month-card.m2 { border-top-color: #f6ad55; }
+        .month-card.m3 { border-top-color: #48bb78; }
+        
+        .month-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .month-name { font-size: 1.3em; font-weight: bold; }
+        .month-weeks { font-size: 0.85em; color: #a0aec0; }
+        
+        .month-goal {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            font-size: 0.95em;
+        }
+        
+        .month-goal strong { color: #2d3748; }
+        
+        .tool-list { list-style: none; }
+        .tool-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #edf2f7;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.92em;
+        }
+        .tool-list li:last-child { border-bottom: none; }
+        .tool-list .tool-icon { font-size: 1.2em; }
+        .tool-list .tool-name { flex: 1; }
+        .tool-list .tool-freq { font-size: 0.8em; color: #a0aec0; white-space: nowrap; }
+        
+        /* Week Plan */
+        .week-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+        
+        .week-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .week-table th:first-child { border-radius: 10px 0 0 0; }
+        .week-table th:last-child { border-radius: 0 10px 0 0; }
+        
+        .week-table td {
+            padding: 14px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+        
+        .week-table tr:nth-child(even) td { background: #f7fafc; }
+        .week-table tr:last-child td { border-bottom: none; }
+        .week-table tr:last-child td:first-child { border-radius: 0 0 0 10px; }
+        .week-table tr:last-child td:last-child { border-radius: 0 0 10px 0; }
+        
+        .day-name { font-weight: bold; color: #2d3748; font-size: 1.05em; }
+        .day-tag { 
+            display: inline-block; 
+            padding: 2px 8px; 
+            border-radius: 6px; 
+            font-size: 0.75em; 
+            font-weight: bold;
+            margin-left: 6px;
+        }
+        .day-tag.cogn { background: #ebf8ff; color: #2b6cb0; }
+        .day-tag.subject { background: #f0fff4; color: #276749; }
+        .day-tag.review { background: #fffaf0; color: #975a16; }
+        .day-tag.test { background: #fff5f5; color: #c53030; }
+        .day-tag.rest { background: #f0f0f0; color: #666; }
+        
+        .day-tasks { margin-top: 8px; }
+        .day-task {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            padding: 3px 0;
+            font-size: 0.88em;
+            color: #4a5568;
+        }
+        .day-task::before { content: "•"; color: #a0aec0; flex-shrink: 0; }
+        .day-task.highlight { color: #e53e3e; font-weight: 500; }
+        
+        /* Daily Timeline */
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #667eea, #764ba2, #48bb78);
+            border-radius: 3px;
+        }
+        
+        .time-slot {
+            position: relative;
+            margin-bottom: 20px;
+            padding: 16px 20px;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .time-slot::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 20px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 3px solid #e4e8ec;
+        }
+        
+        .time-slot.rest::before { background: #48bb78; }
+        .time-slot.subject::before { background: #ed8936; }
+        .time-slot.check::before { background: #9f7aea; }
+        
+        .time-label {
+            font-size: 0.85em;
+            color: #a0aec0;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .time-title { font-size: 1.1em; font-weight: bold; color: #2d3748; margin-bottom: 6px; }
+        .time-desc { font-size: 0.9em; color: #718096; }
+        .time-tools { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+        .time-tool {
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+        .time-tool.pink { background: #fce4ec; color: #c2185b; }
+        .time-tool.blue { background: #e3f2fd; color: #1565c0; }
+        .time-tool.green { background: #e8f5e9; color: #2e7d32; }
+        .time-tool.orange { background: #fff3e0; color: #e65100; }
+        .time-tool.purple { background: #f3e5f5; color: #7b1fa2; }
+        .time-tool.gray { background: #f5f5f5; color: #616161; }
+        
+        /* Sequence Flow */
+        .flow-container { display: flex; flex-direction: column; gap: 0; }
+        
+        .flow-step {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+        }
+        
+        .flow-num {
+            width: 48px;
+            min-width: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4em;
+            font-weight: bold;
+            color: white;
+            border-radius: 14px 0 0 14px;
+        }
+        
+        .flow-content {
+            flex: 1;
+            background: white;
+            padding: 18px 20px;
+            border-radius: 0 14px 14px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 12px;
+        }
+        
+        .flow-title { font-weight: bold; font-size: 1.05em; margin-bottom: 4px; }
+        .flow-desc { font-size: 0.9em; color: #718096; }
+        .flow-why { font-size: 0.85em; color: #e53e3e; margin-top: 6px; font-style: italic; }
+        
+        /* Guide */
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .guide-card {
+            background: white;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+        
+        .guide-icon { font-size: 2.2em; margin-bottom: 10px; }
+        .guide-title { font-size: 1.15em; font-weight: bold; margin-bottom: 10px; }
+        .guide-text { font-size: 0.92em; color: #4a5568; line-height: 1.7; }
+        .guide-text ul { margin-left: 18px; margin-top: 8px; }
+        .guide-text li { margin-bottom: 6px; }
+        
+        /* Principle Banner */
+        .principle-banner {
+            background: linear-gradient(135deg, #fff9e6, #fef3c7);
+            border: 2px solid #f6ad55;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        
+        .principle-banner .icon { font-size: 2em; flex-shrink: 0; }
+        .principle-banner .text { flex: 1; }
+        .principle-banner .title { font-weight: bold; color: #744210; margin-bottom: 6px; }
+        .principle-banner .desc { color: #975a16; font-size: 0.95em; line-height: 1.6; }
+        
+        /* Rules */
+        .rule-list { list-style: none; }
+        .rule-item {
+            display: flex;
+            gap: 14px;
+            padding: 16px;
+            background: #f7fafc;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        .rule-num {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+            flex-shrink: 0;
+        }
+        .rule-content { flex: 1; }
+        .rule-title { font-weight: bold; color: #2d3748; margin-bottom: 4px; }
+        .rule-desc { font-size: 0.9em; color: #718096; }
+        
+        /* Progress tracker */
+        .progress-track {
+            display: flex;
+            gap: 8px;
+            margin: 20px 0;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .progress-week {
+            min-width: 60px;
+            text-align: center;
+            padding: 10px 6px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        
+        .progress-week .num { font-weight: bold; font-size: 0.85em; color: #2d3748; }
+        .progress-week .label { font-size: 0.7em; color: #a0aec0; }
+        .progress-week .dot { 
+            width: 12px; height: 12px; border-radius: 50%; 
+            margin: 6px auto 0; 
+        }
+        .progress-week .dot.cogn { background: #667eea; }
+        .progress-week .dot.build { background: #ed8936; }
+        .progress-week .dot.recog { background: #48bb78; }
+        .progress-week .dot.test { background: #e53e3e; }
+        .progress-week .dot.auto { background: #9f7aea; }
+        
+        /* Print */
+        @media print {
+            .nav-bar, .hero { display: none; }
+            .section { display: block !important; page-break-before: always; }
+            .card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+        }
+        
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 1.6em; }
+            .week-table { font-size: 0.8em; }
+            .week-table th, .week-table td { padding: 8px 6px; }
+            .nav-bar {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                justify-content: flex-start;
+                -webkit-overflow-scrolling: touch;
+            }
+            .nav-btn { padding: 10px 14px; font-size: 0.85em; min-height: 44px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero -->
+    <div class="hero">
+        <h1>🧠 暑假训练规划系统</h1>
+        <div class="subtitle">基于脑科学原理设计的 60-90 天完整训练方案<br>间隔重复 · 提取练习 · 交错练习 · 渐进负荷</div>
+        <div class="meta">
+            <div class="meta-item">📅 建议周期：60-90 天</div>
+            <div class="meta-item">⏱️ 每日训练：20-30 分钟</div>
+            <div class="meta-item">🎯 核心工具：8 套</div>
+            <div class="meta-item">📊 双周测评：4-6 次</div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Navigation -->
+        <div class="nav-bar">
+            <button class="nav-btn active" onclick="showSection('overview', this)">📋 总览</button>
+            <button class="nav-btn" onclick="showSection('monthly', this)">📅 月度目标</button>
+            <button class="nav-btn" onclick="showSection('weekly', this)">📆 周规划</button>
+            <button class="nav-btn" onclick="showSection('daily', this)">⏰ 每日安排</button>
+            <button class="nav-btn" onclick="showSection('sequence', this)">🔀 顺序安排</button>
+            <button class="nav-btn" onclick="showSection('guide', this)">📖 使用说明</button>
+        </div>
+        
+        <!-- ===== SECTION 1: OVERVIEW ===== -->
+        <div class="section active" id="section-overview">
+            <div class="section-title">📋 训练体系总览</div>
+            <div class="section-desc">五阶段递进设计，每阶段对应大脑不同的训练重点</div>
+            
+            <!-- 13-Week Progress Tracker -->
+            <div class="card">
+                <div class="card-title">📊 13 周训练进度地图（点击导航切换详情）</div>
+                <div class="progress-track">
+                    <div class="progress-week"><div class="num">W1</div><div class="label">基建</div><div class="dot cogn"></div></div>
+                    <div class="progress-week"><div class="num">W2</div><div class="label">基建</div><div class="dot cogn"></div></div>
+                    <div class="progress-week"><div class="num">W3</div><div class="label">外化</div><div class="dot build"></div></div>
+                    <div class="progress-week"><div class="num">W4</div><div class="label">外化</div><div class="dot build"></div></div>
+                    <div class="progress-week"><div class="num">W5</div><div class="label">外化</div><div class="dot build"></div></div>
+                    <div class="progress-week"><div class="num">W6</div><div class="label">识别</div><div class="dot recog"></div></div>
+                    <div class="progress-week"><div class="num">W7</div><div class="label">识别</div><div class="dot recog"></div></div>
+                    <div class="progress-week"><div class="num">W8</div><div class="label">识别</div><div class="dot recog"></div></div>
+                    <div class="progress-week"><div class="num">W9</div><div class="label">模拟</div><div class="dot test"></div></div>
+                    <div class="progress-week"><div class="num">W10</div><div class="label">模拟</div><div class="dot test"></div></div>
+                    <div class="progress-week"><div class="num">W11</div><div class="label">内化</div><div class="dot auto"></div></div>
+                    <div class="progress-week"><div class="num">W12</div><div class="label">内化</div><div class="dot auto"></div></div>
+                    <div class="progress-week"><div class="num">W13</div><div class="label">巩固</div><div class="dot auto"></div></div>
+                </div>
+                <div style="display:flex;gap:20px;flex-wrap:wrap;font-size:0.85em;color:#718096;margin-top:10px;">
+                    <span>🟣 认知基建期 (W1-2)</span>
+                    <span>🟠 习惯建立期 (W3-5)</span>
+                    <span>🟢 模式识别期 (W6-8)</span>
+                    <span>🔴 压力模拟期 (W9-10)</span>
+                    <span>🟡 自动化内化期 (W11-13)</span>
+                </div>
+            </div>
+            
+            <!-- Tool Map -->
+            <div class="card">
+                <div class="card-title">🧰 工具矩阵：什么时候用什么</div>
+                <table class="week-table">
+                    <thead>
+                        <tr>
+                            <th style="width:22%">工具</th>
+                            <th style="width:13%">类型</th>
+                            <th style="width:15%">频率</th>
+                            <th style="width:15%">时长</th>
+                            <th style="width:35%">核心作用</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>🔢 数字倒背与变式填空</strong></td>
+                            <td>认知训练</td>
+                            <td>每天</td>
+                            <td>5-8 分钟</td>
+                            <td>工作记忆 + 计算基础 + 模式识别</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🎯 斯特鲁普进阶练习</strong></td>
+                            <td>认知训练</td>
+                            <td>每天</td>
+                            <td>3-5 分钟</td>
+                            <td>抑制控制 + 抗干扰能力</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🏠 多步骤家务指令</strong></td>
+                            <td>执行功能</td>
+                            <td>每天</td>
+                            <td>5-10 分钟</td>
+                            <td>多步骤记忆 + 任务切换 + 优先级</td>
+                        </tr>
+                        <tr>
+                            <td><strong>📋 学科检查卡</strong></td>
+                            <td>学习习惯</td>
+                            <td>每次做题后</td>
+                            <td>1-2 分钟</td>
+                            <td>检查习惯 + 直觉校准</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🗣️ 口述解题法</strong></td>
+                            <td>学习方法</td>
+                            <td>每天 1 题</td>
+                            <td>3-5 分钟</td>
+                            <td>深度理解 + 费曼技巧</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🔍 错误模式归因</strong></td>
+                            <td>元认知</td>
+                            <td>每次出错后</td>
+                            <td>1-2 分钟</td>
+                            <td>错误归类 + 精准改进</td>
+                        </tr>
+                        <tr>
+                            <td><strong>📊 双周压力测试</strong></td>
+                            <td>效果评估</td>
+                            <td>每 2 周</td>
+                            <td>30 分钟</td>
+                            <td>数据追踪 + 阶段检验</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🧠 奥本海默阶段明细</strong></td>
+                            <td>规划参考</td>
+                            <td>每周回顾</td>
+                            <td>5 分钟</td>
+                            <td>阶段目标 + 通过标准</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Key Principles -->
+            <div class="principle-banner">
+                <div class="icon">🧠</div>
+                <div class="text">
+                    <div class="title">四大脑科学原则贯穿全程</div>
+                    <div class="desc">
+                        <strong>间隔重复</strong>：同一题型在不同时间重复出现，比集中练习效果好 2 倍+<br>
+                        <strong>提取练习</strong>：口述解题、网格记忆点击——"主动回忆"比"被动复习"效果好 50%<br>
+                        <strong>交错练习</strong>：🎲 交错模式混合不同题型，训练"辨别该用什么方法"的能力<br>
+                        <strong>渐进负荷</strong>：从 4 位数字→6 位字母→6 格网格，难度逐步提升
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ===== SECTION 2: MONTHLY ===== -->
+        <div class="section" id="section-monthly">
+            <div class="section-title">📅 月度使用目标</div>
+            <div class="section-desc">将 13 周训练划分为 3 个月，每月有明确的阶段目标和通过标准</div>
+            
+            <div class="month-grid">
+                <!-- Month 1 -->
+                <div class="month-card m1">
+                    <div class="month-header">
+                        <div class="month-name">🟣 第 1 个月：奠基期</div>
+                        <div class="month-weeks">第 1-4 周</div>
+                    </div>
+                    <div class="month-goal">
+                        <strong>核心目标：</strong>建立每日训练节奏，让孩子熟悉所有工具的使用方式。工作记忆和抑制控制能力开始提升。口述解题和检查卡初步形成习惯。
+                    </div>
+                    <ul class="tool-list">
+                        <li><span class="tool-icon">🔢</span><span class="tool-name">数字倒背：稳定 5 位</span><span class="tool-freq">每天</span></li>
+                        <li><span class="tool-icon">🔠</span><span class="tool-name">字母倒背：稳定 4 个</span><span class="tool-freq">每天</span></li>
+                        <li><span class="tool-icon">🎯</span><span class="tool-name">斯特鲁普：经典模式 8/10</span><span class="tool-freq">每天</span></li>
+                        <li><span class="tool-icon">🏠</span><span class="tool-name">家务指令：简单任务独立完成</span><span class="tool-freq">每天</span></li>
+                        <li><span class="tool-icon">🗣️</span><span class="tool-name">口述解题：能说出完整三步</span><span class="tool-freq">每天 1 题</span></li>
+                        <li><span class="tool-icon">📋</span><span class="tool-name">检查卡：使用不需要提醒</span><span class="tool-freq">做题后用</span></li>
+                        <li><span class="tool-icon">📊</span><span class="tool-name">双周测试：第 2 周第一次</span><span class="tool-freq">1 次</span></li>
+                    </ul>
+                    <div style="margin-top:14px;padding:10px;background:#ebf8ff;border-radius:8px;font-size:0.88em;color:#2b6cb0;">
+                        <strong>通过标准：</strong>数字倒背 5 位稳定 | 口述解题流程完整 | 检查卡主动使用 | 斯特鲁普 8/10 正确
+                    </div>
+                </div>
+                
+                <!-- Month 2 -->
+                <div class="month-card m2">
+                    <div class="month-header">
+                        <div class="month-name">🟢 第 2 个月：强化期</div>
+                        <div class="month-weeks">第 5-8 周</div>
+                    </div>
+                    <div class="month-goal">
+                        <strong>核心目标：</strong>提升难度，引入交错练习和竖式填空。错误模式归因开始积累数据。家务指令升级到并行任务和打断恢复。双周测试追踪进步曲线。
+                    </div>
+                    <ul class="tool-list">
+                        <li><span class="tool-icon">🔢</span><span class="tool-name">数字倒背：挑战 6 位</span><span class="tool-freq">每天</span></li>
+                        <li><span class="tool-icon">⬜</span><span class="tool-name">网格记忆：稳定 4-5 格</span><span class="tool-freq">每天</span></li>
+                        <li><span class="tool-icon">🎲</span><span class="tool-name">交错练习：每周 2 次</span><span class="tool-freq">二四</span></li>
+                        <li><span class="tool-icon">📝</span><span class="tool-name">竖式填空：正确率 70%+</span><span class="tool-freq">每天</span></li>
+                        <li><span class="tool-icon">⚡</span><span class="tool-name">巧算速算：开始计时</span><span class="tool-freq">每天</span></li>
+                        <li><span class="tool-icon">🔀</span><span class="tool-name">并行家务：每周 1 次</span><span class="tool-freq">周末</span></li>
+                        <li><span class="tool-icon">🔍</span><span class="tool-name">错误归因：Top3 明确</span><span class="tool-freq">出错即记</span></li>
+                        <li><span class="tool-icon">📊</span><span class="tool-name">双周测试：第 2-3 次</span><span class="tool-freq">2 次</span></li>
+                    </ul>
+                    <div style="margin-top:14px;padding:10px;background:#fffaf0;border-radius:8px;font-size:0.88em;color:#975a16;">
+                        <strong>通过标准：</strong>6 位倒背稳定 | 网格 5 格正确 | 巧算 5 秒/题 | 错误 Top3 清晰 | 测试趋势上升
+                    </div>
+                </div>
+                
+                <!-- Month 3 -->
+                <div class="month-card m3">
+                    <div class="month-header">
+                        <div class="month-name">🟡 第 3 个月：内化期</div>
+                        <div class="month-weeks">第 9-13 周</div>
+                    </div>
+                    <div class="month-goal">
+                        <strong>核心目标：</strong>习惯自动化，检查清单不需要提醒。压力测试下保持稳定表现。口述解题可以给他人讲题。总结暑假数据，制定开学维持计划。
+                    </div>
+                    <ul class="tool-list">
+                        <li><span class="tool-icon">🔢</span><span class="tool-name">数字倒背：挑战 7 位</span><span class="tool-freq">每天</span></li>
+                        <li><span class="tool-icon">🔠</span><span class="tool-name">字母倒背：挑战 6 个</span><span class="tool-freq">每天</span></li>
+                        <li><span class="tool-icon">⬜</span><span class="tool-name">网格记忆：挑战 6 格</span><span class="tool-freq">每天</span></li>
+                        <li><span class="tool-icon">🎲</span><span class="tool-name">交错练习：每周 3 次</span><span class="tool-freq">一三五</span></li>
+                        <li><span class="tool-icon">🗣️</span><span class="tool-name">口述解题：给他人讲题</span><span class="tool-freq">每天 1 题</span></li>
+                        <li><span class="tool-icon">🔔</span><span class="tool-name">打断恢复：每周 1 次</span><span class="tool-freq">周末</span></li>
+                        <li><span class="tool-icon">📋</span><span class="tool-name">检查卡：完全自动化</span><span class="tool-freq">做题后</span></li>
+                        <li><span class="tool-icon">📊</span><span class="tool-name">双周测试：第 4-6 次</span><span class="tool-freq">2-3 次</span></li>
+                    </ul>
+                    <div style="margin-top:14px;padding:10px;background:#f0fff4;border-radius:8px;font-size:0.88em;color:#276749;">
+                        <strong>通过标准：</strong>7 位倒背 | 检查自动化 | 能给他人讲题 | 测试总评 2 星+ | 开学维持计划
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ===== SECTION 3: WEEKLY ===== -->
+        <div class="section" id="section-weekly">
+            <div class="section-title">📆 每周使用规划</div>
+            <div class="section-desc">两种模板交替：认知日（周一三五日）+ 学科日（周二四六），周日加入综合测评</div>
+            
+            <div class="card">
+                <div class="card-title">
+                    模板 A：认知强化周（第 1-2 周、5-6 周、9-10 周）
+                    <span class="badge blue">侧重认知训练</span>
+                </div>
+                <table class="week-table">
+                    <thead>
+                        <tr><th>星期</th><th>类型</th><th>训练内容</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><div class="day-name">周一</div><span class="day-tag cogn">认知日</span></td>
+                            <td>
+                                <div class="day-tasks">
+                                    <div class="day-task">🔢 数字倒背 5 分钟（4→5 位升级中）</div>
+                                    <div class="day-task">🎯 斯特鲁普经典模式 5 分钟</div>
+                                    <div class="day-task">🏠 简单家务指令 1 项</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-size:0.85em;color:#718096;">建立基础节奏，每项记录最佳成绩</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><div class="day-name">周二</div><span class="day-tag subject">学科日</span></td>
+                            <td>
+                                <div class="day-tasks">
+                                    <div class="day-task">🗣️ 口述解题 1 题（A/B 型轮换）</div>
+                                    <div class="day-task">📋 学科检查卡（做完当天作业后）</div>
+                                    <div class="day-task">🔍 错误归因（如有新错）</div>
+                                </div>
+                            </td>
+                            <td><div style="font-size:0.85em;color:#718096;">口述必须出声，不可默念</div></td>
+                        </tr>
+                        <tr>
+                            <td><div class="day-name">周三</div><span class="day-tag cogn">认知日</span></td>
+                            <td>
+                                <div class="day-tasks">
+                                    <div class="day-task">🔠 字母倒背 5 分钟（3→4 个升级中）</div>
+                                    <div class="day-task">🎲 变式填空（交错练习模式）5 分钟</div>
+                                    <div class="day-task">🏠 简单家务指令 1 项</div>
+                                </div>
+                            </td>
+                            <td><div style="font-size:0.85em;color:#718096;">字母比数字更难，允许错 1 个</div></td>
+                        </tr>
+                        <tr>
+                            <td><div class="day-name">周四</div><span class="day-tag subject">学科日</span></td>
+                            <td>
+                                <div class="day-tasks">
+                                    <div class="day-task">🗣️ 口述解题 1 题（C/D 型轮换）</div>
+                                    <div class="day-task">📋 学科检查卡（直觉校准模块）</div>
+                                    <div class="day-task">⚡ 巧算速算 3 分钟（计时挑战）</div>
+                                </div>
+                            </td>
+                            <td><div style="font-size:0.85em;color:#718096;">巧算记录用时，目标越来越短</div></td>
+                        </tr>
+                        <tr>
+                            <td><div class="day-name">周五</div><span class="day-tag cogn">认知日</span></td>
+                            <td>
+                                <div class="day-tasks">
+                                    <div class="day-task">⬜ 网格记忆 5 分钟（3→4 格升级中）</div>
+                                    <div class="day-task">🎯 斯特鲁普干扰模式 5 分钟</div>
+                                    <div class="day-task">🏠 简单家务指令 1 项</div>
+                                </div>
+                            </td>
+                            <td><div style="font-size:0.85em;color:#718096;">网格训练视觉空间记忆</div></td>
+                        </tr>
+                        <tr>
+                            <td><div class="day-name">周六</div><span class="day-tag test">测评日</span></td>
+                            <td>
+                                <div class="day-tasks">
+                                    <div class="day-task highlight">📊 双周压力测试（如逢测评周）</div>
+                                    <div class="day-task">🗣️ 口述解题 1 题（不限题型）</div>
+                                    <div class="day-task">📋 本周错题回顾 + 归因分析</div>
+                                </div>
+                            </td>
+                            <td><div style="font-size:0.85em;color:#718096;">非测评周则改为综合复习</div></td>
+                        </tr>
+                        <tr>
+                            <td><div class="day-name">周日</div><span class="day-tag rest">复盘日</span></td>
+                            <td>
+                                <div class="day-tasks">
+                                    <div class="day-task">📈 查看本周数据统计</div>
+                                    <div class="day-task">🎮 自选最喜欢的一项训练</div>
+                                    <div class="day-task">🎯 设定下周 1 个具体小目标</div>
+                                </div>
+                            </td>
+                            <td><div style="font-size:0.85em;color:#718096;">轻松为主，保持兴趣</div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    模板 B：学科深化周（第 3-4 周、7-8 周、11-13 周）
+                    <span class="badge green">侧重学科应用</span>
+                </div>
+                <table class="week-table">
+                    <thead>
+                        <tr><th>星期</th><th>类型</th><th>训练内容</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><div class="day-name">周一</div><span class="day-tag cogn">认知日</span></td>
+                            <td>
+                                <div class="day-tasks">
+                                    <div class="day-task">🔢 数字倒背 + 字母倒背 8 分钟</div>
+                                    <div class="day-task">🎯 斯特鲁普极速模式 3 分钟</div>
+                                    <div class="day-task">🏠 家务指令（轮换新任务）</div>
+                                </div>
+                            </td>
+                            <td><div style="font-size:0.85em;color:#718096;">极速模式追求反应速度</div></td>
+                        </tr>
+                        <tr>
+                            <td><div class="day-name">周二</div><span class="day-tag subject">学科日</span></td>
+                            <td>
+                                <div class="day-tasks">
+                                    <div class="day-task">🗣️ 口述解题（E/F/G 深度题型）</div>
+                                    <div class="day-task">📝 竖式填空（加减乘各 1 题）</div>
+                                    <div class="day-task">📋 检查卡数学专项检查</div>
+                                </div>
+                            </td>
+                            <td><div style="font-size:0.85em;color:#718096;">竖式关注过程，不是答案</div></td>
+                        </tr>
+                        <tr>
+                            <td><div class="day-name">周三</div><span class="day-tag cogn">认知日</span></td>
+                            <td>
+                                <div class="day-tasks">
+                                    <div class="day-task">🎲 交错练习模式 8 分钟</div>
+                                    <div class="day-task">⬜ 网格记忆（挑战更高格数）</div>
+                                    <div class="day-task">🔀 并行家务任务（如适用）</div>
+                                </div>
+                            </td>
+                            <td><div style="font-size:0.85em;color:#718096;">交错练习=最强训练法</div></td>
+                        </tr>
+                        <tr>
+                            <td><div class="day-name">周四</div><span class="day-tag subject">学科日</span></td>
+                            <td>
+                                <div class="day-tasks">
+                                    <div class="day-task">🗣️ 口述解题 1 题（自行选错题）</div>
+                                    <div class="day-task">📋 检查卡语文专项检查</div>
+                                    <div class="day-task">🔍 错误归因数据回顾</div>
+                                </div>
+                            </td>
+                            <td><div style="font-size:0.85em;color:#718096;">选自己最近错的题口述</div></td>
+                        </tr>
+                        <tr>
+                            <td><div class="day-name">周五</div><span class="day-tag cogn">认知日</span></td>
+                            <td>
+                                <div class="day-tasks">
+                                    <div class="day-task">⚡ 巧算速算 5 分钟（全难度混合）</div>
+                                    <div class="day-task">🔢 数字倒背挑战最高位数</div>
+                                    <div class="day-task">🏠 家务指令（含打断恢复）</div>
+                                </div>
+                            </td>
+                            <td><div style="font-size:0.85em;color:#718096;">周五挑战日，追求突破</div></td>
+                        </tr>
+                        <tr>
+                            <td><div class="day-name">周六</div><span class="day-tag test">测评日</span></td>
+                            <td>
+                                <div class="day-tasks">
+                                    <div class="day-task highlight">📊 双周压力测试（如逢测评周）</div>
+                                    <div class="day-task">🗣️ 给他人讲题 1 道</div>
+                                    <div class="day-task">📈 对比上次测试数据</div>
+                                </div>
+                            </td>
+                            <td><div style="font-size:0.85em;color:#718096;">讲题=费曼技巧=最强检验</div></td>
+                        </tr>
+                        <tr>
+                            <td><div class="day-name">周日</div><span class="day-tag rest">复盘日</span></td>
+                            <td>
+                                <div class="day-tasks">
+                                    <div class="day-task">📈 查看本月进步曲线</div>
+                                    <div class="day-task">🎮 自选最喜欢的一项训练</div>
+                                    <div class="day-task">✅ 打勾本周完成的任务</div>
+                                </div>
+                            </td>
+                            <td><div style="font-size:0.85em;color:#718096;">可视化进度，增强动力</div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- ===== SECTION 4: DAILY ===== -->
+        <div class="section" id="section-daily">
+            <div class="section-title">⏰ 每日时间安排与顺序</div>
+            <div class="section-desc">早上 15-20 分钟完成全部认知训练，晚上 5-10 分钟完成学科相关。训练顺序经过脑科学优化。</div>
+            
+            <div class="principle-banner">
+                <div class="icon">⏰</div>
+                <div class="text">
+                    <div class="title">为什么这样安排顺序？</div>
+                    <div class="desc">
+                        1. <strong>简单→复杂</strong>：数字倒背最简单，作为大脑"热身"，激活工作记忆<br>
+                        2. <strong>认知→学科</strong>：认知训练激活大脑后，学科练习效率更高（认知启动效应）<br>
+                        3. <strong>短时高频</strong>：每项 3-5 分钟，避免认知疲劳，总量控制在 20-30 分钟
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">☀️ 早上时段（起床后 20-30 分钟）<span class="badge blue">认知训练</span></div>
+                <div class="timeline">
+                    <div class="time-slot">
+                        <div class="time-label">第 1 步 · 3 分钟</div>
+                        <div class="time-title">🧘 深呼吸 + 准备</div>
+                        <div class="time-desc">坐好，深呼吸 3 次，告诉大脑"训练开始了"。这是注意力锚定仪式。</div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label">第 2 步 · 3-5 分钟</div>
+                        <div class="time-title">🔢 数字倒背（或字母倒背）</div>
+                        <div class="time-desc">最简单的项目，作为大脑热身。从稳定位数开始，每周尝试升 1 级。</div>
+                        <div class="time-tools">
+                            <span class="time-tool pink">数字倒背卡</span>
+                            <span class="time-tool purple">字母倒背卡</span>
+                        </div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label">第 3 步 · 3-5 分钟</div>
+                        <div class="time-title">🎯 斯特鲁普练习</div>
+                        <div class="time-desc">抑制控制训练。按周轮换模式：经典→反向→干扰→极速。</div>
+                        <div class="time-tools">
+                            <span class="time-tool blue">斯特鲁普进阶卡</span>
+                        </div>
+                    </div>
+                    <div class="time-slot">
+                        <div class="time-label">第 4 步 · 5-8 分钟</div>
+                        <div class="time-title">🧩 变式填空 / 网格记忆 / 巧算</div>
+                        <div class="time-desc">按周轮换：周一变式填空、周三网格记忆、周五巧算速算。</div>
+                        <div class="time-tools">
+                            <span class="time-tool green">变式填空</span>
+                            <span class="time-tool orange">网格记忆</span>
+                            <span class="time-tool pink">巧算速算</span>
+                        </div>
+                    </div>
+                    <div class="time-slot rest">
+                        <div class="time-label">第 5 步 · 5-10 分钟</div>
+                        <div class="time-title">🏠 家务指令</div>
+                        <div class="time-desc">执行功能训练。完成后打勾，记录是否独立完成。</div>
+                        <div class="time-tools">
+                            <span class="time-tool green">家务指令卡</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">🌙 晚上时段（作业后 5-10 分钟）<span class="badge orange">学科训练</span></div>
+                <div class="timeline">
+                    <div class="time-slot subject">
+                        <div class="time-label">第 1 步 · 3-5 分钟</div>
+                        <div class="time-title">🗣️ 口述解题 1 题</div>
+                        <div class="time-desc">选当天作业中的 1 道错题或难题，用"理解→规划→验证"三步法大声说出来。</div>
+                        <div class="time-tools">
+                            <span class="time-tool orange">口述解题法话术卡</span>
+                        </div>
+                    </div>
+                    <div class="time-slot check">
+                        <div class="time-label">第 2 步 · 1-2 分钟</div>
+                        <div class="time-title">📋 学科检查卡</div>
+                        <div class="time-desc">做完作业后，花 1 分钟用检查卡扫一遍。这是防止"会做的题丢分"的关键步骤。</div>
+                        <div class="time-tools">
+                            <span class="time-tool purple">学科检查卡</span>
+                        </div>
+                    </div>
+                    <div class="time-slot subject">
+                        <div class="time-label">第 3 步 · 1 分钟（如有）</div>
+                        <div class="time-title">🔍 错误归因</div>
+                        <div class="time-desc">如果今天有错，花 1 分钟归类。累积 2 周后查看 Top3 高频错误。</div>
+                        <div class="time-tools">
+                            <span class="time-tool gray">错误模式归因卡</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📋 每日检查清单（孩子可打印贴墙上）</div>
+                <div style="background:#f7fafc;border-radius:12px;padding:20px;">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;">
+                        <div>
+                            <div style="font-weight:bold;color:#2d3748;margin-bottom:10px;">☀️ 早上（起床后）</div>
+                            <label style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:0.92em;cursor:pointer;">
+                                <input type="checkbox"> 深呼吸 3 次
+                            </label>
+                            <label style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:0.92em;cursor:pointer;">
+                                <input type="checkbox"> 数字/字母倒背 5 题
+                            </label>
+                            <label style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:0.92em;cursor:pointer;">
+                                <input type="checkbox"> 斯特鲁普 10 题
+                            </label>
+                            <label style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:0.92em;cursor:pointer;">
+                                <input type="checkbox"> 变式/网格/巧算 5 题
+                            </label>
+                            <label style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:0.92em;cursor:pointer;">
+                                <input type="checkbox"> 家务 1 项
+                            </label>
+                        </div>
+                        <div>
+                            <div style="font-weight:bold;color:#2d3748;margin-bottom:10px;">🌙 晚上（作业后）</div>
+                            <label style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:0.92em;cursor:pointer;">
+                                <input type="checkbox"> 口述解题 1 题
+                            </label>
+                            <label style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:0.92em;cursor:pointer;">
+                                <input type="checkbox"> 检查卡扫一遍
+                            </label>
+                            <label style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:0.92em;cursor:pointer;">
+                                <input type="checkbox"> 错误归类（如有错）
+                            </label>
+                        </div>
+                        <div>
+                            <div style="font-weight:bold;color:#2d3748;margin-bottom:10px;">📊 今日记录</div>
+                            <div style="font-size:0.9em;color:#718096;line-height:2;">
+                                数字最高位：___<br>
+                                斯特鲁普对___/10<br>
+                                口述题型：___<br>
+                                心情 😊😐😔 ：___
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ===== SECTION 5: SEQUENCE ===== -->
+        <div class="section" id="section-sequence">
+            <div class="section-title">🔀 训练顺序安排</div>
+            <div class="section-desc">单次训练内的项目顺序 + 多周之间的难度递进顺序，均经过脑科学优化</div>
+            
+            <div class="card">
+                <div class="card-title">单次训练顺序（为什么这样排？）</div>
+                <div class="flow-container">
+                    <div class="flow-step">
+                        <div class="flow-num" style="background:linear-gradient(135deg,#48bb78,#38a169);">1</div>
+                        <div class="flow-content">
+                            <div class="flow-title">🧘 注意力锚定（30 秒）</div>
+                            <div class="flow-desc">深呼吸 3 次，坐正，眼睛看屏幕中央。告诉大脑"训练开始了"。</div>
+                            <div class="flow-why">脑科学原理：仪式感帮助大脑从"休息模式"切换到"专注模式"</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-num" style="background:linear-gradient(135deg,#667eea,#764ba2);">2</div>
+                        <div class="flow-content">
+                            <div class="flow-title">🔢 数字倒背（3-5 分钟）— 最简单最先做</div>
+                            <div class="flow-desc">纯数字、有视觉形象，是工作记忆训练中门槛最低的项目。</div>
+                            <div class="flow-why">脑科学原理：简单任务先完成 → 多巴胺释放 → 增强后续训练动力（胜利启动效应）</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-num" style="background:linear-gradient(135deg,#4299e1,#3182ce);">3</div>
+                        <div class="flow-content">
+                            <div class="flow-title">🎯 斯特鲁普（3-5 分钟）— 抑制控制</div>
+                            <div class="flow-desc">说出颜色而非字义。需要前额叶抑制自动反应。</div>
+                            <div class="flow-why">脑科学原理：在简单任务"预热"后，大脑已激活，此时做抑制控制训练效率最高</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-num" style="background:linear-gradient(135deg,#ed8936,#dd6b20);">4</div>
+                        <div class="flow-content">
+                            <div class="flow-title">🧩 变式填空 / 网格 / 巧算（5-8 分钟）— 核心挑战</div>
+                            <div class="flow-desc">数列规律、竖式填空或巧算速算。这是当天认知负荷最高的项目。</div>
+                            <div class="flow-why">脑科学原理：把最难的任务放在中段（大脑已预热但未疲劳），而非开头（未热身）或结尾（已疲劳）</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-num" style="background:linear-gradient(135deg,#9f7aea,#805ad5);">5</div>
+                        <div class="flow-content">
+                            <div class="flow-title">🗣️ 口述解题（3-5 分钟）— 提取练习</div>
+                            <div class="flow-desc">把一道错题的思路"说"出来。舌头强迫大脑理清每一步。</div>
+                            <div class="flow-why">脑科学原理："生成效应"— 自己说出来的内容，记忆效果比看 3 遍还好</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-num" style="background:linear-gradient(135deg,#38b2ac,#319795);">6</div>
+                        <div class="flow-content">
+                            <div class="flow-title">📋 检查卡（1-2 分钟）— 元认知收尾</div>
+                            <div class="flow-desc">花 1 分钟扫一遍检查清单：单位？验算？答句？</div>
+                            <div class="flow-why">脑科学原理：训练"监控自己思维过程"的能力（元认知），这是学霸与普通学生最大的区别</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-num" style="background:linear-gradient(135deg,#48bb78,#38a169);">7</div>
+                        <div class="flow-content">
+                            <div class="flow-title">✅ 记录 + 正向反馈（30 秒）</div>
+                            <div class="flow-desc">在记录表上打勾，对自己说"今天训练完成了！"</div>
+                            <div class="flow-why">脑科学原理：即时正向反馈强化习惯回路（基底神经节），让"每天训练"逐渐成为自动化行为</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📈 跨周难度递进顺序</div>
+                <table class="week-table">
+                    <thead>
+                        <tr><th>阶段</th><th>周次</th><th>递进方向</th><th>退出标准</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>🟣 认知基建</strong></td>
+                            <td>W1-2</td>
+                            <td>数字 4位→5位 / 字母 3个→4个 / 斯特鲁普 经典模式</td>
+                            <td>5位稳定 + 斯特鲁普 8/10</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🟠 习惯建立</strong></td>
+                            <td>W3-5</td>
+                            <td>口述解题完整流程 / 检查卡主动使用 / 网格 3格→4格</td>
+                            <td>口述三步完整 + 检查不需提醒</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🟢 模式识别</strong></td>
+                            <td>W6-8</td>
+                            <td>交错练习引入 / 竖式填空 / 巧算计时 / 错误归因 Top3</td>
+                            <td>交错练习 7/10 + 巧算 5秒/题</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🔴 压力模拟</strong></td>
+                            <td>W9-10</td>
+                            <td>限时口述 / 双周测试 / 并行家务 / 打断恢复</td>
+                            <td>限时口述完整 + 测试 2星+</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🟡 自动化内化</strong></td>
+                            <td>W11-13</td>
+                            <td>数字 7位 / 字母 6个 / 网格 6格 / 给他人讲题</td>
+                            <td>检查自动化 + 能给他人讲题</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- ===== SECTION 6: GUIDE ===== -->
+        <div class="section" id="section-guide">
+            <div class="section-title">📖 使用说明</div>
+            <div class="section-desc">家长必读：如何引导孩子使用这套系统，常见问题解答</div>
+            
+            <div class="guide-grid">
+                <div class="guide-card">
+                    <div class="guide-icon">🚀</div>
+                    <div class="guide-title">第一步：环境准备</div>
+                    <div class="guide-text">
+                        <ul>
+                            <li>打开 <strong>index.html</strong>（工具箱首页）即可开始使用</li>
+                            <li>所有 HTML 文件放在同一文件夹，斯特鲁普图片在 <strong>stroop-cards/</strong> 子文件夹</li>
+                            <li>用浏览器打开即可使用，无需安装任何软件</li>
+                            <li>建议固定一台设备，保持使用习惯</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="guide-card">
+                    <div class="guide-icon">📅</div>
+                    <div class="guide-title">第二步：建立节奏</div>
+                    <div class="guide-text">
+                        <ul>
+                            <li>第 1 周：只使用数字倒背 + 斯特鲁普 + 简单家务</li>
+                            <li>第 2 周：加入口述解题 + 学科检查卡</li>
+                            <li>第 3 周起：全部工具按周规划使用</li>
+                            <li>前 2 周家长可以陪同，之后逐步放手</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="guide-card">
+                    <div class="guide-icon">📊</div>
+                    <div class="guide-title">第三步：数据追踪</div>
+                    <div class="guide-text">
+                        <ul>
+                            <li>每个工具内都有统计面板，数据自动保存</li>
+                            <li>每周日查看一次数据，不需要每天看</li>
+                            <li>关注"趋势"而非"某一天的好坏"</li>
+                            <li>双周测试是检验真实进步的核心指标</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="guide-card">
+                    <div class="guide-icon">💡</div>
+                    <div class="guide-title">家长参与方式</div>
+                    <div class="guide-text">
+                        <ul>
+                            <li><strong>第 1-2 周</strong>：陪同操作，解释规则，示范口述解题</li>
+                            <li><strong>第 3-4 周</strong>：在旁边观察，只在孩子求助时介入</li>
+                            <li><strong>第 5 周起</strong>：完全自主，家长只负责双周测试监考</li>
+                            <li><strong>口述解题</strong>：家长可以扮演"学生"听孩子讲题</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="guide-card">
+                    <div class="guide-icon">⚠️</div>
+                    <div class="guide-title">常见问题</div>
+                    <div class="guide-text">
+                        <ul>
+                            <li><strong>"孩子不想做怎么办？"</strong>→ 从最简单的开始，完成后立刻表扬，建立正向反馈</li>
+                            <li><strong>"某天没做怎么办？"</strong>→ 没关系，第二天继续。不要补做昨天的，保持节奏更重要</li>
+                            <li><strong>"孩子觉得太简单/太难？"</strong>→ 每个工具有难度调节，根据实际表现随时调整</li>
+                            <li><strong>"斯特鲁普总是错？"</strong>→ 正常！这是专门设计的认知冲突，持续练习会改善</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="guide-card">
+                    <div class="guide-icon">🎯</div>
+                    <div class="guide-title">效果判断标准</div>
+                    <div class="guide-text">
+                        <ul>
+                            <li><strong>2 周后</strong>：能自主完成训练流程，不需要提醒</li>
+                            <li><strong>1 个月后</strong>：口述解题能完整说出三步，检查卡主动使用</li>
+                            <li><strong>2 个月后</strong>：双周测试数据显示上升趋势</li>
+                            <li><strong>开学后</strong>：检查习惯自动化，"粗心"错误减少</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top:20px;">
+                <div class="card-title">📋 核心规则（打印贴墙上）</div>
+                <div class="rule-list">
+                    <div class="rule-item">
+                        <div class="rule-num">1</div>
+                        <div class="rule-content">
+                            <div class="rule-title">每天总量不超过 30 分钟</div>
+                            <div class="rule-desc">认知训练早上 20 分钟 + 学科训练晚上 10 分钟。超时会导致认知疲劳，效果反而下降。</div>
+                        </div>
+                    </div>
+                    <div class="rule-item">
+                        <div class="rule-num">2</div>
+                        <div class="rule-content">
+                            <div class="rule-title">先认知、后学科</div>
+                            <div class="rule-desc">早上做数字倒背/斯特鲁普等认知训练，晚上做完作业后用检查卡。这个顺序有认知启动效应。</div>
+                        </div>
+                    </div>
+                    <div class="rule-item">
+                        <div class="rule-num">3</div>
+                        <div class="rule-content">
+                            <div class="rule-title">不批评、只看趋势</div>
+                            <div class="rule-desc">某一天成绩不好很正常。每周日看一次数据，关注"这周比上周好吗？"，不要盯某一天。</div>
+                        </div>
+                    </div>
+                    <div class="rule-item">
+                        <div class="rule-num">4</div>
+                        <div class="rule-content">
+                            <div class="rule-title">口述解题必须出声</div>
+                            <div class="rule-desc">在心里默念无效。必须说出声音来，可以小声，但嘴要动。这是"生成效应"的关键。</div>
+                        </div>
+                    </div>
+                    <div class="rule-item">
+                        <div class="rule-num">5</div>
+                        <div class="rule-content">
+                            <div class="rule-title">周日复盘、不强求</div>
+                            <div class="rule-desc">周日轻松为主，查看数据、设定下周目标即可。如果某天实在太累，只做数字倒背 5 题也行。</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align:center;padding:30px 0;color:#a0aec0;font-size:0.9em;">
+                坚持 60-90 天，大脑会发生可测量的改变 🧠✨<br>
+                这不是"刷题"，这是"训练大脑"
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showSection(id, btn) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('section-' + id).classList.add('active');
+            if (btn) btn.classList.add('active');
+        }
+    </script>
+</body>
+</html>

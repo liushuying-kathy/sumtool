@@ -1,0 +1,2038 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日脑热身 | 数字倒背与变式填空</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            overflow-x: hidden;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 25px;
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 8px;
+        }
+        
+        .header .subtitle {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        /* Date Bar */
+        .date-bar {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .date-bar .date {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #5a67d8;
+        }
+        
+        .date-bar .streak {
+            color: #e53e3e;
+            font-weight: bold;
+        }
+        
+        /* Mode Switcher */
+        .mode-switch {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 6px;
+            flex-wrap: nowrap;
+        }
+        
+        .mode-btn {
+            flex: 0 0 auto;
+            min-width: 100px;
+            min-height: 44px;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 14px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            white-space: nowrap;
+        }
+        
+        .mode-btn:hover { transform: translateY(-2px); }
+        
+        .mode-btn.active {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            transform: scale(1.05);
+        }
+        
+        .mode-btn.digits { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .mode-btn.letter { background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%); color: white; }
+        .mode-btn.grid { background: linear-gradient(135deg, #55efc4 0%, #00b894 100%); color: white; }
+        .mode-btn.fill { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .mode-btn.vertical { background: linear-gradient(135deg, #feca57 0%, #f39c12 100%); color: white; }
+        .mode-btn.smart { background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%); color: white; }
+        .mode-btn.mixed { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); color: white; }
+
+        .instructions {
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        /* Card */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+        
+        .card-title {
+            font-size: 1.4em;
+            color: #2d3748;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title .icon { font-size: 1.3em; }
+        
+        /* Difficulty Selector */
+        .difficulty-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .diff-btn {
+            padding: 8px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.2s;
+        }
+        
+        .diff-btn:hover { border-color: #a0aec0; }
+        .diff-btn.active {
+            border-color: #5a67d8;
+            background: #5a67d8;
+            color: white;
+        }
+        
+        /* Display Area */
+        .display-area {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            border-radius: 16px;
+            padding: 35px;
+            text-align: center;
+            margin-bottom: 20px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .digits-display {
+            font-size: 3em;
+            font-weight: bold;
+            color: #2d3748;
+            letter-spacing: 12px;
+            font-family: "Courier New", monospace;
+        }
+        
+        .digits-display.hidden { color: transparent; }
+        
+        .hint-text {
+            color: #718096;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+        
+        /* Input Area */
+        .input-area {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .user-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 14px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1.3em;
+            text-align: center;
+            letter-spacing: 4px;
+            transition: border-color 0.3s;
+        }
+        
+        .user-input:focus {
+            outline: none;
+            border-color: #5a67d8;
+        }
+        
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover { transform: translateY(-2px); }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(17,153,142,0.4);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: #744210;
+        }
+        
+        /* Fill-blank specific */
+        .fill-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .fill-display .blank {
+            display: inline-block;
+            min-width: 60px;
+            border-bottom: 3px solid #5a67d8;
+            margin: 0 5px;
+            text-align: center;
+            color: #5a67d8;
+        }
+        
+        /* Feedback */
+        .feedback {
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background: #c6f6d5;
+            color: #22543d;
+            display: block;
+        }
+        
+        .feedback.wrong {
+            background: #fed7d7;
+            color: #742a2a;
+            display: block;
+        }
+        
+        .feedback .emoji { font-size: 1.5em; margin-right: 8px; }
+        
+        /* Stats */
+        .stats-row {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-box {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        
+        .stat-box .num {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #5a67d8;
+        }
+        
+        .stat-box .label {
+            font-size: 0.85em;
+            color: #718096;
+        }
+        
+        /* Progress Bar */
+        .progress-section {
+            margin-top: 15px;
+        }
+        
+        .progress-label {
+            font-size: 0.9em;
+            color: #718096;
+            margin-bottom: 6px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 5px;
+            transition: width 0.5s;
+        }
+        
+        /* Timer */
+        .timer-display {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #e53e3e;
+            margin-bottom: 10px;
+        }
+        
+        /* Fill blank options */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .option-btn {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .option-btn:hover {
+            border-color: #5a67d8;
+            background: #f7fafc;
+        }
+        
+        /* History */
+        .history-card {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9em;
+        }
+        
+        .history-item:last-child { border-bottom: none; }
+        
+        .history-item .pass { color: #38a169; font-weight: bold; }
+        .history-item .fail { color: #e53e3e; font-weight: bold; }
+        
+        /* Star animation */
+        @keyframes starPop {
+            0% { transform: scale(0) rotate(0deg); }
+            50% { transform: scale(1.3) rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); }
+        }
+        
+        .star {
+            display: inline-block;
+            animation: starPop 0.5s ease;
+            color: #ecc94b;
+            font-size: 1.4em;
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .digits-display { font-size: 2em; letter-spacing: 6px; }
+            .header h1 { font-size: 1.6em; }
+            .card { padding: 18px; }
+            .fill-display { font-size: 1.4em; }
+            body { padding: 12px; }
+            .mode-btn { font-size: 0.9em; min-width: 92px; padding: 10px 14px; }
+        }
+        
+        /* Print */
+        @media print {
+            body { background: white; }
+            .card { box-shadow: none; border: 1px solid #e2e8f0; }
+            .mode-switch, .btn-group { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🧠 每日脑热身</h1>
+            <div class="subtitle">数字倒背 + 变式填空 — 唤醒大脑，激活专注</div>
+        </div>
+        
+        <!-- Date Bar -->
+        <div class="date-bar">
+            <div class="date" id="todayDate">📅 载入中...</div>
+            <div class="streak" id="streak">🔥 连续 0 天</div>
+        </div>
+        
+        <!-- Mode Switcher -->
+        <div class="mode-switch">
+            <button class="mode-btn digits active" onclick="switchMode('digits', this)">
+                🔢 数字倒背
+            </button>
+            <button class="mode-btn letter" onclick="switchMode('letter', this)">
+                🔠 字母倒背
+            </button>
+            <button class="mode-btn grid" onclick="switchMode('grid', this)">
+                ⬜ 网格记忆
+            </button>
+            <button class="mode-btn fill" onclick="switchMode('fill', this)">
+                🧩 变式填空
+            </button>
+            <button class="mode-btn vertical" onclick="switchMode('vertical', this)">
+                📝 竖式填空
+            </button>
+            <button class="mode-btn smart" onclick="switchMode('smart', this)">
+                ⚡ 巧算速算
+            </button>
+            <button class="mode-btn mixed" onclick="switchMode('mixed', this)">
+                🎲 交错练习
+            </button>
+        </div>
+        
+        <!-- === DIGITS MODE === -->
+        <div class="card" id="digitsCard">
+            <div class="card-title">
+                <span class="icon">🔢</span>
+                <span>数字倒背 — 锻炼工作记忆</span>
+            </div>
+            
+            <!-- Difficulty -->
+            <div class="difficulty-row">
+                <button class="diff-btn active" onclick="setDigitDiff(4)">4位（起步）</button>
+                <button class="diff-btn" onclick="setDigitDiff(5)">5位</button>
+                <button class="diff-btn" onclick="setDigitDiff(6)">6位（挑战）</button>
+                <button class="diff-btn" onclick="setDigitDiff(7)">7位（进阶）</button>
+            </div>
+            
+            <!-- Timer -->
+            <div class="timer-display" id="digitTimer" style="display:none;">⏱️ 记忆时间：3秒</div>
+            
+            <!-- Display -->
+            <div class="display-area" id="digitDisplayArea">
+                <div class="digits-display" id="digitDisplay">点击"开始"生成数字</div>
+                <div class="hint-text" id="digitHint">数字会显示几秒后消失，然后倒着输入！</div>
+            </div>
+            
+            <!-- Input -->
+            <div class="input-area" id="digitInputArea" style="display:none;">
+                <input type="text" class="user-input" id="digitInput" placeholder="倒着输入数字" maxlength="10">
+            </div>
+            
+            <!-- Buttons -->
+            <div class="btn-group">
+                <button class="btn btn-primary" id="digitStartBtn" onclick="startDigitGame()">🚀 开始</button>
+                <button class="btn btn-success" id="digitSubmitBtn" style="display:none;" onclick="checkDigitAnswer()">✅ 确认</button>
+                <button class="btn btn-warning" onclick="showDigitAnswer()">💡 看答案</button>
+            </div>
+            
+            <!-- Feedback -->
+            <div class="feedback" id="digitFeedback"></div>
+            
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="num" id="digitCorrect">0</div>
+                    <div class="label">正确</div>
+                </div>
+                <div class="stat-box">
+                    <div class="num" id="digitTotal">0</div>
+                    <div class="label">总计</div>
+                </div>
+                <div class="stat-box">
+                    <div class="num" id="digitAccuracy">0%</div>
+                    <div class="label">准确率</div>
+                </div>
+                <div class="stat-box">
+                    <div class="num" id="digitMaxLen">4</div>
+                    <div class="label">最高位</div>
+                </div>
+            </div>
+            
+            <!-- Progress -->
+            <div class="progress-section">
+                <div class="progress-label">今日进度（目标10题）</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="digitProgress" style="width:0%"></div>
+                </div>
+            </div>
+            
+            <!-- History -->
+            <div class="history-card" id="digitHistory">
+                <strong>📋 本次练习记录</strong>
+                <div id="digitHistoryList">暂无记录</div>
+            </div>
+        </div>
+        
+        <!-- === FILL BLANK MODE === -->
+        <div class="card" id="fillCard" style="display:none;">
+            <div class="card-title">
+                <span class="icon">🧩</span>
+                <span>变式填空 — 锻炼灵活思维</span>
+            </div>
+            
+            <!-- Difficulty -->
+            <div class="difficulty-row">
+                <button class="diff-btn active" onclick="setFillDiff('easy')">⭐ 基础</button>
+                <button class="diff-btn" onclick="setFillDiff('medium')">⭐⭐ 进阶</button>
+                <button class="diff-btn" onclick="setFillDiff('hard')">⭐⭐⭐ 挑战</button>
+                <button class="diff-btn" onclick="setFillDiff('mixed')">🎲 混合</button>
+            </div>
+            
+            <!-- Display -->
+            <div class="display-area" id="fillDisplayArea">
+                <div class="fill-display" id="fillDisplay">点击"出题"开始</div>
+                <div class="hint-text" id="fillHint">选择正确数字填入空白处</div>
+            </div>
+            
+            <!-- Options -->
+            <div class="options-grid" id="fillOptions"></div>
+            
+            <!-- Buttons -->
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="generateFillQuestion()">🎲 出题</button>
+                <button class="btn btn-warning" onclick="showFillHint()">💡 提示</button>
+            </div>
+            
+            <!-- Feedback -->
+            <div class="feedback" id="fillFeedback"></div>
+            
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="num" id="fillCorrect">0</div>
+                    <div class="label">正确</div>
+                </div>
+                <div class="stat-box">
+                    <div class="num" id="fillTotal">0</div>
+                    <div class="label">总计</div>
+                </div>
+                <div class="stat-box">
+                    <div class="num" id="fillAccuracy">0%</div>
+                    <div class="label">准确率</div>
+                </div>
+            </div>
+            
+            <!-- Progress -->
+            <div class="progress-section">
+                <div class="progress-label">今日进度（目标10题）</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="fillProgress" style="width:0%"></div>
+                </div>
+            </div>
+            
+            <!-- History -->
+            <div class="history-card" id="fillHistory">
+                <strong>📋 本次练习记录</strong>
+                <div id="fillHistoryList">暂无记录</div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+
+        <!-- === LETTER MODE === -->
+        <div class="card" id="letterCard" style="display:none;">
+            <div class="card-title">
+                <span class="icon">🔠</span>
+                <span>字母倒背 — 语音工作记忆</span>
+            </div>
+            <div class="instructions" style="background:#e8f4fd;border-left:4px solid #3498db;padding:12px 16px;margin-bottom:16px;border-radius:8px;color:#1a5276;font-size:0.95em;">
+                <strong>脑科学原理：</strong>字母倒背比数字更难，因为数字有视觉形象，字母需要语音编码。这训练的是<strong>语音环路(Phonological Loop)</strong>。
+            </div>
+            <div class="difficulty-row">
+                <button class="diff-btn active" onclick="setLetterDiff(3)">3个（起步）</button>
+                <button class="diff-btn" onclick="setLetterDiff(4)">4个</button>
+                <button class="diff-btn" onclick="setLetterDiff(5)">5个（挑战）</button>
+                <button class="diff-btn" onclick="setLetterDiff(6)">6个（进阶）</button>
+            </div>
+            <div class="display-area" id="letterDisplayArea">
+                <div class="digits-display" id="letterDisplay">点击"开始"生成字母串</div>
+                <div class="hint-text" id="letterHint">字母会显示几秒后消失，然后倒着输入！</div>
+            </div>
+            <div class="input-area" id="letterInputArea" style="display:none;">
+                <input type="text" class="user-input" id="letterInput" placeholder="倒着输入字母（小写）" maxlength="10">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" id="letterStartBtn" onclick="startLetterGame()">🚀 开始</button>
+                <button class="btn btn-success" id="letterSubmitBtn" style="display:none;" onclick="checkLetterAnswer()">✅ 确认</button>
+                <button class="btn btn-warning" onclick="showLetterAnswer()">💡 看答案</button>
+            </div>
+            <div class="feedback" id="letterFeedback"></div>
+            <div class="stats-row">
+                <div class="stat-box"><div class="num" id="letterCorrect">0</div><div class="label">正确</div></div>
+                <div class="stat-box"><div class="num" id="letterTotal">0</div><div class="label">总计</div></div>
+                <div class="stat-box"><div class="num" id="letterAccuracy">0%</div><div class="label">准确率</div></div>
+            </div>
+            <div class="progress-section">
+                <div class="progress-label">今日进度（目标10题）</div>
+                <div class="progress-bar"><div class="progress-fill" id="letterProgress" style="width:0%"></div></div>
+            </div>
+        </div>
+
+        <!-- === GRID MEMORY MODE === -->
+        <div class="card" id="gridCard" style="display:none;">
+            <div class="card-title">
+                <span class="icon">⬜</span>
+                <span>网格记忆 — 视觉空间工作记忆</span>
+            </div>
+            <div class="instructions" style="background:#e8f8e8;border-left:4px solid #27ae60;padding:12px 16px;margin-bottom:16px;border-radius:8px;color:#1e5631;font-size:0.95em;">
+                <strong>脑科学原理：</strong>网格记忆训练<strong>视觉空间画板(Visuospatial Sketchpad)</strong>。记住闪烁位置并按顺序点击，这是大脑处理空间信息的核心能力。
+            </div>
+            <div class="difficulty-row">
+                <button class="diff-btn active" onclick="setGridDiff(3)">3格（起步）</button>
+                <button class="diff-btn" onclick="setGridDiff(4)">4格</button>
+                <button class="diff-btn" onclick="setGridDiff(5)">5格（挑战）</button>
+                <button class="diff-btn" onclick="setGridDiff(6)">6格（进阶）</button>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:320px;margin:20px auto;" id="gridContainer">
+                <!-- Grid cells generated by JS -->
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="startGridGame()">🚀 开始</button>
+                <button class="btn btn-warning" onclick="showGridAnswer()">💡 再看一遍</button>
+            </div>
+            <div class="feedback" id="gridFeedback"></div>
+            <div class="stats-row">
+                <div class="stat-box"><div class="num" id="gridCorrect">0</div><div class="label">正确</div></div>
+                <div class="stat-box"><div class="num" id="gridTotal">0</div><div class="label">总计</div></div>
+                <div class="stat-box"><div class="num" id="gridAccuracy">0%</div><div class="label">准确率</div></div>
+            </div>
+        </div>
+
+        <!-- === VERTICAL MODE === -->
+        <div class="card" id="verticalCard" style="display:none;">
+            <div class="card-title">
+                <span class="icon">📝</span>
+                <span>竖式填空 — 计算过程可视化</span>
+            </div>
+            <div class="instructions" style="background:#fff8e6;border-left:4px solid #f39c12;padding:12px 16px;margin-bottom:16px;border-radius:8px;color:#7d5c00;font-size:0.95em;">
+                <strong>脑科学原理：</strong>竖式填空强迫孩子关注<strong>计算中间步骤</strong>，而非只盯答案。这训练的是<strong>执行功能(Executive Function)</strong>中的过程监控能力。
+            </div>
+            <div class="display-area" id="verticalDisplay" style="font-family:'Courier New',monospace;font-size:1.4em;text-align:left;max-width:280px;margin:20px auto;">
+                点击"出题"开始
+            </div>
+            <div class="options-grid" id="verticalOptions"></div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="generateVertical()">🎲 出题</button>
+                <button class="btn btn-warning" onclick="showVerticalHint()">💡 提示</button>
+            </div>
+            <div class="feedback" id="verticalFeedback"></div>
+            <div class="stats-row">
+                <div class="stat-box"><div class="num" id="vCorrect">0</div><div class="label">正确</div></div>
+                <div class="stat-box"><div class="num" id="vTotal">0</div><div class="label">总计</div></div>
+                <div class="stat-box"><div class="num" id="vAccuracy">0%</div><div class="label">准确率</div></div>
+            </div>
+        </div>
+
+        <!-- === SMART CALC MODE === -->
+        <div class="card" id="smartCard" style="display:none;">
+            <div class="card-title">
+                <span class="icon">⚡</span>
+                <span>巧算速算 — 数字敏感性训练</span>
+            </div>
+            <div class="instructions" style="background:#fce8f4;border-left:4px solid #e84393;padding:12px 16px;margin-bottom:16px;border-radius:8px;color:#6c1a3d;font-size:0.95em;">
+                <strong>脑科学原理：</strong>巧算训练<strong>数字模式识别</strong>和<strong>计算策略灵活性</strong>。看到25×4立刻想到100，这种自动化反应来自大量提取练习。
+            </div>
+            <div class="difficulty-row">
+                <button class="diff-btn active" onclick="setSmartDiff('easy')">⭐ 凑整</button>
+                <button class="diff-btn" onclick="setSmartDiff('medium')">⭐⭐ 乘法巧算</button>
+                <button class="diff-btn" onclick="setSmartDiff('hard')">⭐⭐⭐ 综合巧算</button>
+            </div>
+            <div class="display-area" id="smartDisplay">
+                <div style="font-size:1.8em;font-weight:bold;" id="smartQuestion">点击"出题"开始</div>
+                <div class="hint-text" id="smartHint">用最快的速度心算出答案</div>
+            </div>
+            <div class="options-grid" id="smartOptions"></div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="generateSmart()">🎲 出题</button>
+                <button class="btn btn-warning" onclick="showSmartStrategy()">💡 巧算策略</button>
+            </div>
+            <div class="feedback" id="smartFeedback"></div>
+            <div class="stats-row">
+                <div class="stat-box"><div class="num" id="sCorrect">0</div><div class="label">正确</div></div>
+                <div class="stat-box"><div class="num" id="sTotal">0</div><div class="label">总计</div></div>
+                <div class="stat-box"><div class="num" id="sAccuracy">0%</div><div class="label">准确率</div></div>
+            </div>
+        </div>
+
+        <!-- === MIXED MODE === -->
+        <div class="card" id="mixedCard" style="display:none;">
+            <div class="card-title">
+                <span class="icon">🎲</span>
+                <span>交错练习 — 脑科学最强训练法</span>
+            </div>
+            <div class="instructions" style="background:#ffe8e8;border-left:4px solid #e74c3c;padding:12px 16px;margin-bottom:16px;border-radius:8px;color:#7b1e1e;font-size:0.95em;">
+                <strong>脑科学原理：</strong><strong>交错练习(Interleaving)</strong>比集中练习效果好40%！不同题型交替出现，大脑必须不断"判断该用什么方法"，这种辨别过程本身就是最强学习。
+            </div>
+            <div style="text-align:center;margin-bottom:16px;color:#666;font-size:0.95em;">
+                当前第 <span id="mixedCounter" style="font-weight:bold;color:#e74c3c;font-size:1.2em;">0</span> / 10 题<br>
+                <span id="mixedTypeLabel" style="font-size:0.85em;color:#999;">点击开始</span>
+            </div>
+            <div class="display-area" id="mixedDisplay">
+                <div style="font-size:1.6em;font-weight:bold;" id="mixedQuestion">点击"开始交错练习"</div>
+            </div>
+            <div class="options-grid" id="mixedOptions"></div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="startMixed()">🚀 开始交错练习</button>
+                <button class="btn btn-warning" onclick="nextMixed()">⏭️ 下一题</button>
+            </div>
+            <div class="feedback" id="mixedFeedback"></div>
+            <div class="stats-row">
+                <div class="stat-box"><div class="num" id="mCorrect">0</div><div class="label">正确</div></div>
+                <div class="stat-box"><div class="num" id="mTotal">0</div><div class="label">总计</div></div>
+                <div class="stat-box"><div class="num" id="mAccuracy">0%</div><div class="label">准确率</div></div>
+            </div>
+        </div>
+
+        <div class="header" style="margin-top: 25px;">
+            <div class="subtitle">每天10分钟，大脑更灵活！🌟</div>
+        </div>
+    </div>
+
+    <script>
+        // === Global State ===
+        let currentMode = 'digits';
+        let digitDifficulty = 4;
+        let fillDifficulty = 'easy';
+        let currentDigits = '';
+        let currentFillAnswer = null;
+        let digitStats = { correct: 0, total: 0, maxLen: 3 };
+        let fillStats = { correct: 0, total: 0 };
+        let fillHistory = [];
+        let digitHistory = [];
+        let timerInterval = null;
+        let memoryTime = 3; // seconds to memorize
+        
+        // === Date ===
+        const now = new Date();
+        document.getElementById('todayDate').textContent = 
+            `📅 ${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+        
+        // === Mode Switching ===
+        function switchMode(mode, btn) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            else document.querySelector(`.mode-btn.${mode}`)?.classList.add('active');
+            const allCards = ['digitsCard', 'fillCard', 'letterCard', 'gridCard', 'verticalCard', 'smartCard', 'mixedCard'];
+            allCards.forEach(c => {
+                const el = document.getElementById(c);
+                if (el) el.style.display = 'none';
+            });
+            const cardMap = {
+                'digits': 'digitsCard', 'letter': 'letterCard', 'grid': 'gridCard',
+                'fill': 'fillCard', 'vertical': 'verticalCard',
+                'smart': 'smartCard', 'mixed': 'mixedCard'
+            };
+            const target = document.getElementById(cardMap[mode]);
+            if (target) target.style.display = 'block';
+        }
+        
+        // === Difficulty ===
+        function setDigitDiff(n) {
+            digitDifficulty = n;
+            document.querySelectorAll('#digitsCard .diff-btn').forEach((b, i) => {
+                b.classList.toggle('active', i === n-4);
+            });
+        }
+        
+        function setFillDiff(d) {
+            fillDifficulty = d;
+            document.querySelectorAll('#fillCard .diff-btn').forEach(b => {
+                b.classList.toggle('active', b.textContent.includes(d === 'easy' ? '基础' : d === 'medium' ? '进阶' : d === 'hard' ? '挑战' : '混合'));
+            });
+        }
+        
+        // === Digit Game ===
+        function generateDigits(length) {
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += Math.floor(Math.random() * 10);
+            }
+            return result;
+        }
+        
+        function startDigitGame() {
+            if (timerInterval) clearInterval(timerInterval);
+            currentDigits = generateDigits(digitDifficulty);
+            const display = document.getElementById('digitDisplay');
+            const hint = document.getElementById('digitHint');
+            const timerEl = document.getElementById('digitTimer');
+            const input = document.getElementById('digitInput');
+            const startBtn = document.getElementById('digitStartBtn');
+            const submitBtn = document.getElementById('digitSubmitBtn');
+            const inputArea = document.getElementById('digitInputArea');
+            
+            // Reset
+            display.classList.remove('hidden');
+            display.textContent = currentDigits;
+            hint.textContent = `请记住这些数字，${memoryTime}秒后会消失！`;
+            timerEl.style.display = 'block';
+            timerEl.textContent = `⏱️ 记忆时间：${memoryTime}秒`;
+            input.value = '';
+            inputArea.style.display = 'none';
+            submitBtn.style.display = 'none';
+            startBtn.style.display = 'none';
+            document.getElementById('digitFeedback').style.display = 'none';
+            
+            // Countdown
+            let timeLeft = memoryTime;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = `⏱️ 记忆时间：${timeLeft}秒`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    // Hide digits, show input
+                    display.classList.add('hidden');
+                    hint.textContent = '现在，请倒着输入你记住的数字！';
+                    timerEl.style.display = 'none';
+                    inputArea.style.display = 'flex';
+                    submitBtn.style.display = 'inline-block';
+                    input.focus();
+                }
+            }, 1000);
+        }
+        
+        function checkDigitAnswer() {
+            const input = document.getElementById('digitInput').value.trim();
+            const reversed = currentDigits.split('').reverse().join('');
+            const feedback = document.getElementById('digitFeedback');
+            const display = document.getElementById('digitDisplay');
+            
+            display.classList.remove('hidden');
+            
+            if (input === reversed) {
+                feedback.className = 'feedback correct';
+                feedback.style.display = 'block';
+                feedback.innerHTML = '<span class="emoji">🎉</span> 太棒了！完全正确！' + '⭐'.repeat(Math.min(digitDifficulty-2, 5));
+                digitStats.correct++;
+                if (digitStats.maxLen < digitDifficulty) digitStats.maxLen = digitDifficulty;
+                addHistory('digit', true, `${digitDifficulty}位: ${currentDigits} → ${reversed}`);
+            } else {
+                feedback.className = 'feedback wrong';
+                feedback.style.display = 'block';
+                feedback.innerHTML = `<span class="emoji">💪</span> 再试试！正确答案是 ${reversed}，你输入了 ${input || '(空)'}`;
+                addHistory('digit', false, `${digitDifficulty}位: ${currentDigits} → 答:${input || '空'}`);
+            }
+            
+            digitStats.total++;
+            updateDigitStats();
+            
+            // Reset buttons
+            document.getElementById('digitStartBtn').style.display = 'inline-block';
+            document.getElementById('digitSubmitBtn').style.display = 'none';
+        }
+        
+        function showDigitAnswer() {
+            const display = document.getElementById('digitDisplay');
+            display.classList.remove('hidden');
+            display.textContent = currentDigits || '请先点击"开始"';
+            document.getElementById('digitHint').textContent = currentDigits ? 
+                `正序：${currentDigits} | 倒序：${currentDigits.split('').reverse().join('')}` : '';
+        }
+        
+        function updateDigitStats() {
+            document.getElementById('digitCorrect').textContent = digitStats.correct;
+            document.getElementById('digitTotal').textContent = digitStats.total;
+            document.getElementById('digitAccuracy').textContent = 
+                digitStats.total > 0 ? Math.round(digitStats.correct/digitStats.total*100) + '%' : '0%';
+            document.getElementById('digitMaxLen').textContent = digitStats.maxLen;
+            document.getElementById('digitProgress').style.width = 
+                Math.min(digitStats.total * 10, 100) + '%';
+        }
+        
+        // === Fill Blank Game ===
+        const FILL_TYPES = ['eqBlank', 'sequence', 'operator', 'reverse', 'multiple', 'compare', 'remainder', 'rounding', 'chainEquation'];
+        
+        function generateFillQuestion() {
+            let type;
+            const easyTypes = ['eqBlank', 'sequence', 'multiple', 'rounding'];
+            const mediumTypes = ['eqBlank', 'sequence', 'operator', 'reverse', 'multiple', 'compare'];
+            const hardTypes = FILL_TYPES;
+            
+            if (fillDifficulty === 'easy') {
+                type = easyTypes[Math.floor(Math.random()*easyTypes.length)];
+            } else if (fillDifficulty === 'medium') {
+                type = mediumTypes[Math.floor(Math.random()*mediumTypes.length)];
+            } else {
+                type = hardTypes[Math.floor(Math.random()*hardTypes.length)];
+            }
+            
+            let question, answer, options, hintText;
+            
+            switch(type) {
+                case 'eqBlank': {
+                    // a + _ = c or a _ b = c
+                    const a = Math.floor(Math.random()*20)+1;
+                    const b = Math.floor(Math.random()*20)+1;
+                    const ops = ['+', '-', '×'];
+                    const op = ops[Math.floor(Math.random()*ops.length)];
+                    let c;
+                    if (op === '+') c = a + b;
+                    else if (op === '-') { c = a - b; if (c < 0) { c = a + b; } }
+                    else c = a * b;
+                    
+                    const blankPos = Math.floor(Math.random()*3);
+                    if (blankPos === 0) {
+                        question = `<span class="blank" id="fillBlank">?</span> ${op} ${b} = ${c}`;
+                        answer = a;
+                    } else if (blankPos === 1) {
+                        question = `${a} ${op} <span class="blank" id="fillBlank">?</span> = ${c}`;
+                        answer = op === '+' ? c-a : op === '-' ? a-c : c/a;
+                    } else {
+                        question = `${a} ${op} ${b} = <span class="blank" id="fillBlank">?</span>`;
+                        answer = c;
+                    }
+                    hintText = '算出空白处的数字';
+                    break;
+                }
+                case 'sequence': {
+                    const patterns = [
+                        // 基础等差 +-
+                        { seq: [2,4,6,8], next: 10, rule: '每次+2' },
+                        { seq: [3,6,9,12], next: 15, rule: '每次+3' },
+                        { seq: [5,10,15,20], next: 25, rule: '每次+5' },
+                        { seq: [1,3,5,7], next: 9, rule: '每次+2（奇数）' },
+                        { seq: [2,6,10,14], next: 18, rule: '每次+4' },
+                        { seq: [30,25,20,15], next: 10, rule: '每次-5' },
+                        { seq: [100,90,80,70], next: 60, rule: '每次-10' },
+                        { seq: [4,8,12,16], next: 20, rule: '每次+4（4的倍数）' },
+                        { seq: [7,14,21,28], next: 35, rule: '每次+7（7的倍数）' },
+                        { seq: [50,45,40,35], next: 30, rule: '每次-5' },
+                        // 等比
+                        { seq: [1,2,4,8], next: 16, rule: '每次×2' },
+                        { seq: [3,6,12,24], next: 48, rule: '每次×2' },
+                        { seq: [81,27,9,3], next: 1, rule: '每次÷3' },
+                        // 差递增/递减
+                        { seq: [2,3,5,8], next: 12, rule: '差递增（+1,+2,+3,+4）' },
+                        { seq: [1,2,4,7], next: 11, rule: '差递增（+1,+2,+3,+4）' },
+                        { seq: [20,19,17,14], next: 10, rule: '差递减（-1,-2,-3,-4）' },
+                        { seq: [1,4,8,13], next: 19, rule: '差递增（+3,+4,+5,+6）' },
+                        // 倍数相关
+                        { seq: [2,4,8,14], next: 22, rule: '差递增（+2,+4,+6,+8）' },
+                        { seq: [5,7,11,17], next: 25, rule: '差递增（+2,+4,+6,+8）' },
+                        { seq: [1,2,6,24], next: 120, rule: '×1,×2,×3,×4,×5' },
+                        // 隔项规律
+                        { seq: [1,10,2,9,3], next: 8, rule: '隔项：1,2,3,... 和 10,9,8,...' },
+                        { seq: [2,1,4,3,6], next: 5, rule: '隔项：2,4,6,... 和 1,3,5,...' },
+                        // 累加
+                        { seq: [1,3,4,7,11], next: 18, rule: '前两项之和（类斐波那契）' },
+                        { seq: [2,5,7,12,19], next: 31, rule: '前两项之和' },
+                        // 重复/周期
+                        { seq: [1,2,3,1,2], next: 3, rule: '1,2,3循环' },
+                        { seq: [5,0,5,0,5], next: 0, rule: '5,0交替' },
+                        // === 90天扩充：第25-48种 ===
+                        // 等差扩展
+                        { seq: [8,16,24,32], next: 40, rule: '每次+8（8的倍数）' },
+                        { seq: [9,18,27,36], next: 45, rule: '每次+9（9的倍数）' },
+                        { seq: [60,55,50,45], next: 40, rule: '每次-5' },
+                        { seq: [12,10,8,6], next: 4, rule: '每次-2' },
+                        { seq: [3,7,11,15], next: 19, rule: '每次+4' },
+                        { seq: [15,12,9,6], next: 3, rule: '每次-3' },
+                        { seq: [11,22,33,44], next: 55, rule: '每次+11' },
+                        { seq: [25,20,15,10], next: 5, rule: '每次-5' },
+                        // 等比扩展
+                        { seq: [2,6,18,54], next: 162, rule: '每次×3' },
+                        { seq: [64,32,16,8], next: 4, rule: '每次÷2' },
+                        { seq: [5,10,20,40], next: 80, rule: '每次×2' },
+                        { seq: [100,50,25,12], next: 6, rule: '每次÷2（整数取整）' },
+                        // 差递增/递减扩展
+                        { seq: [1,3,6,10], next: 15, rule: '差递增（+2,+3,+4,+5）' },
+                        { seq: [3,5,9,15], next: 23, rule: '差递增（+2,+4,+6,+8）' },
+                        { seq: [1,5,11,19], next: 29, rule: '差递增（+4,+6,+8,+10）' },
+                        { seq: [40,35,28,19], next: 8, rule: '差递减（-5,-7,-9,-11）' },
+                        { seq: [2,7,13,20], next: 28, rule: '差递增（+5,+6,+7,+8）' },
+                        { seq: [6,11,17,24], next: 32, rule: '差递增（+5,+6,+7,+8）' },
+                        // 隔项扩展
+                        { seq: [3,8,5,6,7], next: 4, rule: '隔项：3,5,7,...和8,6,4,...' },
+                        { seq: [10,2,8,4,6], next: 6, rule: '隔项：10,8,6,...和2,4,6,...' },
+                        { seq: [1,5,2,10,3], next: 15, rule: '隔项：1,2,3,...和5,10,15,...' },
+                        // 周期扩展
+                        { seq: [2,4,2,4,2], next: 4, rule: '2,4交替' },
+                        { seq: [7,3,7,3,7], next: 3, rule: '7,3交替' },
+                        { seq: [1,1,2,2,3], next: 3, rule: '1,1,2,2,3,3循环' },
+                        { seq: [4,7,4,7,4], next: 7, rule: '4,7交替' },
+                        // === 深度扩容：第49-72种 ===
+                        // 三重规律
+                        { seq: [1,2,1,3,1], next: 4, rule: '隔两项：1,1,1,... 和 2,3,4,...' },
+                        { seq: [2,2,4,4,6], next: 6, rule: '每个数重复两次（+2递进）' },
+                        { seq: [5,1,5,2,5], next: 3, rule: '隔项：5,5,5,... 和 1,2,3,...' },
+                        // 平方相关（四升五认知边界）
+                        { seq: [1,4,9,16], next: 25, rule: '1×1, 2×2, 3×3, 4×4, 5×5' },
+                        { seq: [4,9,16,25], next: 36, rule: '2×2, 3×3, 4×4, 5×5, 6×6' },
+                        // 累加扩展
+                        { seq: [3,4,7,11,18], next: 29, rule: '前两项之和' },
+                        { seq: [5,8,13,21,34], next: 55, rule: '前两项之和（类似斐波那契）' },
+                        // 混合运算
+                        { seq: [10,8,11,9,12], next: 10, rule: '-2, +3, -2, +3, -2' },
+                        { seq: [1,4,5,8,9], next: 12, rule: '+3, +1, +3, +1, +3' },
+                        { seq: [2,5,10,17,26], next: 37, rule: '差：+3,+5,+7,+9,+11（奇数递增）' },
+                        { seq: [6,3,8,5,10], next: 7, rule: '-3, +5, -3, +5, -3' },
+                        // 乘加混合
+                        { seq: [1,3,7,15,31], next: 63, rule: '×2+1, ×2+1, ...' },
+                        { seq: [2,6,14,30,62], next: 126, rule: '×2+2, ×2+2, ...' },
+                        { seq: [3,7,15,31,63], next: 127, rule: '×2+1 递进' },
+                        // 复杂隔项
+                        { seq: [1,3,2,6,3], next: 9, rule: '隔项：1,2,3,... 和 3,6,9,...' },
+                        { seq: [8,2,7,3,6], next: 4, rule: '隔项：8,7,6,... 和 2,3,4,...' },
+                        { seq: [4,1,8,2,12], next: 3, rule: '隔项：4,8,12,... 和 1,2,3,...' },
+                        { seq: [2,6,3,9,4], next: 12, rule: '隔项：2,3,4,... 和 6,9,12,...' },
+                        // 位数规律
+                        { seq: [12,23,34,45], next: 56, rule: '十位+1，个位+1' },
+                        { seq: [21,32,43,54], next: 65, rule: '十位+1，个位+1' },
+                        { seq: [11,22,33,44], next: 55, rule: '重复数字递增' },
+                        { seq: [99,88,77,66], next: 55, rule: '重复数字递减' },
+                        // 综合
+                        { seq: [3,9,8,24,23], next: 69, rule: '×3, -1, ×3, -1, ×3' },
+                        { seq: [7,14,12,24,22], next: 44, rule: '×2, -2, ×2, -2, ×2' },
+                        { seq: [5,10,20,25,50], next: 55, rule: '×2, ×2, +5, ×2, +5' },
+                        { seq: [1,2,6,24,120], next: 720, rule: '×1,×2,×3,×4,×5,×6' }
+                    ];
+                    const p = patterns[Math.floor(Math.random()*patterns.length)];
+                    const showCount = Math.min(p.seq.length, 4);
+                    const shown = p.seq.slice(0, showCount);
+                    question = shown.join(', ') + ', <span class="blank" id="fillBlank">?</span>';
+                    answer = p.next;
+                    hintText = `规律：${p.rule}`;
+                    break;
+                }
+                case 'operator': {
+                    const a = Math.floor(Math.random()*20)+1;
+                    const b = Math.floor(Math.random()*12)+1;
+                    const ops = ['+', '-', '×'];
+                    const op = ops[Math.floor(Math.random()*ops.length)];
+                    let c;
+                    if (op === '+') c = a + b;
+                    else if (op === '-') c = Math.abs(a - b);
+                    else c = a * b;
+                    question = `${a} <span class="blank" id="fillBlank">?</span> ${b} = ${c}`;
+                    answer = op;
+                    hintText = '应该用什么运算符号？';
+                    break;
+                }
+                case 'reverse': {
+                    const num = Math.floor(Math.random()*900)+100;
+                    question = `${num} 倒过来是 <span class="blank" id="fillBlank">?</span>`;
+                    answer = parseInt(num.toString().split('').reverse().join(''));
+                    hintText = '把数字顺序反过来写';
+                    break;
+                }
+                case 'multiple': {
+                    // 倍数关系: "A是B的__倍" 或 "A的__倍是B"
+                    const b = Math.floor(Math.random()*9)+2; // 2-10
+                    const mul = Math.floor(Math.random()*8)+2; // 2-9
+                    const a = b * mul;
+                    const variant = Math.floor(Math.random()*2);
+                    if (variant === 0) {
+                        question = `${a} 是 ${b} 的 <span class="blank" id="fillBlank">?</span> 倍`;
+                    } else {
+                        question = `${b} 的 <span class="blank" id="fillBlank">?</span> 倍是 ${a}`;
+                    }
+                    answer = mul;
+                    hintText = '用除法：几倍 = 大数 ÷ 小数';
+                    break;
+                }
+                case 'compare': {
+                    // 比较大小: a op b __ c
+                    const a = Math.floor(Math.random()*50)+10;
+                    const b = Math.floor(Math.random()*9)+2;
+                    const ops = ['×', '+'];
+                    const op = ops[Math.floor(Math.random()*2)];
+                    const realResult = op === '×' ? a * b : a + b;
+                    // 制造一个相近的错误答案
+                    const fakeOffset = Math.floor(Math.random()*3)*10 + (Math.random()<0.5?5:-5);
+                    const displayResult = realResult + fakeOffset;
+                    const compareSymbol = realResult > displayResult ? '>' : '<';
+                    question = `${a} ${op} ${b} <span class="blank" id="fillBlank">?</span> ${displayResult}`;
+                    answer = compareSymbol;
+                    hintText = `先算 ${a}${op}${b}，再和 ${displayResult} 比较`;
+                    break;
+                }
+                case 'remainder': {
+                    // 有余数除法: __ ÷ __ = __ 余 __
+                    const divisor = Math.floor(Math.random()*8)+2; // 2-9
+                    const quotient = Math.floor(Math.random()*9)+2; // 2-10
+                    const remainder = Math.floor(Math.random()*(divisor-1))+1; // 1到divisor-1
+                    const dividend = divisor * quotient + remainder;
+                    const variant = Math.floor(Math.random()*3);
+                    if (variant === 0) {
+                        question = `${dividend} ÷ ${divisor} = <span class="blank" id="fillBlank">?</span> 余 ${remainder}`;
+                        answer = quotient;
+                    } else if (variant === 1) {
+                        question = `${dividend} ÷ ${divisor} = ${quotient} 余 <span class="blank" id="fillBlank">?</span>`;
+                        answer = remainder;
+                    } else {
+                        question = `<span class="blank" id="fillBlank">?</span> ÷ ${divisor} = ${quotient} 余 ${remainder}`;
+                        answer = dividend;
+                    }
+                    hintText = '被除数 = 除数 × 商 + 余数';
+                    break;
+                }
+                case 'rounding': {
+                    // 估算: 把数字凑整再算
+                    const roundNum = [9,11,18,19,21,22,28,29,31,32,38,39,41,42,48,49,51,52,58,59,61,62,68,69,71,72,78,79,81,82][Math.floor(Math.random()*30)];
+                    const mul = Math.floor(Math.random()*5)+2; // 2-6
+                    const realAns = roundNum * mul;
+                    // 估算：凑到最近的整十
+                    const rounded = Math.round(roundNum/10)*10;
+                    const estAns = rounded * mul;
+                    question = `${roundNum} × ${mul} 大约是 <span class="blank" id="fillBlank">?</span>`;
+                    answer = estAns;
+                    hintText = `把${roundNum}凑成${rounded}再算`;
+                    break;
+                }
+                case 'chainEquation': {
+                    // 连等式: a _ b _ c = d (两个运算符)
+                    const ca = Math.floor(Math.random()*9)+1;
+                    const cb = Math.floor(Math.random()*9)+1;
+                    const cc = Math.floor(Math.random()*9)+1;
+                    // 随机选两个运算符，确保结果合理
+                    const chainOps = ['+', '-', '×'];
+                    const op1 = chainOps[Math.floor(Math.random()*3)];
+                    const op2 = chainOps[Math.floor(Math.random()*3)];
+                    let cd;
+                    if (op1 === '+') {
+                        if (op2 === '+') cd = ca + cb + cc;
+                        else if (op2 === '-') cd = ca + cb - cc;
+                        else cd = ca + cb * cc;
+                    } else if (op1 === '-') {
+                        if (op2 === '+') cd = ca - cb + cc;
+                        else if (op2 === '-') cd = ca - cb - cc;
+                        else cd = ca - cb * cc;
+                    } else {
+                        if (op2 === '+') cd = ca * cb + cc;
+                        else if (op2 === '-') cd = ca * cb - cc;
+                        else cd = ca * cb * cc;
+                    }
+                    // 确保结果为正且在合理范围
+                    if (cd <= 0 || cd > 200) {
+                        // fallback to simple addition chain
+                        question = `${ca} + ${cb} + ${cc} = <span class="blank" id="fillBlank">?</span>`;
+                        answer = ca + cb + cc;
+                    } else {
+                        question = `${ca} ${op1} ${cb} ${op2} ${cc} = <span class="blank" id="fillBlank">?</span>`;
+                        answer = cd;
+                    }
+                    hintText = '按顺序算，先乘除后加减';
+                    break;
+                }
+            }
+            
+            currentFillAnswer = answer;
+            document.getElementById('fillDisplay').innerHTML = question;
+            document.getElementById('fillHint').textContent = hintText;
+            
+            // Generate options
+            options = generateOptions(answer, type === 'operator');
+            renderOptions(options, type === 'operator');
+            document.getElementById('fillFeedback').style.display = 'none';
+        }
+        
+        function generateOptions(answer, isOperator) {
+            let opts = new Set([answer]);
+            if (isOperator) {
+                const ops = ['+', '-', '×', '÷'];
+                while (opts.size < 4) {
+                    opts.add(ops[Math.floor(Math.random()*4)]);
+                }
+            } else if (answer === '>' || answer === '<') {
+                // 比较大小题型
+                opts = new Set(['>', '<', '=']);
+            } else {
+                const numAns = Number(answer);
+                while (opts.size < 6) {
+                    const offset = Math.floor(Math.random()*20) - 10;
+                    if (offset !== 0 && !opts.has(numAns + offset)) {
+                        opts.add(numAns + offset);
+                    }
+                }
+            }
+            return Array.from(opts).sort(() => Math.random() - 0.5);
+        }
+        
+        function renderOptions(options, isOperator) {
+            const grid = document.getElementById('fillOptions');
+            grid.innerHTML = '';
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => checkFillAnswer(opt);
+                grid.appendChild(btn);
+            });
+        }
+        
+        function checkFillAnswer(selected) {
+            const feedback = document.getElementById('fillFeedback');
+            const blank = document.getElementById('fillBlank');
+            
+            // Convert for comparison
+            const sel = typeof currentFillAnswer === 'number' ? Number(selected) : selected;
+            
+            if (sel === currentFillAnswer || sel == currentFillAnswer) {
+                feedback.className = 'feedback correct';
+                feedback.style.display = 'block';
+                feedback.innerHTML = '<span class="emoji">🎉</span> 答对了！真棒！';
+                if (blank) blank.textContent = currentFillAnswer;
+                fillStats.correct++;
+                addHistory('fill', true, document.getElementById('fillDisplay').textContent.replace('?', currentFillAnswer));
+            } else {
+                feedback.className = 'feedback wrong';
+                feedback.style.display = 'block';
+                feedback.innerHTML = `<span class="emoji">💪</span> 不对哦，正确答案是 ${currentFillAnswer}，再试一题！`;
+                fillStats.total++;
+                addHistory('fill', false, document.getElementById('fillDisplay').textContent);
+                updateFillStats();
+                return;
+            }
+            
+            fillStats.total++;
+            updateFillStats();
+            
+            // Auto generate new after delay
+            setTimeout(() => {
+                if (fillStats.total < 20) generateFillQuestion();
+            }, 1500);
+        }
+        
+        function showFillHint() {
+            const hint = document.getElementById('fillHint');
+            hint.style.color = '#e53e3e';
+            hint.style.fontWeight = 'bold';
+            setTimeout(() => {
+                hint.style.color = '';
+                hint.style.fontWeight = '';
+            }, 2000);
+        }
+        
+        function updateFillStats() {
+            document.getElementById('fillCorrect').textContent = fillStats.correct;
+            document.getElementById('fillTotal').textContent = fillStats.total;
+            document.getElementById('fillAccuracy').textContent = 
+                fillStats.total > 0 ? Math.round(fillStats.correct/fillStats.total*100) + '%' : '0%';
+            document.getElementById('fillProgress').style.width = 
+                Math.min(fillStats.total * 10, 100) + '%';
+        }
+        
+        // === History ===
+        function addHistory(type, isCorrect, detail) {
+            const list = type === 'digit' ? document.getElementById('digitHistoryList') 
+                                         : document.getElementById('fillHistoryList');
+            const arr = type === 'digit' ? digitHistory : fillHistory;
+            arr.unshift({ correct: isCorrect, detail, time: new Date().toLocaleTimeString() });
+            
+            if (arr.length === 1) list.innerHTML = '';
+            
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            item.innerHTML = `
+                <span>${detail.substring(0, 40)}${detail.length > 40 ? '...' : ''}</span>
+                <span class="${isCorrect ? 'pass' : 'fail'}">${isCorrect ? '✓' : '✗'}</span>
+            `;
+            list.insertBefore(item, list.firstChild);
+            
+            // Keep only last 10
+            while (list.children.length > 10) list.removeChild(list.lastChild);
+        }
+        
+        // === Keyboard Support ===
+        document.getElementById('digitInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkDigitAnswer();
+        });
+        
+
+        // ============================================================
+        // LETTER BACKWARD MODE (语音工作记忆 - Phonological Loop)
+        // ============================================================
+        let letterDifficulty = 3;
+        let currentLetters = '';
+        let letterStats = { correct: 0, total: 0 };
+        const LETTERS = 'abcdefghijklmnopqrstuvwxyz';
+
+        function setLetterDiff(n) {
+            letterDifficulty = n;
+            document.querySelectorAll('#letterCard .diff-btn').forEach((b, i) => {
+                b.classList.toggle('active', i === n - 3);
+            });
+        }
+
+        function generateLetters(count) {
+            let result = '';
+            const consonants = 'bcdfgjklmnpqrstvxz';
+            const vowels = 'aeiou';
+            // Mix consonants and vowels for better phonological difficulty
+            for (let i = 0; i < count; i++) {
+                const src = i % 2 === 0 ? consonants : vowels;
+                result += src[Math.floor(Math.random() * src.length)];
+            }
+            return result;
+        }
+
+        function startLetterGame() {
+            currentLetters = generateLetters(letterDifficulty);
+            const display = document.getElementById('letterDisplay');
+            const hint = document.getElementById('letterHint');
+            const input = document.getElementById('letterInput');
+            const startBtn = document.getElementById('letterStartBtn');
+            const submitBtn = document.getElementById('letterSubmitBtn');
+            const inputArea = document.getElementById('letterInputArea');
+
+            display.classList.remove('hidden');
+            display.textContent = currentLetters.toUpperCase().split('').join('  ');
+            hint.textContent = `请记住这些字母，${memoryTime}秒后会消失！`;
+            input.value = '';
+            inputArea.style.display = 'none';
+            submitBtn.style.display = 'none';
+            startBtn.style.display = 'none';
+            document.getElementById('letterFeedback').style.display = 'none';
+
+            let timeLeft = memoryTime;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    display.classList.add('hidden');
+                    hint.textContent = '现在，请倒着输入你记住的字母（小写）！';
+                    inputArea.style.display = 'flex';
+                    submitBtn.style.display = 'inline-block';
+                    input.focus();
+                }
+            }, 1000);
+        }
+
+        function checkLetterAnswer() {
+            const input = document.getElementById('letterInput').value.trim().toLowerCase();
+            const reversed = currentLetters.split('').reverse().join('');
+            const feedback = document.getElementById('letterFeedback');
+            const display = document.getElementById('letterDisplay');
+
+            display.classList.remove('hidden');
+
+            if (input === reversed) {
+                feedback.className = 'feedback correct';
+                feedback.style.display = 'block';
+                feedback.innerHTML = '<span class="emoji">🎉</span> 太棒了！字母倒背正确！';
+                letterStats.correct++;
+            } else {
+                feedback.className = 'feedback wrong';
+                feedback.style.display = 'block';
+                feedback.innerHTML = `<span class="emoji">💪</span> 再试试！正确答案是 ${reversed.toUpperCase()}，你输入了 ${input || '(空)'}`;
+            }
+            letterStats.total++;
+            updateLetterStats();
+            document.getElementById('letterStartBtn').style.display = 'inline-block';
+            document.getElementById('letterSubmitBtn').style.display = 'none';
+        }
+
+        function showLetterAnswer() {
+            const display = document.getElementById('letterDisplay');
+            display.classList.remove('hidden');
+            display.textContent = currentLetters ? currentLetters.toUpperCase().split('').join('  ') : '请先点击"开始"';
+        }
+
+        function updateLetterStats() {
+            document.getElementById('letterCorrect').textContent = letterStats.correct;
+            document.getElementById('letterTotal').textContent = letterStats.total;
+            document.getElementById('letterAccuracy').textContent = letterStats.total > 0 ? Math.round(letterStats.correct / letterStats.total * 100) + '%' : '0%';
+            document.getElementById('letterProgress').style.width = Math.min(letterStats.total * 10, 100) + '%';
+        }
+
+        // ============================================================
+        // GRID MEMORY MODE (视觉空间工作记忆 - Visuospatial Sketchpad)
+        // ============================================================
+        let gridDifficulty = 3;
+        let gridSequence = [];
+        let gridUserClicks = [];
+        let gridStats = { correct: 0, total: 0 };
+        let gridShowing = false;
+
+        function setGridDiff(n) { gridDifficulty = n; }
+
+        function initGrid() {
+            const container = document.getElementById('gridContainer');
+            container.innerHTML = '';
+            for (let i = 0; i < 16; i++) {
+                const cell = document.createElement('div');
+                cell.id = `grid-${i}`;
+                cell.style.cssText = 'aspect-ratio:1;background:#e8e8e8;border-radius:10px;cursor:pointer;transition:all 0.3s;border:2px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:1.3em;font-weight:bold;color:#666;';
+                cell.textContent = i + 1;
+                cell.onclick = () => clickGridCell(i);
+                container.appendChild(cell);
+            }
+        }
+
+        function startGridGame() {
+            gridSequence = [];
+            gridUserClicks = [];
+            gridShowing = true;
+
+            // Generate unique random sequence
+            const allCells = Array.from({length: 16}, (_, i) => i);
+            for (let i = allCells.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [allCells[i], allCells[j]] = [allCells[j], allCells[i]];
+            }
+            gridSequence = allCells.slice(0, gridDifficulty);
+
+            // Reset all cells
+            for (let i = 0; i < 16; i++) {
+                const cell = document.getElementById(`grid-${i}`);
+                cell.style.background = '#e8e8e8';
+                cell.style.borderColor = '#ddd';
+                cell.style.color = '#666';
+            }
+
+            document.getElementById('gridFeedback').style.display = 'none';
+
+            // Flash sequence
+            flashGridSequence(0);
+        }
+
+        function flashGridSequence(index) {
+            if (index >= gridSequence.length) {
+                // Hide all and wait for user
+                for (let i = 0; i < 16; i++) {
+                    const cell = document.getElementById(`grid-${i}`);
+                    cell.style.background = '#e8e8e8';
+                    cell.style.borderColor = '#ddd';
+                }
+                gridShowing = false;
+                document.getElementById('gridFeedback').className = 'feedback';
+                document.getElementById('gridFeedback').style.display = 'block';
+                document.getElementById('gridFeedback').innerHTML = '👆 请按刚才闪烁的顺序点击方格！';
+                return;
+            }
+
+            const cellIdx = gridSequence[index];
+            const cell = document.getElementById(`grid-${cellIdx}`);
+            cell.style.background = '#5a67d8';
+            cell.style.borderColor = '#5a67d8';
+            cell.style.color = 'white';
+
+            setTimeout(() => {
+                cell.style.background = '#e8e8e8';
+                cell.style.borderColor = '#ddd';
+                cell.style.color = '#666';
+                setTimeout(() => flashGridSequence(index + 1), 200);
+            }, 600);
+        }
+
+        function clickGridCell(idx) {
+            if (gridShowing) return;
+
+            gridUserClicks.push(idx);
+            const cell = document.getElementById(`grid-${idx}`);
+
+            // Check correctness
+            const expectedIdx = gridSequence[gridUserClicks.length - 1];
+            if (idx === expectedIdx) {
+                cell.style.background = '#48bb78';
+                cell.style.borderColor = '#48bb78';
+                cell.style.color = 'white';
+            } else {
+                cell.style.background = '#e53e3e';
+                cell.style.borderColor = '#e53e3e';
+                cell.style.color = 'white';
+
+                // Show correct sequence
+                for (let i = 0; i < gridSequence.length; i++) {
+                    const c = document.getElementById(`grid-${gridSequence[i]}`);
+                    c.textContent = i + 1;
+                }
+
+                document.getElementById('gridFeedback').className = 'feedback wrong';
+                document.getElementById('gridFeedback').style.display = 'block';
+                document.getElementById('gridFeedback').innerHTML = '<span class="emoji">💪</span> 顺序错了！绿色数字显示了正确顺序。';
+                gridStats.total++;
+                updateGridStats();
+
+                // Reset labels after delay
+                setTimeout(() => {
+                    for (let i = 0; i < 16; i++) {
+                        document.getElementById(`grid-${i}`).textContent = i + 1;
+                    }
+                }, 3000);
+                return;
+            }
+
+            // Check completion
+            if (gridUserClicks.length === gridSequence.length) {
+                document.getElementById('gridFeedback').className = 'feedback correct';
+                document.getElementById('gridFeedback').style.display = 'block';
+                document.getElementById('gridFeedback').innerHTML = '<span class="emoji">🎉</span> 完美！全部正确！';
+                gridStats.correct++;
+                gridStats.total++;
+                updateGridStats();
+            }
+        }
+
+        function showGridAnswer() {
+            if (!gridSequence.length) return;
+            for (let i = 0; i < gridSequence.length; i++) {
+                const cell = document.getElementById(`grid-${gridSequence[i]}`);
+                cell.style.background = '#5a67d8';
+                cell.style.borderColor = '#5a67d8';
+                cell.textContent = i + 1;
+            }
+        }
+
+        function updateGridStats() {
+            document.getElementById('gridCorrect').textContent = gridStats.correct;
+            document.getElementById('gridTotal').textContent = gridStats.total;
+            document.getElementById('gridAccuracy').textContent = gridStats.total > 0 ? Math.round(gridStats.correct / gridStats.total * 100) + '%' : '0%';
+        }
+
+        // ============================================================
+        // VERTICAL CALCULATION MODE (竖式填空 - 过程监控)
+        // ============================================================
+        let verticalStats = { correct: 0, total: 0 };
+        let currentVerticalAnswer = null;
+
+        function generateVertical() {
+            // Random 2-digit × 1-digit or 2-digit + 2-digit with carry
+            const type = Math.floor(Math.random() * 3);
+            let html = '';
+            let answers = [];
+            let hintText = '';
+
+            if (type === 0) {
+                // Addition with carry blank
+                const a = Math.floor(Math.random() * 50) + 20; // 20-69
+                const b = Math.floor(Math.random() * 50) + 20; // 20-69
+                const sum = a + b;
+                const aStr = a.toString().padStart(2, '0');
+                const bStr = b.toString().padStart(2, '0');
+                const aOnes = aStr[1], aTens = aStr[0];
+                const bOnes = bStr[1], bTens = bStr[0];
+                const onesSum = parseInt(aOnes) + parseInt(bOnes);
+                const carry = onesSum >= 10 ? 1 : 0;
+                const onesResult = onesSum % 10;
+                const tensResult = parseInt(aTens) + parseInt(bTens) + carry;
+
+                const blankPos = Math.floor(Math.random() * 4); // 0=carry, 1=ones, 2=tens, 3=final tens
+                let displayCarry = carry, displayOnes = onesResult, displayTens = tensResult;
+                if (blankPos === 0) { displayCarry = '?'; currentVerticalAnswer = carry; hintText = '个位相加有没有进位？'; }
+                else if (blankPos === 1) { displayOnes = '?'; currentVerticalAnswer = onesResult; hintText = '个位相加的个位数是多少？'; }
+                else if (blankPos === 2) { displayTens = '?'; currentVerticalAnswer = tensResult; hintText = '十位相加（含进位）是多少？'; }
+                else { displayTens = '?'; currentVerticalAnswer = tensResult; hintText = '从个位开始算，注意进位'; }
+
+                html = `<div style="text-align:right;line-height:1.8;">
+                    <div>  ${aTens}${aOnes}</div>
+                    <div>+ ${bTens}${bOnes}</div>
+                    <div style="border-top:2px solid #333;padding-top:4px;">
+                        <span style="color:#999;font-size:0.7em;">${displayCarry !== '?' ? displayCarry : '<span style="color:#e74c3c;font-weight:bold;">?</span>'}</span>
+                        <span style="margin-left:8px;">${displayTens !== '?' ? displayTens : '<span style="color:#e74c3c;font-weight:bold;">?</span>'}${displayOnes !== '?' ? displayOnes : '<span style="color:#e74c3c;font-weight:bold;">?</span>'}</span>
+                    </div>
+                </div>`;
+            } else if (type === 1) {
+                // Subtraction with borrow blank
+                const a = Math.floor(Math.random() * 40) + 50; // 50-89
+                const b = Math.floor(Math.random() * 30) + 10; // 10-39
+                const diff = a - b;
+                const aStr = a.toString();
+                const bStr = b.toString().padStart(2, '0');
+
+                const blankPos = Math.floor(Math.random() * 2);
+                if (blankPos === 0) {
+                    currentVerticalAnswer = diff;
+                    hintText = '从个位减起，不够减要借位';
+                    html = `<div style="text-align:right;line-height:1.8;">
+                        <div>  ${aStr}</div>
+                        <div>- ${bStr}</div>
+                        <div style="border-top:2px solid #333;padding-top:4px;">
+                            <span style="color:#e74c3c;font-weight:bold;">?</span>
+                        </div>
+                    </div>`;
+                } else {
+                    // Show partial calculation
+                    const onesA = parseInt(aStr[1]), onesB = parseInt(bStr[1]);
+                    const needBorrow = onesA < onesB;
+                    currentVerticalAnswer = needBorrow ? 1 : 0;
+                    hintText = '个位够不够减？不够要怎么办？';
+                    html = `<div style="text-align:right;line-height:1.8;">
+                        <div>  ${aStr}</div>
+                        <div>- ${bStr}</div>
+                        <div style="border-top:2px solid #333;padding-top:4px;">
+                            需要借位吗？ <span style="color:#e74c3c;font-weight:bold;">?</span> (${needBorrow ? '是/1' : '否/0'})
+                        </div>
+                    </div>`;
+                }
+            } else {
+                // Multiplication 2-digit × 1-digit with partial product
+                const a = Math.floor(Math.random() * 40) + 11; // 11-50
+                const b = Math.floor(Math.random() * 7) + 3; // 3-9
+                const prod = a * b;
+                const aStr = a.toString();
+                const onesA = aStr[1], tensA = aStr[0];
+                const partialOnes = parseInt(onesA) * b;
+                const partialTens = parseInt(tensA) * b;
+
+                const blankPos = Math.floor(Math.random() * 3);
+                if (blankPos === 0) {
+                    currentVerticalAnswer = partialOnes;
+                    hintText = `${onesA} × ${b} = ?`;
+                } else if (blankPos === 1) {
+                    currentVerticalAnswer = partialTens;
+                    hintText = `${tensA} × ${b} = ? (这是几个十)`;
+                } else {
+                    currentVerticalAnswer = prod;
+                    hintText = '部分积相加，注意数位对齐';
+                }
+
+                let pO = blankPos === 0 ? '?' : partialOnes;
+                let pT = blankPos === 1 ? '?' : partialTens;
+                let total = blankPos === 2 ? '?' : prod;
+
+                html = `<div style="text-align:right;line-height:1.8;">
+                    <div>  ${aStr}</div>
+                    <div>×   ${b}</div>
+                    <div style="border-top:2px solid #333;padding-top:4px;">
+                        <div style="font-size:0.85em;color:#999;">${pT !== '?' ? pT + ' (' + tensA + '×' + b + ')' : '<span style="color:#e74c3c;font-weight:bold;">?</span>'}</div>
+                        <div style="font-size:0.85em;color:#999;">${pO !== '?' ? '  ' + pO + ' (' + onesA + '×' + b + ')' : '<span style="color:#e74c3c;font-weight:bold;">?</span>'}</div>
+                        <div style="border-top:1px solid #999;margin-top:2px;padding-top:2px;">${total !== '?' ? total : '<span style="color:#e74c3c;font-weight:bold;">?</span>'}</div>
+                    </div>
+                </div>`;
+            }
+
+            document.getElementById('verticalDisplay').innerHTML = html;
+            document.getElementById('verticalHint').textContent = hintText;
+
+            // Generate options
+            const opts = generateVerticalOptions(currentVerticalAnswer);
+            renderVerticalOptions(opts);
+            document.getElementById('verticalFeedback').style.display = 'none';
+        }
+
+        function generateVerticalOptions(ans) {
+            let opts = new Set([ans]);
+            while (opts.size < 6) {
+                const offset = Math.floor(Math.random() * 20) - 10;
+                if (offset !== 0 && ans + offset >= 0) opts.add(ans + offset);
+            }
+            return Array.from(opts).sort(() => Math.random() - 0.5);
+        }
+
+        function renderVerticalOptions(options) {
+            const grid = document.getElementById('verticalOptions');
+            grid.innerHTML = '';
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => checkVertical(opt);
+                grid.appendChild(btn);
+            });
+        }
+
+        function checkVertical(selected) {
+            const fb = document.getElementById('verticalFeedback');
+            if (selected === currentVerticalAnswer) {
+                fb.className = 'feedback correct';
+                fb.style.display = 'block';
+                fb.innerHTML = '<span class="emoji">🎉</span> 正确！过程比答案更重要！';
+                verticalStats.correct++;
+            } else {
+                fb.className = 'feedback wrong';
+                fb.style.display = 'block';
+                fb.innerHTML = `<span class="emoji">💪</span> 再想想！正确答案是 ${currentVerticalAnswer}`;
+            }
+            verticalStats.total++;
+            document.getElementById('vCorrect').textContent = verticalStats.correct;
+            document.getElementById('vTotal').textContent = verticalStats.total;
+            document.getElementById('vAccuracy').textContent = verticalStats.total > 0 ? Math.round(verticalStats.correct / verticalStats.total * 100) + '%' : '0%';
+        }
+
+        function showVerticalHint() {
+            const hint = document.getElementById('verticalHint');
+            hint.style.color = '#e53e3e';
+            hint.style.fontWeight = 'bold';
+            setTimeout(() => { hint.style.color = ''; hint.style.fontWeight = ''; }, 2000);
+        }
+
+        // ============================================================
+        // SMART CALC MODE (巧算速算 - 数字模式识别)
+        // ============================================================
+        let smartDiff = 'easy';
+        let smartStats = { correct: 0, total: 0 };
+        let currentSmartAnswer = null;
+        let currentSmartStrategy = '';
+
+        function setSmartDiff(d) {
+            smartDiff = d;
+            document.querySelectorAll('#smartCard .diff-btn').forEach(b => {
+                b.classList.toggle('active', b.textContent.includes(d === 'easy' ? '凑整' : d === 'medium' ? '乘法' : '综合'));
+            });
+        }
+
+        const SMART_QUESTIONS = {
+            easy: [
+                { q: '29 + 57', a: 86, s: '29+1=30, 30+56=86（拆1凑整）' },
+                { q: '38 + 45', a: 83, s: '38+2=40, 40+43=83（拆2凑整）' },
+                { q: '53 + 19', a: 72, s: '53+20=73, 73-1=72（先加整再减）' },
+                { q: '67 + 28', a: 95, s: '67+3=70, 70+25=95（拆3凑整）' },
+                { q: '44 + 39', a: 83, s: '44+40=84, 84-1=83（先加整再减）' },
+                { q: '82 - 29', a: 53, s: '82-30=52, 52+1=53（先减整再加）' },
+                { q: '75 - 38', a: 37, s: '75-40=35, 35+2=37（先减整再加）' },
+                { q: '91 - 47', a: 44, s: '91-50=41, 41+3=44（先减整再加）' },
+                { q: '18 + 37 + 12', a: 67, s: '18+12=30, 30+37=67（先凑整）' },
+                { q: '25 + 43 + 15', a: 83, s: '25+15=40, 40+43=83（先凑整）' },
+                { q: '66 + 17 + 4', a: 87, s: '66+4=70, 70+17=87（先凑整）' },
+                { q: '33 + 28 + 27', a: 88, s: '33+27=60, 60+28=88（先凑整）' },
+                { q: '98 + 17', a: 115, s: '98+2=100, 100+15=115（拆2凑百）' },
+                { q: '199 + 36', a: 235, s: '199+1=200, 200+35=235（拆1凑百）' },
+                { q: '103 - 48', a: 55, s: '100-48=52, 52+3=55（拆整百再补）' }
+            ],
+            medium: [
+                { q: '25 × 4', a: 100, s: '熟记：25×4=100' },
+                { q: '25 × 8', a: 200, s: '25×4=100, 100×2=200' },
+                { q: '25 × 12', a: 300, s: '25×4=100, 100×3=300' },
+                { q: '125 × 8', a: 1000, s: '熟记：125×8=1000' },
+                { q: '50 × 6', a: 300, s: '5×6=30, 末尾加0=300' },
+                { q: '50 × 14', a: 700, s: '50×10=500, 50×4=200, 500+200=700' },
+                { q: '4 × 99', a: 396, s: '4×100=400, 400-4=396' },
+                { q: '5 × 102', a: 510, s: '5×100=500, 5×2=10, 500+10=510' },
+                { q: '8 × 25', a: 200, s: '8÷2=4, 4×50=200（拆因数）' },
+                { q: '16 × 25', a: 400, s: '16÷4=4, 4×100=400（16=4×4）' },
+                { q: '24 × 25', a: 600, s: '24÷4=6, 6×100=600（24=4×6）' },
+                { q: '12 × 15', a: 180, s: '12×10=120, 12×5=60, 120+60=180' },
+                { q: '36 × 11', a: 396, s: '两边拉开，中间相加：3(3+6)6=396' },
+                { q: '72 × 11', a: 792, s: '7(7+2)2=792（注意进位）' },
+                { q: '45 × 11', a: 495, s: '4(4+5)5=495（注意进位）' }
+            ],
+            hard: [
+                { q: '25 × 32', a: 800, s: '25×4=100, 32÷4=8, 100×8=800' },
+                { q: '125 × 16', a: 2000, s: '125×8=1000, 16÷8=2, 1000×2=2000' },
+                { q: '25 × 36', a: 900, s: '25×4=100, 36÷4=9, 100×9=900' },
+                { q: '99 × 5 + 5', a: 500, s: '(99+1)×5=100×5=500（提取公因数）' },
+                { q: '101 × 7 - 7', a: 700, s: '(101-1)×7=100×7=700' },
+                { q: '8 × 37 × 125', a: 37000, s: '8×125=1000, 1000×37=37000（交换律）' },
+                { q: '4 × 9 × 25', a: 900, s: '4×25=100, 100×9=900（交换律）' },
+                { q: '50 × 13 × 2', a: 1300, s: '50×2=100, 100×13=1300（交换律）' },
+                { q: '37 + 56 + 63 + 44', a: 200, s: '(37+63)+(56+44)=100+100=200' },
+                { q: '48 + 73 + 52 + 27', a: 200, s: '(48+52)+(73+27)=100+100=200' },
+                { q: '28 × 99 + 28', a: 2800, s: '28×(99+1)=28×100=2800' },
+                { q: '125 × 88', a: 11000, s: '125×8=1000, 1000×11=11000（88=8×11）' },
+                { q: '25 × 28', a: 700, s: '25×4=100, 28÷4=7, 100×7=700' },
+                { q: '48 × 25', a: 1200, s: '48÷4=12, 12×100=1200（48=4×12）' },
+                { q: '72 × 125', a: 9000, s: '72÷8=9, 9×1000=9000（72=8×9）' }
+            ]
+        };
+
+        let usedSmart = { easy: new Set(), medium: new Set(), hard: new Set() };
+
+        function generateSmart() {
+            const pool = SMART_QUESTIONS[smartDiff];
+            let idx;
+            do { idx = Math.floor(Math.random() * pool.length); }
+            while (usedSmart[smartDiff].has(idx) && usedSmart[smartDiff].size < pool.length);
+
+            usedSmart[smartDiff].add(idx);
+            if (usedSmart[smartDiff].size >= pool.length) usedSmart[smartDiff].clear();
+
+            const q = pool[idx];
+            document.getElementById('smartQuestion').textContent = q.q + ' = ?';
+            currentSmartAnswer = q.a;
+            currentSmartStrategy = q.s;
+            document.getElementById('smartHint').textContent = '用心算，别动笔！';
+
+            const opts = generateSmartOptions(q.a);
+            const grid = document.getElementById('smartOptions');
+            grid.innerHTML = '';
+            opts.forEach(o => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = o;
+                btn.onclick = () => checkSmart(o);
+                grid.appendChild(btn);
+            });
+            document.getElementById('smartFeedback').style.display = 'none';
+        }
+
+        function generateSmartOptions(ans) {
+            let opts = new Set([ans]);
+            const distractors = [
+                ans + 1, ans - 1, ans + 10, ans - 10,
+                ans * 2, Math.floor(ans / 2),
+                ans + 100, ans - 100
+            ];
+            for (let d of distractors) {
+                if (d >= 0 && opts.size < 6) opts.add(d);
+            }
+            while (opts.size < 4) {
+                const off = Math.floor(Math.random() * 20) - 10;
+                if (off !== 0) opts.add(Math.max(0, ans + off));
+            }
+            return Array.from(opts).sort(() => Math.random() - 0.5);
+        }
+
+        function checkSmart(selected) {
+            const fb = document.getElementById('smartFeedback');
+            if (selected === currentSmartAnswer) {
+                fb.className = 'feedback correct';
+                fb.style.display = 'block';
+                fb.innerHTML = `<span class="emoji">🎉</span> 正确！巧算：${currentSmartStrategy}`;
+                smartStats.correct++;
+            } else {
+                fb.className = 'feedback wrong';
+                fb.style.display = 'block';
+                fb.innerHTML = `<span class="emoji">💪</span> 正确答案是 ${currentSmartAnswer}<br><small>巧算：${currentSmartStrategy}</small>`;
+            }
+            smartStats.total++;
+            document.getElementById('sCorrect').textContent = smartStats.correct;
+            document.getElementById('sTotal').textContent = smartStats.total;
+            document.getElementById('sAccuracy').textContent = smartStats.total > 0 ? Math.round(smartStats.correct / smartStats.total * 100) + '%' : '0%';
+        }
+
+        function showSmartStrategy() {
+            const fb = document.getElementById('smartFeedback');
+            fb.className = 'feedback correct';
+            fb.style.display = 'block';
+            fb.innerHTML = `<span class="emoji">💡</span> 巧算策略：${currentSmartStrategy}`;
+        }
+
+        // ============================================================
+        // MIXED MODE (交错练习 - Interleaved Practice)
+        // ============================================================
+        let mixedStats = { correct: 0, total: 0 };
+        let mixedCounter = 0;
+        let currentMixedType = '';
+        const MIXED_TYPES = ['等式填空', '数列规律', '倍数关系', '比较大小', '有余数除法', '估算凑整'];
+
+        function startMixed() {
+            mixedCounter = 0;
+            mixedStats = { correct: 0, total: 0 };
+            nextMixed();
+        }
+
+        function nextMixed() {
+            if (mixedCounter >= 10) {
+                const fb = document.getElementById('mixedFeedback');
+                fb.className = 'feedback correct';
+                fb.style.display = 'block';
+                fb.innerHTML = `<span class="emoji">🏆</span> 10题完成！正确率：${mixedStats.total > 0 ? Math.round(mixedStats.correct / mixedStats.total * 100) : 0}%`;
+                return;
+            }
+
+            mixedCounter++;
+            document.getElementById('mixedCounter').textContent = mixedCounter;
+
+            // Pick random type ensuring variety
+            let type;
+            do { type = MIXED_TYPES[Math.floor(Math.random() * MIXED_TYPES.length)]; }
+            while (type === currentMixedType && Math.random() < 0.5);
+            currentMixedType = type;
+            document.getElementById('mixedTypeLabel').textContent = `当前题型：${type}`;
+
+            // Generate question based on type
+            let question, answer, options;
+            switch(type) {
+                case '等式填空': {
+                    const a = Math.floor(Math.random() * 20) + 1;
+                    const b = Math.floor(Math.random() * 20) + 1;
+                    const ops = ['+', '-', '×'];
+                    const op = ops[Math.floor(Math.random() * 3)];
+                    let c;
+                    if (op === '+') c = a + b;
+                    else if (op === '-') c = Math.abs(a - b);
+                    else c = a * b;
+                    const pos = Math.floor(Math.random() * 2);
+                    if (pos === 0) { question = `? ${op} ${b} = ${c}`; answer = a; }
+                    else { question = `${a} ${op} ? = ${c}`; answer = op === '+' ? c - a : op === '-' ? a - c : c / a; }
+                    break;
+                }
+                case '数列规律': {
+                    const simple = [
+                        { s: [3,6,9,12], n: 15 }, { s: [4,8,12,16], n: 20 },
+                        { s: [10,8,6,4], n: 2 }, { s: [1,3,5,7], n: 9 },
+                        { s: [2,4,8,16], n: 32 }, { s: [1,2,4,7], n: 11 }
+                    ];
+                    const p = simple[Math.floor(Math.random() * simple.length)];
+                    question = p.s.join(', ') + ', ?';
+                    answer = p.n;
+                    break;
+                }
+                case '倍数关系': {
+                    const b = Math.floor(Math.random() * 8) + 2;
+                    const m = Math.floor(Math.random() * 8) + 2;
+                    const a = b * m;
+                    question = `${a} 是 ${b} 的 ? 倍`;
+                    answer = m;
+                    break;
+                }
+                case '比较大小': {
+                    const a = Math.floor(Math.random() * 50) + 10;
+                    const b = Math.floor(Math.random() * 5) + 2;
+                    const op2 = Math.random() < 0.5 ? '×' : '+';
+                    const real = op2 === '×' ? a * b : a + b;
+                    const fake = real + (Math.floor(Math.random() * 3) * 10 + 5) * (Math.random() < 0.5 ? 1 : -1);
+                    question = `${a} ${op2} ${b} ? ${fake}`;
+                    answer = real > fake ? '>' : '<';
+                    break;
+                }
+                case '有余数除法': {
+                    const div = Math.floor(Math.random() * 7) + 2;
+                    const quo = Math.floor(Math.random() * 8) + 2;
+                    const rem = Math.floor(Math.random() * (div - 1)) + 1;
+                    const dd = div * quo + rem;
+                    const v2 = Math.floor(Math.random() * 2);
+                    if (v2 === 0) { question = `${dd} ÷ ${div} = ? 余 ${rem}`; answer = quo; }
+                    else { question = `${dd} ÷ ${div} = ${quo} 余 ?`; answer = rem; }
+                    break;
+                }
+                case '估算凑整': {
+                    const rn = [18, 19, 21, 22, 28, 29, 31, 32, 48, 49, 51, 52][Math.floor(Math.random() * 12)];
+                    const mu = Math.floor(Math.random() * 4) + 2;
+                    question = `${rn} × ${mu} 大约是 ?`;
+                    answer = Math.round(rn / 10) * 10 * mu;
+                    break;
+                }
+            }
+
+            document.getElementById('mixedQuestion').textContent = question;
+
+            // Special handling for compare
+            if (answer === '>' || answer === '<') {
+                options = ['>', '<', '='];
+            } else {
+                options = [answer];
+                while (options.length < 6) {
+                    const off = Math.floor(Math.random() * 20) - 10;
+                    if (off !== 0 && !options.includes(answer + off)) options.push(answer + off);
+                }
+                options.sort(() => Math.random() - 0.5);
+            }
+
+            const grid = document.getElementById('mixedOptions');
+            grid.innerHTML = '';
+            options.forEach(o => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = o;
+                btn.onclick = () => checkMixed(o, answer);
+                grid.appendChild(btn);
+            });
+
+            document.getElementById('mixedFeedback').style.display = 'none';
+        }
+
+        function checkMixed(selected, correct) {
+            const fb = document.getElementById('mixedFeedback');
+            if (selected == correct) {
+                fb.className = 'feedback correct';
+                fb.style.display = 'block';
+                fb.innerHTML = '<span class="emoji">✓</span> 正确！';
+                mixedStats.correct++;
+            } else {
+                fb.className = 'feedback wrong';
+                fb.style.display = 'block';
+                fb.innerHTML = `<span class="emoji">✗</span> 正确答案是 ${correct}`;
+            }
+            mixedStats.total++;
+            document.getElementById('mCorrect').textContent = mixedStats.correct;
+            document.getElementById('mTotal').textContent = mixedStats.total;
+            document.getElementById('mAccuracy').textContent = mixedStats.total > 0 ? Math.round(mixedStats.correct / mixedStats.total * 100) + '%' : '0%';
+
+            setTimeout(() => nextMixed(), 1000);
+        }
+
+        // === Streak Tracking ===
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const lastDate = localStorage.getItem('lastTrainingDate');
+            let streak = parseInt(localStorage.getItem('trainingStreak') || '0');
+            
+            if (lastDate !== today) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                streak = (lastDate === yesterday.toDateString()) ? streak + 1 : 1;
+                localStorage.setItem('lastTrainingDate', today);
+                localStorage.setItem('trainingStreak', streak);
+            }
+            document.getElementById('streak').textContent = `🔥 连续 ${streak} 天`;
+        }
+
+        // === Init ===
+        updateStreak();
+        updateDigitStats();
+        updateFillStats();
+        initGrid();
+    </script>
+</body>
+</html>

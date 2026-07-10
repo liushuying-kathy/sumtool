@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>双周压力测试方案卡</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container { max-width: 950px; margin: 0 auto; overflow-x: hidden; }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .header h1 { font-size: 2.2em; margin-bottom: 8px; color: #744210; }
+        .header .subtitle { font-size: 1.05em; color: #975a16; }
+        
+        .date-bar {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        /* Intro */
+        .intro-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+        
+        .intro-title { font-size: 1.2em; color: #744210; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .intro-text { color: #553c9a; line-height: 1.8; font-size: 0.95em; }
+        
+        /* Test Item Card */
+        .test-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+        
+        .test-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #fef3c7;
+        }
+        
+        .test-icon { font-size: 2em; }
+        .test-title { font-size: 1.2em; color: #2d3436; }
+        .test-subtitle { font-size: 0.85em; color: #b2bec3; }
+        
+        .test-meta {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        
+        .meta-tag {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        .meta-tag.time { background: #fef3c7; color: #975a16; }
+        .meta-tag.type { background: #e6fffa; color: #234e52; }
+        .meta-tag.tool { background: #f3e8ff; color: #553c9a; }
+        
+        .test-desc { color: #4a5568; line-height: 1.7; margin-bottom: 14px; font-size: 0.95em; }
+        .test-desc strong { color: #744210; }
+        
+        /* Scoring */
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        
+        .score-option {
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-size: 0.95em;
+        }
+        
+        .score-option:hover { border-color: #f6ad55; background: #fffaf0; }
+        .score-option.selected { border-color: #f6ad55; background: #fffaf0; }
+        .score-option .score-val { font-size: 1.3em; font-weight: bold; color: #e53e3e; }
+        .score-option .score-desc { color: #718096; font-size: 0.85em; margin-top: 4px; }
+        
+        /* Record Table */
+        .record-table-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 16px;
+            border-radius: 10px;
+        }
+        
+        .record-table {
+            width: 100%;
+            min-width: 560px;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+        
+        .record-table th {
+            background: #fffaf0;
+            padding: 12px;
+            text-align: center;
+            color: #744210;
+            border-bottom: 2px solid #f6ad55;
+            font-weight: bold;
+        }
+        
+        .record-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #edf2f7;
+        }
+        
+        .record-table td:first-child { text-align: left; font-weight: 500; }
+        .record-table .editable {
+            background: #fffaf0;
+            border: 1px dashed #f6ad55;
+            border-radius: 6px;
+            padding: 6px;
+            min-width: 50px;
+            cursor: text;
+        }
+        
+        /* Trend */
+        .trend-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 14px;
+        }
+        
+        .trend-title { font-size: 1.1em; color: #2d3436; margin-bottom: 14px; }
+        
+        .trend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+        
+        .trend-item {
+            background: white;
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+        
+        .trend-val { font-size: 1.6em; font-weight: bold; }
+        .trend-val.up { color: #48bb78; }
+        .trend-val.down { color: #e53e3e; }
+        .trend-val.flat { color: #a0aec0; }
+        .trend-label { font-size: 0.85em; color: #718096; margin-top: 4px; }
+        
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-save { background: linear-gradient(135deg, #f6ad55, #ed8936); color: white; }
+        .btn-print { background: #e2e8f0; color: #4a5568; }
+        
+        /* Summary */
+        .summary-card {
+            background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
+            border-radius: 20px;
+            padding: 24px;
+            margin-top: 10px;
+        }
+        
+        .summary-title { font-size: 1.2em; color: #22543d; margin-bottom: 12px; }
+        .summary-text { color: #276749; line-height: 1.7; font-size: 0.95em; }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.6em; }
+            .score-grid { grid-template-columns: 1fr; }
+            .record-table { font-size: 0.8em; }
+            .record-table th, .record-table td { padding: 6px; }
+        }
+        
+        @media print {
+            body { background: white; }
+            .test-card, .intro-card { box-shadow: none; border: 1px solid #ddd; }
+            .btn-group { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📊 双周压力测试方案</h1>
+            <div class="subtitle">每两周一次小测验，追踪真实进步</div>
+        </div>
+        
+        <!-- Date -->
+        <div class="date-bar">
+            <div id="dateRange" style="font-weight:bold;color:#975a16;">📅 载入中...</div>
+            <div style="color:#b7791f;font-size:0.9em;">建议每两周六上午进行，约30分钟</div>
+        </div>
+        
+        <!-- Intro -->
+        <div class="intro-card">
+            <div class="intro-title">💡 为什么做双周测试？</div>
+            <div class="intro-text">
+                日常训练是基础，但<strong>测试能检验真实水平</strong>。双周一次频率刚好：不会给孩子太大压力，又能及时发现问题。<br><br>
+                <strong>测试原则：</strong>① 模拟真实场景，计时进行 ② 不提醒、不提示，观察独立表现 ③ 记录数据，对比进步 ④ 不批评分数，只关注趋势。分数低了说明找到了提升空间！
+            </div>
+        </div>
+        
+        <!-- Test 1: Working Memory -->
+        <div class="test-card">
+            <div class="test-header">
+                <span class="test-icon">🔢</span>
+                <div>
+                    <div class="test-title">测试一：工作记忆（数字倒背）</div>
+                    <div class="test-subtitle">核心认知能力，影响课堂听讲和 multi-step 解题</div>
+                </div>
+            </div>
+            <div class="test-meta">
+                <span class="meta-tag time">⏱️ 3分钟</span>
+                <span class="meta-tag type">认知能力</span>
+                <span class="meta-tag tool">工具：数字倒背卡</span>
+            </div>
+            <div class="test-desc">
+                <strong>测试方法：</strong>使用「数字倒背与变式填空卡」，从4位开始测试。每级测3组，全部正确则升级，失败则记录最高稳定位数。<br>
+                <strong>记录指标：</strong>① 最高稳定倒背位数 ② 4位数平均反应时间 ③ 错误时是否自我纠正
+            </div>
+            <div class="score-grid">
+                <div class="score-option" onclick="selectScore(this, 'memory', 3)">
+                    <div class="score-val">⭐⭐⭐</div>
+                    <div class="score-desc">稳定倒背6位+，反应快</div>
+                </div>
+                <div class="score-option" onclick="selectScore(this, 'memory', 2)">
+                    <div class="score-val">⭐⭐</div>
+                    <div class="score-desc">稳定倒背4-5位</div>
+                </div>
+                <div class="score-option" onclick="selectScore(this, 'memory', 1)">
+                    <div class="score-val">⭐</div>
+                    <div class="score-desc">3位有困难，需加强</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test 2: Inhibition Control -->
+        <div class="test-card">
+            <div class="test-header">
+                <span class="test-icon">🎯</span>
+                <div>
+                    <div class="test-title">测试二：抑制控制（斯特鲁普测试）</div>
+                    <div class="test-subtitle">前额叶功能，影响抗干扰能力和冲动控制</div>
+                </div>
+            </div>
+            <div class="test-meta">
+                <span class="meta-tag time">⏱️ 5分钟</span>
+                <span class="meta-tag type">认知能力</span>
+                <span class="meta-tag tool">工具：斯特鲁普进阶卡</span>
+            </div>
+            <div class="test-desc">
+                <strong>测试方法：</strong>使用「斯特鲁普进阶卡」经典模式，连续测试10题字色冲突。记录总用时和正确率。<br>
+                <strong>记录指标：</strong>① 10题正确数 ② 总用时（秒） ③ 是否有"脱口而出说错字义"后自我纠正的情况
+            </div>
+            <div class="score-grid">
+                <div class="score-option" onclick="selectScore(this, 'stroop', 3)">
+                    <div class="score-val">⭐⭐⭐</div>
+                    <div class="score-desc">10题全对 &lt;60秒</div>
+                </div>
+                <div class="score-option" onclick="selectScore(this, 'stroop', 2)">
+                    <div class="score-val">⭐⭐</div>
+                    <div class="score-desc">正确8-9题，&lt;90秒</div>
+                </div>
+                <div class="score-option" onclick="selectScore(this, 'stroop', 1)">
+                    <div class="score-val">⭐</div>
+                    <div class="score-desc">正确&lt;8题 或 &gt;90秒</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test 3: Math -->
+        <div class="test-card">
+            <div class="test-header">
+                <span class="test-icon">📐</span>
+                <div>
+                    <div class="test-title">测试三：数学解题（含直觉陷阱题）</div>
+                    <div class="test-subtitle">检验直觉校准和检查习惯</div>
+                </div>
+            </div>
+            <div class="test-meta">
+                <span class="meta-tag time">⏱️ 8分钟</span>
+                <span class="meta-tag type">学科能力</span>
+                <span class="meta-tag tool">笔算，家长监考</span>
+            </div>
+            <div class="test-desc">
+                <strong>出题建议：</strong>1道多位数乘法（含进退位，如 36×24）+ 1道带单位应用题 + 1道"似曾相识"但条件不同的陷阱题 + 1道倍数/和差问题。<br>
+                <strong>记录指标：</strong>① 正确率 ② 是否写单位 ③ 进退位标记有无 ④ 陷阱题是否中招 ⑤ 是否验算
+            </div>
+            <div class="score-grid">
+                <div class="score-option" onclick="selectScore(this, 'math', 3)">
+                    <div class="score-val">⭐⭐⭐</div>
+                    <div class="score-desc">全对，单位验算都有</div>
+                </div>
+                <div class="score-option" onclick="selectScore(this, 'math', 2)">
+                    <div class="score-val">⭐⭐</div>
+                    <div class="score-desc">对3题，有小失误</div>
+                </div>
+                <div class="score-option" onclick="selectScore(this, 'math', 1)">
+                    <div class="score-val">⭐</div>
+                    <div class="score-desc">对≤2题 或 中陷阱题</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test 4: Chinese -->
+        <div class="test-card">
+            <div class="test-header">
+                <span class="test-icon">📖</span>
+                <div>
+                    <div class="test-title">测试四：语文基础（字词+阅读）</div>
+                    <div class="test-subtitle">错别字检测和阅读找依据能力</div>
+                </div>
+            </div>
+            <div class="test-meta">
+                <span class="meta-tag time">⏱️ 8分钟</span>
+                <span class="meta-tag type">学科能力</span>
+                <span class="meta-tag tool">笔算，家长监考</span>
+            </div>
+            <div class="test-desc">
+                <strong>出题建议：</strong>看拼音写词语（含易错同音字/形近字）+ 1篇阅读理解（答案需回原文找依据）+ 1句古诗默写。<br>
+                <strong>记录指标：</strong>① 字词正确率 ② 阅读理解是否回原文找依据 ③ 古诗有无错字
+            </div>
+            <div class="score-grid">
+                <div class="score-option" onclick="selectScore(this, 'chinese', 3)">
+                    <div class="score-val">⭐⭐⭐</div>
+                    <div class="score-desc">字词全对，阅读有据</div>
+                </div>
+                <div class="score-option" onclick="selectScore(this, 'chinese', 2)">
+                    <div class="score-val">⭐⭐</div>
+                    <div class="score-desc">小错误≤2处</div>
+                </div>
+                <div class="score-option" onclick="selectScore(this, 'chinese', 1)">
+                    <div class="score-val">⭐</div>
+                    <div class="score-desc">错≥3处 或 阅读凭感觉</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test 5: English -->
+        <div class="test-card">
+            <div class="test-header">
+                <span class="test-icon">🔤</span>
+                <div>
+                    <div class="test-title">测试五：英语（拼写+语法+朗读）</div>
+                    <div class="test-subtitle">错音检测和语法意识</div>
+                </div>
+            </div>
+            <div class="test-meta">
+                <span class="meta-tag time">⏱️ 6分钟</span>
+                <span class="meta-tag type">学科能力</span>
+                <span class="meta-tag tool">口试+笔试</span>
+            </div>
+            <div class="test-desc">
+                <strong>出题建议：</strong>听写5个单词（含易混元音/尾音）+ 3道语法选择题（时态/三单/复数）+ 朗读一句含th的句子，观察发音。<br>
+                <strong>记录指标：</strong>① 听写正确数 ② 语法正确率 ③ th音是否准确 ④ 尾音是否遗漏
+            </div>
+            <div class="score-grid">
+                <div class="score-option" onclick="selectScore(this, 'english', 3)">
+                    <div class="score-val">⭐⭐⭐</div>
+                    <div class="score-desc">听写全对，th音标准</div>
+                </div>
+                <div class="score-option" onclick="selectScore(this, 'english', 2)">
+                    <div class="score-val">⭐⭐</div>
+                    <div class="score-desc">小错1-2处</div>
+                </div>
+                <div class="score-option" onclick="selectScore(this, 'english', 1)">
+                    <div class="score-val">⭐</div>
+                    <div class="score-desc">错≥3处 或 th音仍错</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test 6: Executive Function -->
+        <div class="test-card">
+            <div class="test-header">
+                <span class="test-icon">🧹</span>
+                <div>
+                    <div class="test-title">测试六：执行功能（家务多步骤完成度）</div>
+                    <div class="test-subtitle">观察多步骤任务的完成质量和独立性</div>
+                </div>
+            </div>
+            <div class="test-meta">
+                <span class="meta-tag time">⏱️ 不限时</span>
+                <span class="meta-tag type">执行功能</span>
+                <span class="meta-tag tool">观察记录</span>
+            </div>
+            <div class="test-desc">
+                <strong>测试方法：</strong>指定一项包含5+步骤的家务（如清理宠物笼），完全不提醒，观察独立完成情况。可在中途插入一个"干扰指令"看能否记住原任务。<br>
+                <strong>记录指标：</strong>① 独立完成步骤数/总步骤数 ② 是否漏步骤 ③ 遇到干扰后的恢复能力 ④ 是否需要催促
+            </div>
+            <div class="score-grid">
+                <div class="score-option" onclick="selectScore(this, 'exec', 3)">
+                    <div class="score-val">⭐⭐⭐</div>
+                    <div class="score-desc">独立完成全部步骤</div>
+                </div>
+                <div class="score-option" onclick="selectScore(this, 'exec', 2)">
+                    <div class="score-val">⭐⭐</div>
+                    <div class="score-desc">漏1-2步，基本独立</div>
+                </div>
+                <div class="score-option" onclick="selectScore(this, 'exec', 1)">
+                    <div class="score-val">⭐</div>
+                    <div class="score-desc">需多次提醒或漏≥3步</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Question Bank -->
+        <div class="test-card">
+            <div class="test-header">
+                <span class="test-icon">📚</span>
+                <div>
+                    <div class="test-title">出题库（4套完整试卷）</div>
+                    <div class="test-subtitle">可直接使用，也可自行替换同类题</div>
+                </div>
+            </div>
+            <div class="test-desc">
+                每套包含数学4题 + 语文3题 + 英语3题。根据当前日期轮换使用（第1-2周用A卷，第3-4周用B卷...）。<br>
+                <strong>使用方法：</strong>打印本页后剪下对应套题，每次只给孩子该次的一套题。
+            </div>
+            
+            <div style="background:#f7fafc;border-radius:12px;padding:18px;margin-top:14px;">
+                <div style="font-weight:bold;color:#2d3436;margin-bottom:12px;">📐 数学试卷 A（第1-2周）</div>
+                <div style="font-size:0.95em;color:#4a5568;line-height:1.8;">
+                    1. 计算：47 × 28 = ？（要求写出竖式过程，标出进位）<br>
+                    2. 应用题：一箱苹果有36个，每6个装一袋，可以装几袋？还剩几个？<br>
+                    3. 陷阱题：小华有24元，小明有他的3倍，小红比小明少8元，小红有多少元？<br>
+                    4. 倍数题：操场上男生有18人，女生比男生多7人，女生是男生的几倍还多几人？
+                </div>
+            </div>
+            
+            <div style="background:#f7fafc;border-radius:12px;padding:18px;margin-top:14px;">
+                <div style="font-weight:bold;color:#2d3436;margin-bottom:12px;">📐 数学试卷 B（第3-4周）</div>
+                <div style="font-size:0.95em;color:#4a5568;line-height:1.8;">
+                    1. 计算：53 × 37 = ？（要求写出竖式过程，标出进位）<br>
+                    2. 应用题：一根绳子长45米，每7米剪一段，能剪几段？还剩几米？<br>
+                    3. 陷阱题：一块布长30米，做一套衣服用4米，最多能做几套？（注意：余数不能再用）<br>
+                    4. 和差题：甲乙两数和是42，甲比乙多6，求甲是多少？（提示：画图帮助理解）
+                </div>
+            </div>
+            
+            <div style="background:#f7fafc;border-radius:12px;padding:18px;margin-top:14px;">
+                <div style="font-weight:bold;color:#2d3436;margin-bottom:12px;">📐 数学试卷 C（第5-6周）</div>
+                <div style="font-size:0.95em;color:#4a5568;line-height:1.8;">
+                    1. 计算：68 × 45 = ？（要求写出竖式过程，标出进位）<br>
+                    2. 应用题：买3本同样的笔记本花了27元，每本多少钱？（注意写单位和答句）<br>
+                    3. 陷阱题：一个长方形长12厘米，宽比长短4厘米，它的周长是多少厘米？（注意：求的是周长不是面积）<br>
+                    4. 倍数题：养殖场有鸡25只，鸭的数量是鸡的2倍还多5只，鹅比鸭少12只，鹅有多少只？
+                </div>
+            </div>
+            
+            <div style="background:#f7fafc;border-radius:12px;padding:18px;margin-top:14px;">
+                <div style="font-weight:bold;color:#2d3436;margin-bottom:12px;">📐 数学试卷 D（第7-8周）</div>
+                <div style="font-size:0.95em;color:#4a5568;line-height:1.8;">
+                    1. 计算：79 × 56 = ？（要求写出竖式过程，标出进位，并验算）<br>
+                    2. 应用题：42个同学分组做游戏，每组5人，至少分几组？（注意：余下的人也要一组）<br>
+                    3. 陷阱题：小明看一本书，第一天看了35页，第二天看的是第一天的2倍少10页，第三天应从第几页开始看？<br>
+                    4. 综合题：学校买来8箱粉笔，每箱25盒，用去120盒，还剩多少盒？
+                </div>
+            </div>
+            
+            <!-- 90天扩充：E/F/G/H试卷 -->
+            <div style="background:#f7fafc;border-radius:12px;padding:18px;margin-top:14px;">
+                <div style="font-weight:bold;color:#2d3436;margin-bottom:12px;">📐 数学试卷 E（第9-10周）</div>
+                <div style="font-size:0.95em;color:#4a5568;line-height:1.8;">
+                    1. 计算：84 × 39 = ？（写出竖式，标进退位）<br>
+                    2. 应用题：每盒彩笔8元，老师带了50元，最多能买几盒？还剩多少钱？<br>
+                    3. 陷阱题：一个正方形花坛周长是32米，它的边长是多少？（注意：正方形四边相等）<br>
+                    4. 倍数题：图书馆有故事书36本，科技书比故事书少9本，故事书是科技书的几倍？
+                </div>
+            </div>
+            <div style="background:#f7fafc;border-radius:12px;padding:18px;margin-top:14px;">
+                <div style="font-weight:bold;color:#2d3436;margin-bottom:12px;">📐 数学试卷 F（第11-12周）</div>
+                <div style="font-size:0.95em;color:#4a5568;line-height:1.8;">
+                    1. 计算：67 × 48 = ？（写出竖式，标进退位，并验算）<br>
+                    2. 应用题：一根彩带长38米，做花用去17米，剩下的每5米扎一束，能扎几束？<br>
+                    3. 陷阱题：小明从家到学校要走15分钟，他7:40出门，上课时间是8:00，他会不会迟到？<br>
+                    4. 和差题：两筐苹果共重56千克，第一筐比第二筐重12千克，第二筐有多少千克？
+                </div>
+            </div>
+            <div style="background:#f7fafc;border-radius:12px;padding:18px;margin-top:14px;">
+                <div style="font-weight:bold;color:#2d3436;margin-bottom:12px;">📐 数学试卷 G（第13-14周）</div>
+                <div style="font-size:0.95em;color:#4a5568;line-height:1.8;">
+                    1. 计算：93 × 27 = ？（写出竖式，标进退位）<br>
+                    2. 应用题：三年级有4个班，每班浇花28盆，一共浇了多少盆？<br>
+                    3. 陷阱题：妈妈买了3千克苹果和2千克梨，苹果每千克6元，梨每千克4元，一共花了多少钱？（注意：单价不同）<br>
+                    4. 综合题：一辆大巴车能坐45人，三年级有160人去春游，租3辆车够吗？还差多少个座位？
+                </div>
+            </div>
+            <div style="background:#f7fafc;border-radius:12px;padding:18px;margin-top:14px;">
+                <div style="font-weight:bold;color:#2d3436;margin-bottom:12px;">📐 数学试卷 H（第15-16周 — 期末综合）</div>
+                <div style="font-size:0.95em;color:#4a5568;line-height:1.8;">
+                    1. 计算：58 × 73 = ？（写出竖式，标进退位，并验算）<br>
+                    2. 应用题：一部动画片每集25分钟，每天播2集，连续播5天，一共播了多少分钟？合几小时几分？<br>
+                    3. 陷阱题：一块长方形菜地长15米，宽是长的一半，围着菜地围一圈篱笆要多少米？<br>
+                    4. 综合题：文具店钢笔每支8元，笔记本每本6元，小明买了2支钢笔和3本笔记本，付50元应找回多少钱？
+                </div>
+            </div>
+            <div style="background:#f7fafc;border-radius:12px;padding:18px;margin-top:14px;">
+                <div style="font-weight:bold;color:#2d3436;margin-bottom:12px;">📐 数学试卷 I（第17-18周 — 查漏补缺1）</div>
+                <div style="font-size:0.95em;color:#4a5568;line-height:1.8;">
+                    1. 计算：46 × 35 = ？（竖式+进退位标记）<br>
+                    2. 应用题：一个面包5元，买8个面包付了50元，应找回多少？<br>
+                    3. 陷阱题：小华身高135厘米，小红比小华矮8厘米，小明比小红高5厘米，小明身高多少？<br>
+                    4. 倍数题：三年级植树40棵，四年级植的是三年级的2倍，五年级比四年级少植15棵，五年级植树多少棵？
+                </div>
+            </div>
+            <div style="background:#f7fafc;border-radius:12px;padding:18px;margin-top:14px;">
+                <div style="font-weight:bold;color:#2d3436;margin-bottom:12px;">📐 数学试卷 J（第19-20周 — 查漏补缺2）</div>
+                <div style="font-size:0.95em;color:#4a5568;line-height:1.8;">
+                    1. 计算：89 × 24 = ？（竖式+进退位标记+验算）<br>
+                    2. 应用题：一辆小汽车坐4人，30名同学去春游，租7辆车够吗？多几个或少几个座位？<br>
+                    3. 陷阱题：一根绳子对折两次后每段长12米，这根绳子原来长多少米？<br>
+                    4. 和差题：两袋米共重80千克，从大袋倒10千克到小袋后两袋一样重，原来大袋多少千克？
+                </div>
+            </div>
+            <div style="background:#f7fafc;border-radius:12px;padding:18px;margin-top:14px;">
+                <div style="font-weight:bold;color:#2d3436;margin-bottom:12px;">📐 数学试卷 K（第21-22周 — 综合提升1）</div>
+                <div style="font-size:0.95em;color:#4a5568;line-height:1.8;">
+                    1. 计算：76 × 58 = ？（竖式+进退位标记+验算）<br>
+                    2. 应用题：做一套校服需要3米布，现有95米布，最多做多少套？还剩几米？<br>
+                    3. 陷阱题：时钟3点敲3下用了6秒，8点敲8下要用几秒？（注意：敲的间隔数=敲的次数-1）<br>
+                    4. 综合题：操场上有男生24人，女生人数是男生的3倍，现在每6人一组做游戏，一共可以分几组？
+                </div>
+            </div>
+            <div style="background:#f7fafc;border-radius:12px;padding:18px;margin-top:14px;">
+                <div style="font-weight:bold;color:#2d3436;margin-bottom:12px;">📐 数学试卷 L（第23-24周 — 综合提升2/期末）</div>
+                <div style="font-size:0.95em;color:#4a5568;line-height:1.8;">
+                    1. 计算：65 × 47 = ？（竖式+进退位标记+验算）<br>
+                    2. 应用题：学校图书馆买来科技书120本，比故事书少30本，两种书一共多少本？<br>
+                    3. 陷阱题：一个数除以6商是8余数是5，这个数是多少？（注意：被除数=除数×商+余数）<br>
+                    4. 综合题：农场里有鸡48只，鸭的数量是鸡的一半，鹅比鸭多12只。鸡是鹅的几倍？
+                </div>
+            </div>
+            
+            <div style="background:#fff0f5;border-radius:12px;padding:18px;margin-top:14px;">
+                <div style="font-weight:bold;color:#2d3436;margin-bottom:12px;">📖 语文测试（通用模板，每次替换内容）</div>
+                <div style="font-size:0.95em;color:#4a5568;line-height:1.8;">
+                    1. 看拼音写词语（5个，从以下高频易错词中轮换选择）：<br>
+                       &nbsp;&nbsp;第A次：礼貌、熟悉、即使、勇敢、翅膀<br>
+                       &nbsp;&nbsp;第B次：继续、热烈、未来、健康、舞蹈<br>
+                       &nbsp;&nbsp;第C次：普通、预防、智慧、浪费、吸引<br>
+                       &nbsp;&nbsp;第D次：攻击、来历、资源、谦虚、危险<br>
+                       &nbsp;&nbsp;第E次：健康、实际、舒服、翻遍、潮湿<br>
+                       &nbsp;&nbsp;第F次：仍然、迎接、狐狸、威武、空闲<br>
+                       &nbsp;&nbsp;第G次：邮票、汽油、秘密、冷热、粗壮<br>
+                       &nbsp;&nbsp;第H次：翅膀、图案、或者、冷冻、修建<br>
+                    2. 阅读理解（给一段200字短文，回答2个问题，要求答案从原文找依据）<br>
+                    3. 古诗默写（从以下轮换）：<br>
+                       &nbsp;&nbsp;第A次：「春眠不觉晓，______闻啼鸟。夜来______，花落知多少。」<br>
+                       &nbsp;&nbsp;第B次：「床前______，疑是地上霜。举头望______，低头思故乡。」<br>
+                       &nbsp;&nbsp;第C次：「白日依山尽，______入海流。欲穷______，更上一层______。」<br>
+                       &nbsp;&nbsp;第D次：「离离原上草，一岁一______。野火烧不尽，______吹又生。」<br>
+                       &nbsp;&nbsp;第E-H次：从语文课本必背古诗中自选
+                </div>
+            </div>
+            
+            <div style="background:#f0f8ff;border-radius:12px;padding:18px;margin-top:14px;">
+                <div style="font-weight:bold;color:#2d3436;margin-bottom:12px;">🔤 英语测试（通用模板，每次替换单词）</div>
+                <div style="font-size:0.95em;color:#4a5568;line-height:1.8;">
+                    1. 听写5个单词（从以下分组中轮换）：<br>
+                       &nbsp;&nbsp;第A次：think, thank, these, those, birthday<br>
+                       &nbsp;&nbsp;第B次：three, mouth, fish, sheep, ship<br>
+                       &nbsp;&nbsp;第C次：cat, kite, red, bed, book, look<br>
+                       &nbsp;&nbsp;第D次：rice, rise, very, well, desk, test<br>
+                       &nbsp;&nbsp;第E次：think, three, month, path, bath<br>
+                       &nbsp;&nbsp;第F次：this, that, mother, father, brother<br>
+                       &nbsp;&nbsp;第G次：sing, song, long, wrong, young<br>
+                       &nbsp;&nbsp;第H次：light, night, right, sight, fight<br>
+                    2. 语法选择3题（从以下轮换）：<br>
+                       &nbsp;&nbsp;第A次：① She ___ to school every day. (go/goes) ② There ___ a book on the desk. (is/are) ③ I ___ a student. (am/is/are)<br>
+                       &nbsp;&nbsp;第B次：① He ___ a blue shirt yesterday. (wear/wore) ② ___ you like apples? (Do/Does) ③ My sister ___ in the park now. (play/is playing)<br>
+                       &nbsp;&nbsp;第C次：① There are some ___ on the table. (book/books) ② ___ he have a pen? (Do/Does) ③ I ___ like red. (don't/doesn't)<br>
+                       &nbsp;&nbsp;第D次：① ___ is your name? (What/Who) ② ___ you go to school by bus? (Do/Does) ③ She ___ at home yesterday. (was/were)<br>
+                       &nbsp;&nbsp;第E次：① My father ___ TV every evening. (watch/watches) ② ___ there any milk? (Is/Are) ③ We ___ students. (am/are/is)<br>
+                       &nbsp;&nbsp;第F次：① She ___ to Beijing last summer. (go/goes/went) ② What ___ they doing? (is/are) ③ He ___ tall and strong. (is/are/am)<br>
+                       &nbsp;&nbsp;第G次：① I have ___ English book. (a/an) ② ___ you have a ruler? (Do/Does) ③ There ___ a pen and two books. (is/are)<br>
+                       &nbsp;&nbsp;第H次：① ___ Tom reading? (Is/Are) ② I ___ like apples. (don't/doesn't) ③ ___ he like PE? (Do/Does)<br>
+                    3. 朗读句子（含th，从以下轮换）：<br>
+                       &nbsp;&nbsp;第A次：Thank you for these three books.<br>
+                       &nbsp;&nbsp;第B次：My father and mother like this.<br>
+                       &nbsp;&nbsp;第C-H次：自选含th的句子
+                </div>
+            </div>
+        </div>
+        
+        <!-- Record Table -->
+        <div class="test-card">
+            <div class="test-header">
+                <span class="test-icon">📋</span>
+                <div>
+                    <div class="test-title">双周测试记录表</div>
+                    <div class="test-subtitle">填写每次测试的日期和得分</div>
+                </div>
+            </div>
+            <div class="record-table-wrap">
+            <table class="record-table">
+                <thead>
+                    <tr>
+                        <th>测试项目</th>
+                        <th>第1次</th>
+                        <th>第2次</th>
+                        <th>第3次</th>
+                        <th>第4次</th>
+                        <th>第5次</th>
+                        <th>第6次</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>🔢 工作记忆</td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td></tr>
+                    <tr><td>🎯 抑制控制</td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td></tr>
+                    <tr><td>📐 数学</td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td></tr>
+                    <tr><td>📖 语文</td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td></tr>
+                    <tr><td>🔤 英语</td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td></tr>
+                    <tr><td>🧹 执行功能</td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td><td class="editable" contenteditable></td></tr>
+                    <tr style="background:#fffaf0;font-weight:bold;">
+                        <td>总评（均分）</td>
+                        <td class="editable" contenteditable></td>
+                        <td class="editable" contenteditable></td>
+                        <td class="editable" contenteditable></td>
+                        <td class="editable" contenteditable></td>
+                        <td class="editable" contenteditable></td>
+                        <td class="editable" contenteditable></td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+        
+        <!-- Trend -->
+        <div class="test-card">
+            <div class="test-header">
+                <span class="test-icon">📈</span>
+                <div>
+                    <div class="test-title">进步趋势解读</div>
+                    <div class="test-subtitle">每个项目对比上一次的变化</div>
+                </div>
+            </div>
+            <div class="trend-section">
+                <div class="trend-grid" id="trendGrid">
+                    <div class="trend-item">
+                        <div class="trend-val flat">—</div>
+                        <div class="trend-label">先完成第一次测试</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Summary -->
+        <div class="summary-card">
+            <div class="summary-title">🎯 测试后该做什么？</div>
+            <div class="summary-text">
+                1. <strong>不批评分数</strong> — 分数只是信号，告诉我们哪里需要加强<br>
+                2. <strong>对比上一次</strong> — 进步1分也是进步，退步则要分析原因（是不是最近训练少了？）<br>
+                3. <strong>调整训练重点</strong> — 哪项弱接下来两周就多练哪项<br>
+                4. <strong>记录"非分数"观察</strong> — 比如"这次检查卡用了3次""口述解题说得很清楚"，这些比分数更重要
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn btn-save" onclick="saveScores()">💾 保存本次评分</button>
+            <button class="btn btn-print" onclick="window.print()">🖨️ 打印记录表</button>
+        </div>
+    </div>
+
+    <script>
+        // === State ===
+        let scores = JSON.parse(localStorage.getItem('biweeklyScores') || '{}');
+        let recordData = JSON.parse(localStorage.getItem('biweeklyRecords') || '[]');
+        
+        // === Date ===
+        const now = new Date();
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const weekNum = Math.ceil((now - startOfYear) / 604800000);
+        const biweekNum = Math.ceil(weekNum / 2);
+        document.getElementById('dateRange').textContent = 
+            `📅 ${now.getFullYear()}年 第${biweekNum}个双周周期（第${weekNum}周）`;
+        
+        // === Score Selection ===
+        function selectScore(el, test, score) {
+            el.parentElement.querySelectorAll('.score-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            
+            const key = now.toDateString() + '_' + test;
+            scores[key] = score;
+        }
+        
+        // === Record Table Persistence ===
+        function saveRecordTable() {
+            const cells = document.querySelectorAll('.record-table .editable');
+            recordData = Array.from(cells).map(c => c.textContent.trim());
+            localStorage.setItem('biweeklyRecords', JSON.stringify(recordData));
+        }
+        
+        function loadRecordTable() {
+            if (recordData.length === 0) return;
+            const cells = document.querySelectorAll('.record-table .editable');
+            cells.forEach((c, i) => {
+                if (recordData[i]) c.textContent = recordData[i];
+            });
+        }
+        
+        document.querySelectorAll('.record-table .editable').forEach(cell => {
+            cell.addEventListener('blur', saveRecordTable);
+        });
+        
+        // === Save ===
+        function saveScores() {
+            localStorage.setItem('biweeklyScores', JSON.stringify(scores));
+            saveRecordTable();
+            
+            // Update trend display
+            const tests = ['memory', 'stroop', 'math', 'chinese', 'english', 'exec'];
+            const names = ['🔢 工作记忆', '🎯 抑制控制', '📐 数学', '📖 语文', '🔤 英语', '🧹 执行功能'];
+            const grid = document.getElementById('trendGrid');
+            grid.innerHTML = '';
+            
+            tests.forEach((test, i) => {
+                const keys = Object.keys(scores).filter(k => k.endsWith('_' + test));
+                if (keys.length >= 2) {
+                    const sorted = keys.sort();
+                    const latest = scores[sorted[sorted.length-1]];
+                    const prev = scores[sorted[sorted.length-2]];
+                    const diff = latest - prev;
+                    
+                    const item = document.createElement('div');
+                    item.className = 'trend-item';
+                    item.innerHTML = `
+                        <div class="trend-val ${diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat'}">${diff > 0 ? '↑' : diff < 0 ? '↓' : '—'}</div>
+                        <div class="trend-label">${names[i]}<br>${diff > 0 ? '进步了！' : diff < 0 ? '需加强' : '持平'}</div>
+                    `;
+                    grid.appendChild(item);
+                }
+            });
+            
+            if (grid.innerHTML === '') {
+                grid.innerHTML = '<div class="trend-item"><div class="trend-val flat">—</div><div class="trend-label">完成两次测试后显示趋势</div></div>';
+            }
+            
+            alert('评分已保存！下次测试时可以对比进步趋势。');
+        }
+        
+        // Restore selected states on load
+        const todayPrefix = now.toDateString();
+        Object.entries(scores).forEach(([key, score]) => {
+            if (key.startsWith(todayPrefix + '_')) {
+                const test = key.split('_').slice(1).join('_');
+                const testCards = document.querySelectorAll('.test-card');
+                testCards.forEach(card => {
+                    const options = card.querySelectorAll('.score-option');
+                    options.forEach(opt => {
+                        const val = opt.querySelector('.score-val');
+                        if (val && val.textContent.length >= score && val.textContent.split('⭐').length - 1 === score) {
+                            opt.classList.add('selected');
+                        }
+                    });
+                });
+            }
+        });
+        
+        loadRecordTable();
+    </script>
+</body>
+</html>

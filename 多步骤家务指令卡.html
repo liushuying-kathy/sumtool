@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日家务挑战 | 多步骤指令卡</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container { max-width: 850px; margin: 0 auto; }
+        
+        .header {
+            text-align: center;
+            color: #2d3436;
+            margin-bottom: 25px;
+        }
+        
+        .header h1 { font-size: 2.2em; margin-bottom: 8px; }
+        .header .subtitle { font-size: 1.05em; color: #636e72; }
+        
+        .date-bar {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        .date-bar .date { font-weight: bold; color: #00b894; font-size: 1.1em; }
+        .date-bar .coins { font-size: 1.2em; }
+        
+        /* Task Selector */
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        
+        .task-card {
+            background: white;
+            border-radius: 18px;
+            padding: 18px 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 3px solid transparent;
+            position: relative;
+        }
+        
+        .task-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+        .task-card.active { border-color: #00b894; background: #f0fff4; }
+        .task-card.completed { opacity: 0.7; background: #f5f5f5; }
+        .task-card.completed::after { content: '✓'; position: absolute; top: 8px; right: 12px; font-size: 1.5em; color: #00b894; }
+        
+        .task-icon { font-size: 2.5em; margin-bottom: 8px; display: block; }
+        .task-name { font-weight: bold; font-size: 1em; color: #2d3436; }
+        .task-time { font-size: 0.8em; color: #b2bec3; margin-top: 4px; }
+        
+        /* Detail Card */
+        .detail-card {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .detail-title {
+            font-size: 1.4em;
+            color: #2d3436;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .timer-badge {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .timer-badge.running { animation: pulse 1s infinite; }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Steps */
+        .steps-list { list-style: none; }
+        
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 14px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .step-item:hover { background: #e8f5e9; }
+        .step-item.checked {
+            background: #e8f5e9;
+            border-color: #81c784;
+        }
+        .step-item.checked .step-num { background: #4caf50; }
+        .step-item.checked .step-text { text-decoration: line-through; opacity: 0.7; }
+        
+        .step-num {
+            min-width: 36px;
+            height: 36px;
+            background: #74b9ff;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1em;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+        
+        .step-content { flex: 1; }
+        .step-text { font-size: 1.05em; color: #2d3436; line-height: 1.5; }
+        .step-hint {
+            font-size: 0.85em;
+            color: #b2bec3;
+            margin-top: 4px;
+            font-style: italic;
+        }
+        
+        .step-check {
+            font-size: 1.5em;
+            color: #dfe6e9;
+            transition: all 0.3s;
+        }
+        .step-item.checked .step-check { color: #4caf50; }
+        
+        /* Progress */
+        .progress-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed #dfe6e9;
+        }
+        
+        .progress-bar {
+            height: 16px;
+            background: #dfe6e9;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b894, #55efc4);
+            border-radius: 8px;
+            transition: width 0.5s;
+        }
+        
+        .progress-text {
+            text-align: center;
+            color: #636e72;
+            font-size: 0.95em;
+        }
+        
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 14px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover { transform: translateY(-2px); }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00b894, #55efc4);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,184,148,0.35);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #fdcb6e, #f39c12);
+            color: #333;
+        }
+        
+        .btn-secondary {
+            background: #dfe6e9;
+            color: #636e72;
+        }
+        
+        /* Completion Reward */
+        .reward-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .reward-overlay.show { display: flex; }
+        
+        .reward-box {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            animation: popIn 0.5s ease;
+            max-width: 400px;
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .reward-emoji { font-size: 4em; margin-bottom: 15px; display: block; }
+        .reward-title { font-size: 1.6em; color: #00b894; margin-bottom: 10px; }
+        .reward-text { color: #636e72; margin-bottom: 20px; }
+        
+        /* Weekly Calendar */
+        .calendar-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        }
+        
+        .calendar-title {
+            font-size: 1.2em;
+            color: #2d3436;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+        
+        .day-box {
+            aspect-ratio: 1;
+            background: #f8f9fa;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        
+        .day-box:hover { background: #e8f5e9; }
+        .day-box.today { border-color: #00b894; background: #e8f5e9; font-weight: bold; }
+        .day-box.done { background: #c8e6c9; }
+        .day-box .day-name { font-size: 0.75em; color: #b2bec3; }
+        .day-box .day-num { font-size: 1.1em; color: #2d3436; }
+        .day-box .day-star { font-size: 0.9em; margin-top: 2px; }
+        
+        /* Distraction popup */
+        .distraction-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin: 15px 0;
+            font-size: 0.95em;
+            color: #e65100;
+            display: none;
+        }
+        .distraction-box.show { display: block; }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.6em; }
+            .task-grid { grid-template-columns: repeat(2, 1fr); }
+            .week-grid { gap: 5px; }
+            .day-box { font-size: 0.75em; }
+        }
+        
+        @media print {
+            body { background: white; }
+            .detail-card { box-shadow: none; border: 1px solid #ddd; }
+            .btn-group, .task-grid { display: none; }
+            .step-item { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🏠 每日家务挑战</h1>
+            <div class="subtitle">一步一步来，做完打勾勾！</div>
+        </div>
+        
+        <!-- Date Bar -->
+        <div class="date-bar">
+            <div class="date" id="todayDate">📅 载入中...</div>
+            <div class="coins" id="coinDisplay">⭐ 本周积分：0</div>
+        </div>
+        
+        <!-- Task Selector -->
+        <div class="task-grid" id="taskGrid"></div>
+        
+        <!-- Detail Card -->
+        <div class="detail-card" id="detailCard" style="display:none;">
+            <div class="detail-header">
+                <div class="detail-title">
+                    <span id="detailIcon">📋</span>
+                    <span id="detailName">选择一项家务</span>
+                </div>
+                <div class="timer-badge" id="taskTimer">⏱️ 00:00</div>
+            </div>
+            
+            <!-- Distraction Box -->
+            <div class="distraction-box" id="distractionBox"></div>
+            
+            <!-- Steps -->
+            <ul class="steps-list" id="stepsList"></ul>
+            
+            <!-- Progress -->
+            <div class="progress-section">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="taskProgress" style="width:0%"></div>
+                </div>
+                <div class="progress-text" id="progressText">完成 0/0 步骤</div>
+            </div>
+            
+            <!-- Buttons -->
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="startTask()">▶️ 开始</button>
+                <button class="btn btn-warning" onclick="resetTask()">🔄 重置</button>
+                <button class="btn btn-secondary" onclick="insertDistraction()">🎲 随机加任务</button>
+            </div>
+        </div>
+        
+        <!-- Weekly Calendar -->
+        <div class="calendar-card">
+            <div class="calendar-title">📅 本周完成日历</div>
+            <div class="week-grid" id="weekGrid"></div>
+        </div>
+    </div>
+    
+    <!-- Reward Overlay -->
+    <div class="reward-overlay" id="rewardOverlay">
+        <div class="reward-box">
+            <span class="reward-emoji">🎉</span>
+            <div class="reward-title">任务完成！</div>
+            <div class="reward-text" id="rewardText">太棒了！你完成了所有步骤！</div>
+            <button class="btn btn-primary" onclick="closeReward()">继续加油！</button>
+        </div>
+    </div>
+
+    <script>
+        // === Task Data ===
+        const TASKS = {
+            clothes: {
+                icon: '👕', name: '收叠衣服', estTime: '10分钟',
+                steps: [
+                    { text: '把晾干的衣服从晾衣架上取下来', hint: '一件一件拿，别拉倒架子' },
+                    { text: '把衣服按人分类：爸爸的、妈妈的、我的', hint: '看衣服大小和样式来分' },
+                    { text: '先把衣服翻回正面（如果反了的话）', hint: '标签一般在里面' },
+                    { text: '把T恤/上衣铺平，对折再对折', hint: '铺在床上折最方便' },
+                    { text: '裤子对折，裤脚对齐裤腰', hint: '像商店里那样叠整齐' },
+                    { text: '把叠好的衣服分类放进衣柜/抽屉', hint: '自己的衣服放自己抽屉' },
+                    { text: '把空衣架收好挂回晾衣架', hint: '别乱丢，下次还要用' }
+                ]
+            },
+            cat: {
+                icon: '🐱', name: '喂猫+清理', estTime: '8分钟',
+                steps: [
+                    { text: '洗手，准备喂猫工具', hint: '干净的手对猫咪更健康' },
+                    { text: '把猫粮碗拿出来，把昨天的剩粮倒掉', hint: '旧粮可能会变质' },
+                    { text: '用水冲洗猫粮碗，擦干', hint: '碗要干净猫咪才爱吃' },
+                    { text: '按量倒入新猫粮（问爸妈放多少）', hint: '通常有专用量杯' },
+                    { text: '换新鲜的水，清洗水碗', hint: '猫咪爱喝干净水' },
+                    { text: '检查猫砂盆，用铲子清理结团', hint: '把结团的猫砂铲进垃圾袋' },
+                    { text: '如果猫砂少了，补充新猫砂', hint: '铺到大约5厘米厚' },
+                    { text: '把垃圾袋扎紧，扔到垃圾桶', hint: '记得洗手！' }
+                ]
+            },
+            cage: {
+                icon: '🐹', name: '清理宠物笼', estTime: '12分钟',
+                steps: [
+                    { text: '把小动物放到安全的临时容器', hint: '确保它跑不出来' },
+                    { text: '把笼子里的垫料/木屑倒出来', hint: '可以铺报纸方便收拾' },
+                    { text: '用湿布擦拭笼子底部和四周', hint: '顽固污渍多擦几下' },
+                    { text: '清洗食盆和水壶，换新食物和水', hint: '水壶要确认出水通畅' },
+                    { text: '铺上干净的新垫料/木屑', hint: '铺均匀，大约2-3厘米厚' },
+                    { text: '把玩具、跑轮放回原位', hint: '检查跑轮能不能正常转' },
+                    { text: '把小动物轻轻放回笼子', hint: '动作要轻，别吓到它' },
+                    { text: '清理桌面/地面，洗手', hint: '卫生最重要' }
+                ]
+            },
+            desk: {
+                icon: '🧽', name: '擦桌子台面', estTime: '7分钟',
+                steps: [
+                    { text: '先把桌上的东西移到一边', hint: '轻拿轻放，别摔了' },
+                    { text: '用干布/纸巾擦掉碎屑和灰尘', hint: '把 crumbs 扫到手里扔掉' },
+                    { text: '湿布拧干，擦拭桌面', hint: '不要太湿，滴水就拧一拧' },
+                    { text: '有油渍的地方多擦几下', hint: '可以沾一点点洗洁精' },
+                    { text: '用干净布把桌面擦干', hint: '没有水痕才算好' },
+                    { text: '把东西按原样摆回去', hint: '摆整齐，别乱放' },
+                    { text: '把抹布洗干净晾好', hint: '湿抹布容易发臭' }
+                ]
+            },
+            toilet: {
+                icon: '🚽', name: '清洁厕所', estTime: '10分钟',
+                steps: [
+                    { text: '打开窗户通风，戴上手套', hint: '保护自己很重要' },
+                    { text: '往马桶里倒适量洁厕灵', hint: '沿着边缘倒一圈' },
+                    { text: '用马桶刷擦洗马桶内壁', hint: '水位线附近多刷几下' },
+                    { text: '盖上马桶盖冲水', hint: '冲水时盖盖子防止飞溅' },
+                    { text: '用湿布擦拭马桶座圈和盖子', hint: '包括外侧和按钮' },
+                    { text: '擦拭洗手台台面和水龙头', hint: '水龙头擦完会亮亮的' },
+                    { text: '把地面头发和污渍清理干净', hint: '可以用拖把或湿布' },
+                    { text: '脱掉手套洗手，关窗', hint: '用洗手液好好洗' }
+                ]
+            },
+            kitchen: {
+                icon: '🍽️', name: '餐后清理', estTime: '10分钟',
+                steps: [
+                    { text: '把桌上剩菜倒进垃圾桶', hint: '汤汁先倒掉再扔' },
+                    { text: '把碗筷拿到水槽', hint: '重的碗碟分开拿，别摔了' },
+                    { text: '用水冲掉碗筷上的残渣', hint: '冲干净后面好洗' },
+                    { text: '用海绵+洗洁精擦洗碗筷', hint: '里里外外都要擦到' },
+                    { text: '用清水把泡泡冲干净', hint: '摸起来不滑才算冲净' },
+                    { text: '把碗筷放进沥水架晾干', hint: '筷子头朝上放' },
+                    { text: '用湿布擦餐桌和灶台', hint: '油渍要擦干净' },
+                    { text: '把抹布洗干净，垃圾袋扎好', hint: '最后洗手！' }
+                ]
+            },
+            floor: {
+                icon: '🧹', name: '扫地拖地', estTime: '12分钟',
+                steps: [
+                    { text: '把地上的玩具、鞋子移到一边', hint: '清空地面才好扫' },
+                    { text: '从房间最里面开始往外扫', hint: '别把自己关在角落里' },
+                    { text: '把垃圾扫成一堆，扫进簸箕', hint: '可以用小刷子帮忙' },
+                    { text: '倒进垃圾桶，簸箕里的别漏', hint: '倒完敲一下簸箕' },
+                    { text: '拖把浸湿拧干（不要太湿）', hint: '拧到不滴水最好' },
+                    { text: '从房间最里面往外拖', hint: 'S型路线拖，别漏地方' },
+                    { text: '墙角和家具下面也要拖到', hint: '灰尘最爱藏这些地方' },
+                    { text: '拖把冲洗干净晾好', hint: '洗干净下次才好用' }
+                ]
+            },
+            bed: {
+                icon: '🛏️', name: '整理床铺', estTime: '5分钟',
+                steps: [
+                    { text: '把被子掀开，抖一抖', hint: '把皮屑灰尘抖掉' },
+                    { text: '把床单拉平整，塞到床垫下', hint: '四个角都要塞好' },
+                    { text: '把被子平铺在床上', hint: '长边和床对齐' },
+                    { text: '把被子对折或三折', hint: '根据被子的厚度来' },
+                    { text: '把枕头拍拍松，摆在床头', hint: '枕套要拉平整' },
+                    { text: '把毛绒玩具摆好', hint: '让它们也整整齐齐' }
+                ]
+            },
+            plant: {
+                icon: '🪴', name: '给植物浇水', estTime: '5分钟',
+                steps: [
+                    { text: '检查每盆植物土壤的干湿程度', hint: '手指插进土里2厘米，干了才浇' },
+                    { text: '准备适量的水（不要太凉）', hint: '室温水最好，别用刚接的冷水' },
+                    { text: '沿着花盆边缘慢慢浇', hint: '别直接浇在叶子上' },
+                    { text: '浇到水从底部排水孔流出', hint: '说明浇透了' },
+                    { text: '把托盘里的积水倒掉', hint: '积水会烂根' },
+                    { text: '用湿布轻轻擦叶片灰尘', hint: '叶子也要干净才能好好光合作用' }
+                ]
+            },
+            bookshelf: {
+                icon: '📚', name: '整理书架', estTime: '8分钟',
+                steps: [
+                    { text: '把书架上的书全部取下来', hint: '轻拿轻放，按顺序放地上' },
+                    { text: '用干布擦掉书架上的灰尘', hint: '角落也要擦到' },
+                    { text: '把书按大小或类别分类', hint: '大的放一起，课本放一起' },
+                    { text: '检查有没有不是书的东西混在里面', hint: '玩具、零食包装要拿出来' },
+                    { text: '把书整齐地摆回书架', hint: '书脊朝外，方便找' },
+                    { text: '把不需要的废纸/过期杂志放到回收处', hint: '问问爸妈哪些可以扔' }
+                ]
+            },
+            trash: {
+                icon: '🗑️', name: '倒垃圾+换袋', estTime: '5分钟',
+                steps: [
+                    { text: '检查家里各房间的垃圾桶', hint: '厨房、客厅、卫生间、卧室' },
+                    { text: '把满的垃圾袋拿出来扎紧', hint: '打结时别漏出来' },
+                    { text: '换上新的垃圾袋', hint: '把袋子边缘套在桶口上' },
+                    { text: '把垃圾袋提到楼下垃圾桶', hint: '注意分类：可回收/厨余/其他' },
+                    { text: '回来洗手', hint: '用洗手液，至少20秒' }
+                ]
+            },
+            window: {
+                icon: '🪟', name: '擦窗户玻璃', estTime: '8分钟',
+                steps: [
+                    { text: '用干布/纸巾擦掉表面灰尘', hint: '先把大颗粒灰尘扫掉' },
+                    { text: '喷一点玻璃清洁剂', hint: '没有就用湿布+一点点洗洁精水' },
+                    { text: '用湿布从上到下擦', hint: 'S型路线，别画圈' },
+                    { text: '用报纸或干布擦干', hint: '报纸擦玻璃不留水痕' },
+                    { text: '检查有没有水痕，有就再擦一遍', hint: '对着光看' },
+                    { text: '把窗台也擦一擦', hint: '窗台积灰最多' }
+                ]
+            },
+            schoolbag: {
+                icon: '🎒', name: '整理书包', estTime: '6分钟',
+                steps: [
+                    { text: '把书包里的东西全部倒出来', hint: '找一个干净的桌面' },
+                    { text: '分类：课本、作业本、文具、杂物', hint: '没用的废纸扔掉' },
+                    { text: '检查铅笔是否需要削', hint: '钝了的铅笔削好' },
+                    { text: '把课本按大小放进书包', hint: '大的放后面，小的放前面' },
+                    { text: '文具放进笔袋', hint: '尺子、橡皮、圆规各就各位' },
+                    { text: '把明天的课表对照一下', hint: '确认带对了课本' }
+                ]
+            },
+            socks: {
+                icon: '🧦', name: '袜子配对折叠', estTime: '5分钟',
+                steps: [
+                    { text: '把晾干的袜子从衣架取下来', hint: '别弄丢单只的' },
+                    { text: '找出成双的袜子配对', hint: '颜色、花纹、大小要一样' },
+                    { text: '把单只的袜子放到一边', hint: '可能另一只还在晾着' },
+                    { text: '把配对的袜子叠在一起', hint: '一只翻过来套住另一只' },
+                    { text: '把叠好的袜子放进抽屉', hint: '按人分类放' },
+                    { text: '单只袜子放回提醒爸妈', hint: '可能掉到某个角落了' }
+                ]
+            },
+            fridge: {
+                icon: '🧊', name: '检查冰箱食品', estTime: '7分钟',
+                steps: [
+                    { text: '打开冰箱，看看有什么食品', hint: '一层一层检查' },
+                    { text: '找出过期或快过期的食品', hint: '看包装上的日期' },
+                    { text: '把过期食品拿出来', hint: '问问爸妈确认能不能扔' },
+                    { text: '把食品按类别整理好', hint: '饮料放一起，剩菜放一起' },
+                    { text: '用湿布擦一擦冰箱隔板', hint: '有汤汁洒了要擦干净' },
+                    { text: '告诉爸妈哪些东西快过期了', hint: '提醒尽快吃掉' }
+                ]
+            },
+            mirror: {
+                icon: '🪞', name: '擦镜子', estTime: '5分钟',
+                steps: [
+                    { text: '喷一点玻璃清洁剂在镜子上', hint: '或用湿布沾一点洗洁精水' },
+                    { text: '用湿布从上到下擦', hint: '先擦大面积' },
+                    { text: '边角和污渍处重点擦', hint: '牙膏印、水渍要多擦几下' },
+                    { text: '用干布或报纸擦干', hint: '避免水痕' },
+                    { text: '退后一步检查整体', hint: '有遗漏的地方补擦' }
+                ]
+            },
+            shoes: {
+                icon: '👟', name: '整理鞋柜', estTime: '6分钟',
+                steps: [
+                    { text: '把鞋柜里的鞋全部拿出来', hint: '一对一对拿' },
+                    { text: '用干布擦掉鞋柜里的灰尘', hint: '角落也要擦' },
+                    { text: '把脏鞋底蹭干净', hint: '在门口的地垫上蹭' },
+                    { text: '按人分类摆放：爸爸的、妈妈的、我的', hint: '常用的放前面' },
+                    { text: '把不穿的鞋收好', hint: '换季鞋收进鞋盒' },
+                    { text: '检查有没有单只鞋找不到配对', hint: '问问爸妈另一只在哪' }
+                ]
+            },
+            bathtub: {
+                icon: '🛁', name: '清洁浴缸/淋浴间', estTime: '10分钟',
+                steps: [
+                    { text: '打开排风扇或窗户通风', hint: '清洁剂味道大，要通风' },
+                    { text: '把浴缸/地上的头发捡起来', hint: '头发会堵下水口' },
+                    { text: '喷上清洁剂，等2分钟', hint: '让清洁剂发挥作用' },
+                    { text: '用刷子刷洗浴缸壁和底部', hint: '一圈一圈刷' },
+                    { text: '用清水冲洗干净', hint: '把泡泡冲干净' },
+                    { text: '擦干水龙头和把手', hint: '擦完亮晶晶' },
+                    { text: '打开浴帘晾干', hint: '叠起来容易发霉' }
+                ]
+            },
+            appliance: {
+                icon: '📺', name: '擦拭家电表面', estTime: '6分钟',
+                steps: [
+                    { text: '拔掉电源（或确认手是干的）', hint: '安全第一' },
+                    { text: '用干布擦掉表面灰尘', hint: '电视屏幕、电脑屏幕、空调外壳' },
+                    { text: '用微湿布擦顽固污渍', hint: '布要拧干，不能滴水' },
+                    { text: '遥控器也要擦', hint: '按键缝隙里的灰' },
+                    { text: '用干布再擦一遍', hint: '不能留水痕' },
+                    { text: '插回电源，检查是否正常', hint: '指示灯亮了就行' }
+                ]
+            }
+        };
+        
+        // === State ===
+        let currentTask = null;
+        let checkedSteps = new Set();
+        let taskStartTime = null;
+        let taskTimerInterval = null;
+        let weeklyCoins = (function() {
+            const today = new Date();
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - today.getDay());
+            const weekKey = 'week_' + startOfWeek.toDateString();
+            const savedWeek = localStorage.getItem('coinsWeekKey');
+            if (savedWeek !== weekKey) {
+                localStorage.setItem('coinsWeekKey', weekKey);
+                localStorage.setItem('weeklyCoins', '0');
+                return 0;
+            }
+            return parseInt(localStorage.getItem('weeklyCoins') || '0');
+        })();
+        let completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '{}');
+        
+        // === Date ===
+        const now = new Date();
+        document.getElementById('todayDate').textContent = 
+            `📅 ${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+        document.getElementById('coinDisplay').textContent = `⭐ 本周积分：${weeklyCoins}`;
+        
+        // === Init Task Grid ===
+        function initTaskGrid() {
+            const grid = document.getElementById('taskGrid');
+            grid.innerHTML = '';
+            
+            Object.entries(TASKS).forEach(([key, task]) => {
+                const card = document.createElement('div');
+                card.className = 'task-card';
+                card.dataset.task = key;
+                card.onclick = () => selectTask(key);
+                
+                const today = now.toDateString();
+                if (completedTasks[today] && completedTasks[today].includes(key)) {
+                    card.classList.add('completed');
+                }
+                
+                card.innerHTML = `
+                    <span class="task-icon">${task.icon}</span>
+                    <div class="task-name">${task.name}</div>
+                    <div class="task-time">⏱️ ${task.estTime}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        function selectTask(key) {
+            currentTask = key;
+            const task = TASKS[key];
+            
+            // Update selection
+            document.querySelectorAll('.task-card').forEach(c => c.classList.remove('active'));
+            document.querySelector(`[data-task="${key}"]`).classList.add('active');
+            
+            // Show detail
+            document.getElementById('detailCard').style.display = 'block';
+            document.getElementById('detailIcon').textContent = task.icon;
+            document.getElementById('detailName').textContent = task.name;
+            document.getElementById('taskTimer').textContent = '⏱️ 00:00';
+            
+            // Reset
+            checkedSteps.clear();
+            stopTaskTimer();
+            document.getElementById('distractionBox').classList.remove('show');
+            
+            // Render steps
+            const list = document.getElementById('stepsList');
+            list.innerHTML = '';
+            task.steps.forEach((step, i) => {
+                const li = document.createElement('li');
+                li.className = 'step-item';
+                li.dataset.index = i;
+                li.onclick = () => toggleStep(i);
+                li.innerHTML = `
+                    <div class="step-num">${i+1}</div>
+                    <div class="step-content">
+                        <div class="step-text">${step.text}</div>
+                        <div class="step-hint">💡 ${step.hint}</div>
+                    </div>
+                    <div class="step-check">✓</div>
+                `;
+                list.appendChild(li);
+            });
+            
+            updateProgress();
+            
+            // Scroll to detail
+            document.getElementById('detailCard').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function toggleStep(index) {
+            const items = document.querySelectorAll('.step-item');
+            const item = items[index];
+            
+            if (checkedSteps.has(index)) {
+                checkedSteps.delete(index);
+                item.classList.remove('checked');
+            } else {
+                checkedSteps.add(index);
+                item.classList.add('checked');
+            }
+            
+            updateProgress();
+            
+            // Check completion (only if not already completed today)
+            const today = now.toDateString();
+            const alreadyDone = completedTasks[today] && completedTasks[today].includes(currentTask);
+            if (!alreadyDone && checkedSteps.size === TASKS[currentTask].steps.length) {
+                completeTask();
+            }
+        }
+        
+        function updateProgress() {
+            if (!currentTask) return;
+            const total = TASKS[currentTask].steps.length;
+            const done = checkedSteps.size;
+            const pct = (done / total * 100);
+            document.getElementById('taskProgress').style.width = pct + '%';
+            document.getElementById('progressText').textContent = `完成 ${done}/${total} 步骤`;
+        }
+        
+        function startTask() {
+            taskStartTime = Date.now();
+            const timerEl = document.getElementById('taskTimer');
+            timerEl.classList.add('running');
+            
+            taskTimerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - taskStartTime) / 1000);
+                const mins = String(Math.floor(elapsed / 60)).padStart(2, '0');
+                const secs = String(elapsed % 60).padStart(2, '0');
+                timerEl.textContent = `⏱️ ${mins}:${secs}`;
+            }, 1000);
+        }
+        
+        function stopTaskTimer() {
+            if (taskTimerInterval) {
+                clearInterval(taskTimerInterval);
+                taskTimerInterval = null;
+            }
+            document.getElementById('taskTimer').classList.remove('running');
+        }
+        
+        function resetTask() {
+            checkedSteps.clear();
+            stopTaskTimer();
+            document.getElementById('taskTimer').textContent = '⏱️ 00:00';
+            document.getElementById('distractionBox').classList.remove('show');
+            document.querySelectorAll('.step-item').forEach(item => item.classList.remove('checked'));
+            updateProgress();
+        }
+        
+        function insertDistraction() {
+            const distractions = [
+                '⚠️ 妈妈追加：顺手把门口的地垫也拍一拍！',
+                '⚠️ 爸爸追加：做完记得把阳台门关上！',
+                '⚠️ 突发情况：猫咪把猫砂带出来了，顺手扫一下！',
+                '⚠️ 追加任务：把洗手间的毛巾挂整齐！',
+                '⚠️ 临时任务：把沙发上乱丢的衣服叠好！',
+                '⚠️ 妈妈追加：顺便把垃圾桶里的袋子换掉！'
+            ];
+            const box = document.getElementById('distractionBox');
+            box.textContent = distractions[Math.floor(Math.random() * distractions.length)];
+            box.classList.add('show');
+        }
+        
+        function completeTask() {
+            stopTaskTimer();
+            
+            const elapsed = taskStartTime ? Math.floor((Date.now() - taskStartTime) / 1000) : 0;
+            const mins = Math.floor(elapsed / 60);
+            const secs = elapsed % 60;
+            
+            // Award coins
+            const baseCoins = TASKS[currentTask].steps.length;
+            const timeBonus = elapsed < 300 ? 2 : 1;
+            const totalCoins = baseCoins * timeBonus;
+            weeklyCoins += totalCoins;
+            
+            // Save completion
+            const today = now.toDateString();
+            if (!completedTasks[today]) completedTasks[today] = [];
+            if (!completedTasks[today].includes(currentTask)) {
+                completedTasks[today].push(currentTask);
+            }
+            localStorage.setItem('weeklyCoins', weeklyCoins);
+            localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
+            
+            document.getElementById('coinDisplay').textContent = `⭐ 本周积分：${weeklyCoins}`;
+            
+            // Mark card completed
+            document.querySelector(`[data-task="${currentTask}"]`).classList.add('completed');
+            
+            // Show reward
+            document.getElementById('rewardText').innerHTML = 
+                `你用了 ${mins}分${secs}秒 完成了「${TASKS[currentTask].name}」！<br>获得 ${totalCoins} 积分！`;
+            document.getElementById('rewardOverlay').classList.add('show');
+            
+            initCalendar();
+        }
+        
+        function closeReward() {
+            document.getElementById('rewardOverlay').classList.remove('show');
+        }
+        
+        // === Calendar ===
+        function initCalendar() {
+            const grid = document.getElementById('weekGrid');
+            grid.innerHTML = '';
+            
+            const days = ['日', '一', '二', '三', '四', '五', '六'];
+            const today = new Date();
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - today.getDay());
+            
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(startOfWeek);
+                date.setDate(startOfWeek.getDate() + i);
+                
+                const box = document.createElement('div');
+                box.className = 'day-box';
+                if (i === today.getDay()) box.classList.add('today');
+                
+                const dateStr = date.toDateString();
+                if (completedTasks[dateStr] && completedTasks[dateStr].length > 0) {
+                    box.classList.add('done');
+                }
+                
+                box.innerHTML = `
+                    <span class="day-name">${days[i]}</span>
+                    <span class="day-num">${date.getDate()}</span>
+                    <span class="day-star">${completedTasks[dateStr] ? '⭐'.repeat(Math.min(completedTasks[dateStr].length, 3)) : ''}</span>
+                `;
+                grid.appendChild(box);
+            }
+        }
+        
+        // === Init ===
+        initTaskGrid();
+        initCalendar();
+    </script>
+</body>
+</html>
